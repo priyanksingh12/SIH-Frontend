@@ -60,14 +60,17 @@ export default function Vitals() {
     try {
       const conditions = medConditions.split(',').map((s) => s.trim()).filter(Boolean)
       const surgeries = medSurgeries.split(',').map((s) => s.trim()).filter(Boolean)
-      await addMedicalHistory(patientId, {
-        conditions,
-        surgeries,
-        had_typhoid: hadTyphoid,
-        had_malaria: hadMalaria,
-        doctor_notes: doctorNotes,
-      })
-      setMedHistorySaved(true)
+      if (patientId) {
+        await addMedicalHistory(patientId, {
+          conditions,
+          surgeries,
+          had_typhoid: hadTyphoid,
+          had_malaria: hadMalaria,
+          doctor_notes: doctorNotes,
+        })
+      }
+      window.localStorage.setItem('medimate-vitals-complete', 'true')
+      setSaved(true)
     } catch (err) {
       setMedHistoryError(err.message || 'Failed to save medical history. Please try again.')
     } finally {

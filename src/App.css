@@ -139,7 +139,9 @@ button { border: 0; cursor: pointer; font-family: inherit; }
 .assistant-composer-wrap { position: fixed; right: 0; bottom: 0; left: 288px; display: flex; flex-direction: column; align-items: center; padding: 24px 64px 32px; background: linear-gradient(to top, rgba(245,251,247,0.92) 0%, rgba(245,251,247,0.8) 50%, rgba(245,251,247,0) 100%); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 .assistant-composer-wrap > p { margin: 6px 0 0; color: rgba(64,72,69,.6); font: 700 12px/1.2 'Manrope', sans-serif; text-align: center; }
 .assistant-composer { display: flex; align-items: center; gap: 8px; width: min(100%, 768px); padding: 9px; border: 1px solid rgba(192,200,196,.5); border-radius: 32px; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 10px 15px -3px rgba(66,111,99,.05), 0 4px 6px -4px rgba(66,111,99,.05); }
-.assistant-composer button { display: grid; flex: 0 0 48px; place-items: center; width: 48px; height: 48px; border-radius: 999px; color: #404845; background: transparent; }
+.assistant-composer > button { display: grid; flex: 0 0 48px; place-items: center; width: 48px; height: 48px; border-radius: 999px; color: #404845; background: transparent; }
+.assistant-composer .assistant-lang-btn { display: inline-flex !important; flex: 0 0 auto !important; width: auto !important; height: auto !important; min-height: 38px; place-items: normal !important; border-radius: 999px; }
+.assistant-composer .assistant-lang-option { display: flex !important; flex: 1 1 auto !important; width: 100% !important; height: auto !important; place-items: normal !important; border-radius: 0 !important; }
 .assistant-composer input { flex: 1; min-width: 0; height: 56px; padding: 16px 8px; border: 0; outline: 0; color: #171d1b; background: transparent; font: 400 16px/1.5 'Manrope', sans-serif; }
 .assistant-composer input::placeholder { color: rgba(64,72,69,.6); }
 .assistant-composer .assistant-send { color: white; background: #29574b; box-shadow: 0 1px 1px rgba(0,0,0,.05); }

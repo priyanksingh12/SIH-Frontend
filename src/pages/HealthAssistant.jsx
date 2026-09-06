@@ -132,37 +132,40 @@ function LanguageSelector({ value, onChange }) {
   }, [])
 
   return (
-    <div ref={wrapRef} style={{ position: 'relative', flexShrink: 0 }}>
+    <div ref={wrapRef} style={{ position: 'relative', flexShrink: 0, margin: '0 2px' }}>
       <button
         type="button"
+        className="assistant-lang-btn"
         onClick={() => setOpen((o) => !o)}
         title="Select reply language"
         style={{
-          display: 'flex', alignItems: 'center', gap: 5,
-          padding: '6px 12px', borderRadius: 999,
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          padding: '8px 14px', borderRadius: 999,
           border: '1px solid #c4dcd3', background: '#f5fbf7',
           color: '#29574b', fontWeight: 700, fontSize: 13,
           cursor: 'pointer', fontFamily: 'Manrope, sans-serif',
-          whiteSpace: 'nowrap',
+          whiteSpace: 'nowrap', width: 'auto', height: 'auto', flex: '0 0 auto',
+          boxSizing: 'border-box',
         }}
       >
-        <Globe size={14} />
-        {current.native}
-        <span style={{ opacity: 0.45, fontSize: 9 }}>▾</span>
+        <Globe size={15} style={{ flexShrink: 0 }} />
+        <span>{current.native}</span>
+        <span style={{ opacity: 0.5, fontSize: 10, marginLeft: 2 }}>▾</span>
       </button>
 
       {open && (
         <div style={{
-          position: 'absolute', bottom: 'calc(100% + 8px)', left: 0,
+          position: 'absolute', bottom: 'calc(100% + 8px)', right: 0,
           minWidth: 170, borderRadius: 14,
           background: '#fff', border: '1px solid #d5e5dd',
           boxShadow: '0 8px 32px rgba(41,87,75,.14)',
-          zIndex: 9999, overflow: 'hidden',
+          zIndex: 9999, overflow: 'hidden', padding: '4px 0',
         }}>
           {LANGUAGES.map((lang) => (
             <button
               key={lang.code}
               type="button"
+              className="assistant-lang-option"
               onClick={() => { onChange(lang.code); setOpen(false) }}
               style={{
                 width: '100%', textAlign: 'left',
@@ -171,6 +174,7 @@ function LanguageSelector({ value, onChange }) {
                 color: '#171d1b', fontFamily: 'Manrope, sans-serif',
                 fontSize: 13, fontWeight: lang.code === value ? 700 : 500,
                 display: 'flex', alignItems: 'center', gap: 10,
+                height: 'auto', borderRadius: 0,
               }}
             >
               <span style={{ opacity: 0.5, fontSize: 11, minWidth: 52 }}>{lang.label}</span>
