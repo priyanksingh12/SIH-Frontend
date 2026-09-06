@@ -39,7 +39,7 @@ function SecondaryButton({ children, href = '#features', className = '' }) {
 
 function Navbar() {
 	const navigate = useNavigate()
-	return <nav className="fixed inset-x-0 top-0 z-50 border-b border-black/[.03] bg-[#f5fbf7]/80 px-5 py-3 backdrop-blur-md sm:px-8 lg:px-16">
+	return <nav className="fixed inset-x-0 top-0 z-50 border-b border-[#29574b]/10 bg-transparent px-5 py-3 sm:px-8 lg:px-16">
 		<div className="mx-auto flex max-w-[1152px] items-center justify-between">
 			<a href="#top" className="brand font-serif text-2xl font-semibold sm:text-[32px]">MediMate</a>
 			<div className="hidden items-center gap-8 text-sm font-semibold text-[#404845] md:flex">
