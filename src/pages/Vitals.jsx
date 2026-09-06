@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getStoredUser } from '../api/apiClient.js'
-import { saveVitals } from '../api/patientApi.js'
+import { saveVitals, addMedicalHistory } from '../api/patientApi.js'
 
 const inputFields = [
   ['bloodPressure', 'Blood Pressure', '120/80', 'mmHg', 'Target: below 120/80'],
@@ -40,7 +40,40 @@ export default function Vitals() {
   const [error, setError] = useState('')
   const [savedVitals, setSavedVitals] = useState(null)
 
+  // Medical History state
+  const [medConditions, setMedConditions] = useState('')
+  const [medSurgeries, setMedSurgeries] = useState('')
+  const [hadTyphoid, setHadTyphoid] = useState(false)
+  const [hadMalaria, setHadMalaria] = useState(false)
+  const [doctorNotes, setDoctorNotes] = useState('')
+  const [medHistoryLoading, setMedHistoryLoading] = useState(false)
+  const [medHistoryError, setMedHistoryError] = useState('')
+  const [medHistorySaved, setMedHistorySaved] = useState(false)
+
   const updateField = (event) => setForm({ ...form, [event.target.name]: event.target.value })
+
+  const saveMedHistory = async (event) => {
+    event.preventDefault()
+    setMedHistoryError('')
+    setMedHistorySaved(false)
+    setMedHistoryLoading(true)
+    try {
+      const conditions = medConditions.split(',').map((s) => s.trim()).filter(Boolean)
+      const surgeries = medSurgeries.split(',').map((s) => s.trim()).filter(Boolean)
+      await addMedicalHistory(patientId, {
+        conditions,
+        surgeries,
+        had_typhoid: hadTyphoid,
+        had_malaria: hadMalaria,
+        doctor_notes: doctorNotes,
+      })
+      setMedHistorySaved(true)
+    } catch (err) {
+      setMedHistoryError(err.message || 'Failed to save medical history. Please try again.')
+    } finally {
+      setMedHistoryLoading(false)
+    }
+  }
 
   const finish = async (event) => {
     event.preventDefault()
@@ -335,6 +368,93 @@ export default function Vitals() {
                 View My Health <span>→</span>
               </button>
             </div>
+          </section>
+
+          {/* Medical History Section */}
+          <section style={{ marginTop: '56px' }}>
+            <div style={{ marginBottom: '24px' }}>
+              <h2 style={{ fontSize: '2.2rem', fontWeight: 700, margin: 0 }}>Medical History</h2>
+              <p style={{ fontSize: '1.2rem', color: '#526e67', marginTop: '8px' }}>
+                Record your past conditions, surgeries, and disease history.
+              </p>
+            </div>
+
+            <form className="vitals-form" onSubmit={saveMedHistory} style={{ padding: '44px' }}>
+              <div className="vitals-fields">
+                <label className="vitals-field">
+                  <span>Conditions <small style={{ fontWeight: 400, color: '#526e67' }}>(comma-separated)</small></span>
+                  <div className="vitals-input-wrap">
+                    <input
+                      value={medConditions}
+                      onChange={(e) => setMedConditions(e.target.value)}
+                      placeholder="e.g. Diabetes Type 2, Hypertension"
+                    />
+                  </div>
+                </label>
+
+                <label className="vitals-field">
+                  <span>Previous Surgeries <small style={{ fontWeight: 400, color: '#526e67' }}>(comma-separated)</small></span>
+                  <div className="vitals-input-wrap">
+                    <input
+                      value={medSurgeries}
+                      onChange={(e) => setMedSurgeries(e.target.value)}
+                      placeholder="e.g. Appendectomy, Knee Replacement"
+                    />
+                  </div>
+                </label>
+              </div>
+
+              <div className="vitals-extra-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 600, fontSize: '1.05rem', color: '#171d1b', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={hadTyphoid}
+                    onChange={(e) => setHadTyphoid(e.target.checked)}
+                    style={{ width: '20px', height: '20px', accentColor: '#29574b', cursor: 'pointer' }}
+                  />
+                  Had Typhoid
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontWeight: 600, fontSize: '1.05rem', color: '#171d1b', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={hadMalaria}
+                    onChange={(e) => setHadMalaria(e.target.checked)}
+                    style={{ width: '20px', height: '20px', accentColor: '#29574b', cursor: 'pointer' }}
+                  />
+                  Had Malaria
+                </label>
+              </div>
+
+              <label className="vitals-notes" style={{ marginTop: '20px' }}>
+                <span>Doctor Notes <small style={{ fontWeight: 400, color: '#526e67' }}>(Optional)</small></span>
+                <textarea
+                  value={doctorNotes}
+                  onChange={(e) => setDoctorNotes(e.target.value)}
+                  placeholder="e.g. Advised diet control, follow-up in 3 months"
+                />
+              </label>
+
+              {medHistoryError && (
+                <p className="signup-error" role="alert" style={{ marginBottom: '0.5rem', fontSize: '1rem' }}>
+                  {medHistoryError}
+                </p>
+              )}
+
+              {medHistorySaved && (
+                <p style={{ color: '#29574b', fontWeight: 700, fontSize: '1rem', marginBottom: '0.5rem', padding: '12px 16px', background: '#dcece5', borderRadius: '10px' }}>
+                  ✓ Medical history saved successfully.
+                </p>
+              )}
+
+              <div className="vitals-form-actions" style={{ marginTop: '12px' }}>
+                <button className="save-vitals" type="submit" disabled={medHistoryLoading || !patientId} style={{ fontSize: '1.2rem', padding: '16px 36px', color: '#00ff88', fontWeight: 800 }}>
+                  {medHistoryLoading ? 'Saving…' : 'Save Medical History'} {!medHistoryLoading && <span>→</span>}
+                </button>
+              </div>
+              {!patientId && (
+                <p style={{ color: '#526e67', fontSize: '0.9rem', marginTop: '8px' }}>Sign in to save medical history.</p>
+              )}
+            </form>
           </section>
         </div>
       </main>

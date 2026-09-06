@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getStoredUser } from '../api/apiClient.js'
-import { getPatientProfile, updatePatientProfile, getVitals, getReports } from '../api/patientApi.js'
+import { getPatientProfile, updatePatientProfile, getVitals, getReports, getMedicalHistory } from '../api/patientApi.js'
 import { Sidebar, TopBar } from './PatientDashboard.jsx'
 import { convertBase64ToPdfBlobUrl, downloadPdfFile } from '../utils/pdfHelper.js'
 
@@ -301,6 +301,8 @@ export default function PatientProfile() {
   const [vitalsLoading, setVitalsLoading] = useState(true)
   const [reports, setReports] = useState([])
   const [reportsLoading, setReportsLoading] = useState(true)
+  const [medicalHistory, setMedicalHistory] = useState(null)
+  const [medHistoryLoading, setMedHistoryLoading] = useState(true)
 
   // Edit Modal State
   const [isEditingModalOpen, setIsEditingModalOpen] = useState(false)
@@ -358,12 +360,27 @@ export default function PatientProfile() {
           setReports(localReports)
         })
         .finally(() => setReportsLoading(false))
+
+      getMedicalHistory(patientId)
+        .then((data) => {
+          // data may be an array (history list) or a single object
+          if (Array.isArray(data) && data.length > 0) {
+            setMedicalHistory(data[0])
+          } else if (data && !Array.isArray(data)) {
+            setMedicalHistory(data)
+          } else {
+            setMedicalHistory(null)
+          }
+        })
+        .catch(() => setMedicalHistory(null))
+        .finally(() => setMedHistoryLoading(false))
     } else {
       const merged = getMergedVitalsList([])
       setVitals(merged)
       setVitalsLoading(false)
       setReports(localReports)
       setReportsLoading(false)
+      setMedHistoryLoading(false)
     }
   }, [patientId])
 
@@ -468,6 +485,78 @@ export default function PatientProfile() {
           </div>
 
           <ClinicalReportsCard reports={reports} loading={reportsLoading} onViewPdf={handleViewPdf} />
+
+          {/* Medical History Card */}
+          <section style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #e2eae5', boxShadow: '0 8px 24px rgba(41,87,75,0.06)', marginTop: '24px' }}>
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div>
+                <h2 style={{ margin: 0, font: "700 1.4rem 'Playfair Display', serif", color: '#171d1b' }}>🏥 Medical History</h2>
+                <p style={{ margin: '4px 0 0', color: '#59756e', fontSize: '0.85rem' }}>Recorded conditions, surgeries, and disease history</p>
+              </div>
+            </header>
+
+            {medHistoryLoading ? (
+              <p style={{ padding: '1rem', opacity: 0.6 }}>Loading medical history…</p>
+            ) : !medicalHistory ? (
+              <div style={{ padding: '24px', textAlign: 'center', background: '#f5fbf7', borderRadius: '14px', border: '1px solid #e2eae5' }}>
+                <p style={{ margin: 0, color: '#59756e', fontSize: '0.95rem', fontWeight: 600 }}>
+                  No medical history recorded yet. Add it from the <strong>Vitals</strong> page.
+                </p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gap: '14px' }}>
+                {medicalHistory.conditions && medicalHistory.conditions.length > 0 && (
+                  <div style={{ padding: '14px 18px', borderRadius: '12px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
+                    <small style={{ display: 'block', color: '#59756e', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>Conditions</small>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {medicalHistory.conditions.map((c, i) => (
+                        <span key={i} style={{ padding: '4px 12px', borderRadius: '999px', background: '#dcece5', color: '#29574b', fontSize: '0.9rem', fontWeight: 600 }}>{c}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {medicalHistory.surgeries && medicalHistory.surgeries.length > 0 && (
+                  <div style={{ padding: '14px 18px', borderRadius: '12px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
+                    <small style={{ display: 'block', color: '#59756e', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>Previous Surgeries</small>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {medicalHistory.surgeries.map((s, i) => (
+                        <span key={i} style={{ padding: '4px 12px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', fontSize: '0.9rem', fontWeight: 600 }}>{s}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                  <div style={{ padding: '14px 18px', borderRadius: '12px', background: medicalHistory.had_typhoid ? '#fff1f0' : '#f5fbf7', border: `1px solid ${medicalHistory.had_typhoid ? '#fecaca' : '#e2eae5'}` }}>
+                    <small style={{ display: 'block', color: '#59756e', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>Had Typhoid</small>
+                    <strong style={{ fontSize: '1.1rem', color: medicalHistory.had_typhoid ? '#991b1b' : '#29574b', fontWeight: 800 }}>
+                      {medicalHistory.had_typhoid ? '⚠ Yes' : '✓ No'}
+                    </strong>
+                  </div>
+                  <div style={{ padding: '14px 18px', borderRadius: '12px', background: medicalHistory.had_malaria ? '#fff1f0' : '#f5fbf7', border: `1px solid ${medicalHistory.had_malaria ? '#fecaca' : '#e2eae5'}` }}>
+                    <small style={{ display: 'block', color: '#59756e', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>Had Malaria</small>
+                    <strong style={{ fontSize: '1.1rem', color: medicalHistory.had_malaria ? '#991b1b' : '#29574b', fontWeight: 800 }}>
+                      {medicalHistory.had_malaria ? '⚠ Yes' : '✓ No'}
+                    </strong>
+                  </div>
+                </div>
+
+                {medicalHistory.doctor_notes && (
+                  <div style={{ padding: '14px 18px', borderRadius: '12px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
+                    <small style={{ display: 'block', color: '#59756e', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '6px' }}>Doctor Notes</small>
+                    <p style={{ margin: 0, color: '#171d1b', fontSize: '0.95rem', lineHeight: 1.6 }}>{medicalHistory.doctor_notes}</p>
+                  </div>
+                )}
+
+                {medicalHistory.date && (
+                  <p style={{ margin: '4px 0 0', color: '#59756e', fontSize: '0.82rem' }}>
+                    Recorded on {new Date(medicalHistory.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  </p>
+                )}
+              </div>
+            )}
+          </section>
         </main>
       </div>
 
