@@ -1,8 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Paperclip, Send, X, Globe, FileText } from 'lucide-react'
+import { Paperclip, Send, X, Globe, FileText, Plus, Trash2, Pencil, Check, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getStoredUser } from '../api/apiClient.js'
-import { triageChat, triageReport, getTriageSessions, getTriageSession } from '../api/triageApi.js'
+import {
+  triageChat, triageReport, getTriageSessions, getTriageSession,
+  createNewTriageSession, renameTriageSession, deleteTriageSession,
+} from '../api/triageApi.js'
 import { downloadPdfFile } from '../utils/pdfHelper.js'
 import { Sidebar } from './PatientDashboard.jsx'
 
@@ -188,6 +191,178 @@ function LanguageSelector({ value, onChange }) {
   )
 }
 
+// ─── Zone badge helper ────────────────────────────────────────────────────────
+function ZoneBadge({ zone }) {
+  if (!zone) return null
+  const colors = {
+    green:  { bg: '#d1fae5', color: '#065f46', border: '#6ee7b7' },
+    yellow: { bg: '#fef3c7', color: '#92400e', border: '#fcd34d' },
+    red:    { bg: '#fee2e2', color: '#991b1b', border: '#fca5a5' },
+  }
+  const c = colors[zone] || colors.green
+  return (
+    <span style={{
+      display: 'inline-block', padding: '1px 8px', borderRadius: 999,
+      fontSize: 10, fontWeight: 800, letterSpacing: '.08em',
+      background: c.bg, color: c.color, border: `1px solid ${c.border}`,
+      textTransform: 'uppercase',
+    }}>{zone}</span>
+  )
+}
+
+// ─── Chat History Sidebar ─────────────────────────────────────────────────────
+function ChatHistorySidebar({ sessions, activeSessionId, onNew, onSelect, onRename, onDelete, loading, collapsed, onToggle }) {
+  const [renamingId, setRenamingId] = useState(null)
+  const [renameValue, setRenameValue] = useState('')
+  const renameInputRef = useRef(null)
+
+  useEffect(() => {
+    if (renamingId && renameInputRef.current) renameInputRef.current.focus()
+  }, [renamingId])
+
+  const startRename = (session, e) => {
+    e.stopPropagation()
+    setRenamingId(session.id)
+    setRenameValue(session.title || '')
+  }
+
+  const confirmRename = (e) => {
+    e?.stopPropagation()
+    if (renameValue.trim() && renamingId) {
+      onRename(renamingId, renameValue.trim())
+    }
+    setRenamingId(null)
+  }
+
+  return (
+    <aside style={{
+      width: collapsed ? 48 : 260,
+      minWidth: collapsed ? 48 : 260,
+      maxWidth: collapsed ? 48 : 260,
+      height: '100%',
+      background: '#1a2e28',
+      display: 'flex',
+      flexDirection: 'column',
+      transition: 'width 0.22s cubic-bezier(.4,0,.2,1), min-width 0.22s, max-width 0.22s',
+      overflow: 'hidden',
+      position: 'relative',
+      flexShrink: 0,
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: collapsed ? '14px 8px' : '14px 12px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+        {!collapsed && (
+          <span style={{ color: '#bff0e1', fontWeight: 800, fontSize: 13, letterSpacing: '.04em' }}>CHAT HISTORY</span>
+        )}
+        <button
+          onClick={onToggle}
+          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          style={{ background: 'transparent', border: 0, cursor: 'pointer', color: '#bff0e1', display: 'flex', alignItems: 'center', padding: 4, borderRadius: 6 }}
+        >
+          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        </button>
+      </div>
+
+      {/* New Chat button */}
+      <div style={{ padding: collapsed ? '8px 6px' : '8px 10px' }}>
+        <button
+          onClick={onNew}
+          disabled={loading}
+          title="New Chat"
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            padding: collapsed ? '8px' : '9px 12px',
+            borderRadius: 10, border: '1px solid rgba(0,255,136,0.25)',
+            background: 'rgba(0,255,136,0.07)', color: '#00ff88',
+            fontWeight: 800, fontSize: 13, cursor: 'pointer',
+            transition: 'background .15s',
+          }}
+        >
+          <Plus size={15} />
+          {!collapsed && <span>New Chat</span>}
+        </button>
+      </div>
+
+      {/* Session list */}
+      {!collapsed && (
+        <div style={{ flex: 1, overflowY: 'auto', padding: '4px 6px 12px' }}>
+          {sessions.length === 0 && (
+            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, textAlign: 'center', padding: '24px 8px' }}>
+              No past conversations
+            </div>
+          )}
+          {sessions.map((session) => {
+            const isActive = session.id === activeSessionId
+            const isRenaming = renamingId === session.id
+            return (
+              <div
+                key={session.id}
+                onClick={() => !isRenaming && onSelect(session.id)}
+                style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 8,
+                  padding: '9px 10px', borderRadius: 10, marginBottom: 2,
+                  cursor: 'pointer', background: isActive ? 'rgba(0,255,136,0.1)' : 'transparent',
+                  border: isActive ? '1px solid rgba(0,255,136,0.2)' : '1px solid transparent',
+                  transition: 'background .13s',
+                }}
+              >
+                <MessageSquare size={13} style={{ flexShrink: 0, marginTop: 2, color: isActive ? '#00ff88' : 'rgba(255,255,255,0.4)' }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  {isRenaming ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }} onClick={(e) => e.stopPropagation()}>
+                      <input
+                        ref={renameInputRef}
+                        value={renameValue}
+                        onChange={(e) => setRenameValue(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') confirmRename(); if (e.key === 'Escape') setRenamingId(null) }}
+                        style={{ flex: 1, background: '#0e1f1a', border: '1px solid #00ff88', borderRadius: 6, color: '#fff', fontSize: 12, padding: '2px 6px', outline: 'none' }}
+                      />
+                      <button onClick={confirmRename} style={{ background: 'transparent', border: 0, cursor: 'pointer', color: '#00ff88', padding: 2 }}><Check size={13} /></button>
+                    </div>
+                  ) : (
+                    <div style={{ color: isActive ? '#ffffff' : 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: isActive ? 700 : 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {session.title || 'Untitled Chat'}
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                    <ZoneBadge zone={session.zone_result} />
+                    {session.message_count > 0 && (
+                      <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>{session.message_count} msg</span>
+                    )}
+                  </div>
+                  {session.preview && !isRenaming && (
+                    <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {session.preview}
+                    </div>
+                  )}
+                </div>
+                {!isRenaming && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                    <button
+                      title="Rename"
+                      onClick={(e) => startRename(session, e)}
+                      style={{ background: 'transparent', border: 0, cursor: 'pointer', color: 'rgba(255,255,255,0.35)', padding: 2, borderRadius: 4 }}
+                    >
+                      <Pencil size={11} />
+                    </button>
+                    <button
+                      title="Delete"
+                      onClick={(e) => { e.stopPropagation(); onDelete(session.id) }}
+                      style={{ background: 'transparent', border: 0, cursor: 'pointer', color: 'rgba(255,100,100,0.5)', padding: 2, borderRadius: 4 }}
+                    >
+                      <Trash2 size={11} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </aside>
+  )
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 function HealthAssistant() {
@@ -195,82 +370,175 @@ function HealthAssistant() {
   const user = getStoredUser()
   const userName = user?.name || window.localStorage.getItem('medimate-account-name') || 'there'
 
-  // Derive initial language code from stored user preference
   const defaultLang = (() => {
     const pref = user?.preferred_language || 'en'
-    // If stored as full name (e.g. "hindi"), convert to code
     const byFull = LANGUAGES.find((l) => LANG_FULL[l.code] === pref)
     if (byFull) return byFull.code
     return LANGUAGES.find((l) => l.code === pref) ? pref : 'en'
   })()
 
+  // ─── State ─────────────────────────────────────────────────────────────────
   const [messages, setMessages] = useState([initialGreeting])
   const [inputMessage, setInputMessage] = useState('')
   const [sessionId, setSessionId] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [sessionsLoading, setSessionsLoading] = useState(false)
   const [reportLoading, setReportLoading] = useState(false)
   const [error, setError] = useState('')
   const [language, setLanguage] = useState(defaultLang)
   const [pendingAttachments, setPendingAttachments] = useState([])
+  const [sessions, setSessions] = useState([])
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   const chatEndRef = useRef(null)
   const fileInputRef = useRef(null)
 
+  // ─── Scroll to bottom ──────────────────────────────────────────────────────
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
-  // Load latest triage session on mount
-  useEffect(() => {
-    getTriageSessions()
-      .then(async (sessions) => {
-        if (sessions && sessions.length > 0) {
-          const latestSession = sessions[0]
-          setSessionId(latestSession.id)
-          try {
-            const detail = await getTriageSession(latestSession.id)
-            if (detail?.session?.messages && detail.session.messages.length > 0) {
-              const formatted = detail.session.messages.map((m, idx) => ({
-                id: 'hist_' + idx,
-                sender: m.role === 'user' ? 'user' : 'system',
-                content: m.role === 'user' ? m.content : undefined,
-                reply: m.role !== 'user' ? m.content : undefined,
-                zone: m.zone || detail.session.zone_result,
-              }))
-              setMessages([initialGreeting, ...formatted])
-            }
-          } catch {
-            // keep default welcome message
-          }
-        }
-      })
-      .catch(() => {})
+  // ─── Load sessions list ────────────────────────────────────────────────────
+  const loadSessions = useCallback(async () => {
+    try {
+      const data = await getTriageSessions()
+      setSessions(data || [])
+      return data || []
+    } catch {
+      return []
+    }
   }, [])
 
-  // ─── File picking ───────────────────────────────────────────────────────────
+  // ─── Load a session's messages into chat ──────────────────────────────────
+  const loadSessionMessages = useCallback(async (sid) => {
+    try {
+      const detail = await getTriageSession(sid)
+      if (detail?.session?.messages?.length > 0) {
+        const formatted = detail.session.messages.map((m, idx) => ({
+          id: 'hist_' + idx,
+          sender: m.role === 'user' ? 'user' : 'system',
+          content: m.role === 'user' ? m.content : undefined,
+          reply: m.role !== 'user' ? m.content : undefined,
+          zone: m.zone || detail.session.zone_result || null,
+          is_final: m.is_final || false,
+          remedy_suggestion: m.remedy_suggestion || null,
+          follow_up_question: m.follow_up_question || null,
+        }))
+        setMessages([initialGreeting, ...formatted])
+      } else {
+        setMessages([initialGreeting])
+      }
+    } catch {
+      setMessages([initialGreeting])
+    }
+  }, [])
 
+  // ─── Mount: load sessions, open most recent ────────────────────────────────
+  useEffect(() => {
+    setSessionsLoading(true)
+    loadSessions().then((data) => {
+      if (data && data.length > 0) {
+        const latest = data[0]
+        setSessionId(latest.id)
+        loadSessionMessages(latest.id)
+      }
+    }).finally(() => setSessionsLoading(false))
+  }, [])
+
+  // ─── New Chat ──────────────────────────────────────────────────────────────
+  const handleNewChat = async () => {
+    setLoading(true)
+    try {
+      const res = await createNewTriageSession()
+      const newId = res?.session_id || res?.id
+      if (newId) {
+        setSessionId(newId)
+        setMessages([initialGreeting])
+        setInputMessage('')
+        setPendingAttachments([])
+        setError('')
+        // Add to top of sidebar list immediately
+        const newSession = {
+          id: newId,
+          title: res?.title || `Chat - ${new Date().toLocaleDateString('en-IN')}`,
+          preview: null,
+          message_count: 0,
+          zone_result: null,
+          created_at: res?.created_at || new Date().toISOString(),
+          updated_at: res?.created_at || new Date().toISOString(),
+          healthReports: [],
+        }
+        setSessions((prev) => [newSession, ...prev.filter((s) => s.id !== newId)])
+      }
+    } catch {
+      // Fallback: just clear the chat
+      setSessionId(null)
+      setMessages([initialGreeting])
+      setError('')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // ─── Select session from sidebar ──────────────────────────────────────────
+  const handleSelectSession = async (sid) => {
+    if (sid === sessionId) return
+    setSessionId(sid)
+    setMessages([initialGreeting])
+    setInputMessage('')
+    setPendingAttachments([])
+    setError('')
+    await loadSessionMessages(sid)
+  }
+
+  // ─── Rename session ────────────────────────────────────────────────────────
+  const handleRenameSession = async (sid, title) => {
+    try {
+      await renameTriageSession(sid, title)
+      setSessions((prev) => prev.map((s) => s.id === sid ? { ...s, title } : s))
+    } catch {
+      // silently fail
+    }
+  }
+
+  // ─── Delete session ────────────────────────────────────────────────────────
+  const handleDeleteSession = async (sid) => {
+    if (!window.confirm('Delete this chat session and its reports?')) return
+    try {
+      await deleteTriageSession(sid)
+      const remaining = sessions.filter((s) => s.id !== sid)
+      setSessions(remaining)
+      if (sid === sessionId) {
+        if (remaining.length > 0) {
+          setSessionId(remaining[0].id)
+          loadSessionMessages(remaining[0].id)
+        } else {
+          setSessionId(null)
+          setMessages([initialGreeting])
+        }
+      }
+    } catch {
+      alert('Failed to delete session.')
+    }
+  }
+
+  // ─── File picking ──────────────────────────────────────────────────────────
   function handleFileSelect(e) {
     const files = Array.from(e.target.files || [])
     if (!files.length) return
-
     const valid = files.filter((f) => {
       if (f.size > MAX_FILE_MB * 1024 * 1024) {
-        alert(`"${f.name}" exceeds the ${MAX_FILE_MB} MB size limit and was not added.`)
+        alert(`"${f.name}" exceeds the ${MAX_FILE_MB} MB size limit.`)
         return false
       }
       return true
     })
-
     const newAtts = valid.map((file) => ({
-      file,
-      name: file.name,
-      type: file.type,
-      size: file.size,
+      file, name: file.name, type: file.type, size: file.size,
       previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : null,
     }))
-
     setPendingAttachments((prev) => [...prev, ...newAtts])
-    e.target.value = '' // allow re-selecting the same file
+    e.target.value = ''
   }
 
   function removePending(index) {
@@ -282,17 +550,14 @@ function HealthAssistant() {
     })
   }
 
-  /** Build extra context text from attachments to append to the API message */
   function attachmentContext(atts) {
     if (!atts.length) return ''
-    const lines = atts.map((a) =>
+    return '\n\n' + atts.map((a) =>
       a.type?.startsWith('image/') ? `[Attached image: ${a.name}]` : `[Attached file: ${a.name} (${a.type || 'document'})]`
-    )
-    return '\n\n' + lines.join('\n')
+    ).join('\n')
   }
 
-  // ─── Send ───────────────────────────────────────────────────────────────────
-
+  // ─── Send message ──────────────────────────────────────────────────────────
   const handleSend = async (textToSend) => {
     const rawText = textToSend !== undefined ? textToSend : inputMessage
     const hasText = rawText.trim().length > 0
@@ -324,7 +589,23 @@ function HealthAssistant() {
         session_id: sessionId || undefined,
       })
 
-      if (res?.session_id) setSessionId(res.session_id)
+      // If backend auto-created a new session, persist it
+      if (res?.session_id) {
+        const newSid = res.session_id
+        setSessionId(newSid)
+        setSessions((prev) => {
+          const exists = prev.find((s) => s.id === newSid)
+          if (exists) {
+            return prev.map((s) => s.id === newSid ? { ...s, title: res.title || s.title, updated_at: new Date().toISOString() } : s)
+          }
+          return [{
+            id: newSid, title: res.title || `Chat - ${new Date().toLocaleDateString('en-IN')}`,
+            preview: apiMessage.slice(0, 80), message_count: 1,
+            zone_result: res.zone || null, created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(), healthReports: [],
+          }, ...prev]
+        })
+      }
 
       const sysMsg = {
         id: 'sys_' + Date.now(),
@@ -337,15 +618,18 @@ function HealthAssistant() {
       }
 
       setMessages((prev) => [...prev, sysMsg])
+
+      // Update session in sidebar with new zone
+      if (res?.session_id && res?.zone) {
+        setSessions((prev) => prev.map((s) =>
+          s.id === res.session_id ? { ...s, zone_result: res.zone, updated_at: new Date().toISOString() } : s
+        ))
+      }
     } catch (err) {
       setError(err.message || 'Failed to connect to AI triage. Please try again.')
       setMessages((prev) => [
         ...prev,
-        {
-          id: 'err_' + Date.now(),
-          sender: 'system',
-          reply: 'I had trouble evaluating symptoms right now. Please check your connection or try again.',
-        },
+        { id: 'err_' + Date.now(), sender: 'system', reply: 'I had trouble evaluating symptoms right now. Please check your connection or try again.' },
       ])
     } finally {
       setLoading(false)
@@ -356,55 +640,40 @@ function HealthAssistant() {
   const sendMessage = (e) => { e.preventDefault(); handleSend() }
   const handleSuggestionClick = (label) => handleSend(label)
 
-  // ─── Download report ────────────────────────────────────────────────────────
-
+  // ─── Download report ───────────────────────────────────────────────────────
   const handleDownloadReport = async () => {
     if (!sessionId) return
     setReportLoading(true)
     try {
       const res = await triageReport(sessionId)
-
       const BACKEND_URL = 'https://sih-otuc.onrender.com'
-
-      // Resolve relative paths (e.g. /uploads/reports/...) to full URLs
       const resolveUrl = (val) => {
         if (!val || typeof val !== 'string') return val
         if (val.startsWith('/')) return `${BACKEND_URL}${val}`
         return val
       }
-
       const rawPdfData =
-        res?.report_base64 ||
-        res?.pdf_base64 ||
-        res?.pdf ||
-        res?.report ||
-        res?.report_url ||
-        res?.file_url ||
-        res?.url ||
-        res?.base64 ||
-        res?.data ||
-        res?.content ||
-        (typeof res === 'string' ? res : null)
-
+        res?.report_base64 || res?.pdf_base64 || res?.pdf || res?.report ||
+        res?.report_url || res?.file_url || res?.url || res?.base64 ||
+        res?.data || res?.content || (typeof res === 'string' ? res : null)
       const pdfData = resolveUrl(rawPdfData)
-
       if (pdfData) {
-        // 1. Download the PDF file (handles both full URLs and base64)
         const filename = `MediMate_Clinical_Report_${new Date().toISOString().slice(0, 10)}.pdf`
         downloadPdfFile(pdfData, filename)
-
-        // 2. Store report in localStorage for Patient Profile
         const existingReports = JSON.parse(window.localStorage.getItem('medimate-clinical-reports') || '[]')
         const newReport = {
           id: res?.report_id || `rep_${Date.now()}`,
-          pdf_url: pdfData,
-          session_id: sessionId,
+          pdf_url: pdfData, session_id: sessionId,
           generated_at: res?.generated_at || new Date().toISOString(),
           title: 'AI Triage Clinical PDF Summary',
         }
         const updatedReports = [newReport, ...existingReports.filter((r) => r.id !== newReport.id)]
         window.localStorage.setItem('medimate-clinical-reports', JSON.stringify(updatedReports))
-        alert('Clinical report downloaded to your computer and saved to your Patient Profile!')
+        // Update sidebar to show healthReport badge
+        setSessions((prev) => prev.map((s) => s.id === sessionId ? {
+          ...s, healthReports: [{ id: newReport.id, pdf_url: pdfData, generated_at: newReport.generated_at }, ...s.healthReports],
+        } : s))
+        alert('Clinical report downloaded and saved to your Patient Profile!')
       } else {
         alert('Report was generated but no PDF data was returned by the server.')
       }
@@ -415,17 +684,31 @@ function HealthAssistant() {
     }
   }
 
-  // ─── Render ─────────────────────────────────────────────────────────────────
-
+  // ─── Render ────────────────────────────────────────────────────────────────
   const canSend = !loading && (inputMessage.trim().length > 0 || pendingAttachments.length > 0)
 
   return (
     <div className="assistant-page">
       <Sidebar userName={userName} activeLabel="Health Assistant" />
-      <main className="assistant-main">
-        <div className="assistant-canvas">
+      <main className="assistant-main" style={{ display: 'flex', flexDirection: 'row', minHeight: '100vh', overflow: 'hidden' }}>
+
+        {/* ── Chat History Sidebar ── */}
+        <ChatHistorySidebar
+          sessions={sessions}
+          activeSessionId={sessionId}
+          onNew={handleNewChat}
+          onSelect={handleSelectSession}
+          onRename={handleRenameSession}
+          onDelete={handleDeleteSession}
+          loading={loading || sessionsLoading}
+          collapsed={sidebarCollapsed}
+          onToggle={() => setSidebarCollapsed((c) => !c)}
+        />
+
+        {/* ── Main Chat Area ── */}
+        <div className="assistant-canvas" style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
           <div className="assistant-decoration" />
-          <div className="assistant-content">
+          <div className="assistant-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', minHeight: 0 }}>
             <header className="assistant-header">
               <p>AI Health Assistant</p>
               <h1>Tell me what&apos;s bothering you.</h1>
@@ -438,9 +721,7 @@ function HealthAssistant() {
                     <div className="assistant-message assistant-message-user" key={msg.id}>
                       <UserInitialsAvatar name={userName} />
                       <div className="assistant-bubble assistant-bubble-dark">
-                        {msg.attachments?.length > 0 && (
-                          <MessageAttachments attachments={msg.attachments} />
-                        )}
+                        {msg.attachments?.length > 0 && <MessageAttachments attachments={msg.attachments} />}
                         {msg.content}
                       </div>
                     </div>
@@ -490,10 +771,7 @@ function HealthAssistant() {
                             <button
                               type="button"
                               className="assistant-care-link"
-                              onClick={() => {
-                                window.sessionStorage.setItem('medimate-doctors-entry', 'true')
-                                navigate('/doctors')
-                              }}
+                              onClick={() => { window.sessionStorage.setItem('medimate-doctors-entry', 'true'); navigate('/doctors') }}
                               style={{ margin: 0 }}
                             >
                               Find nearby care <img src={arrowIcon} alt="" />
@@ -542,15 +820,8 @@ function HealthAssistant() {
 
           {/* ── Composer ── */}
           <div className="assistant-composer-wrap">
-
-            {/* Pending attachment tray */}
             {pendingAttachments.length > 0 && (
-              <div style={{
-                display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center',
-                width: 'min(100%, 768px)', marginBottom: 10,
-                padding: '12px 16px', borderRadius: 16,
-                background: '#29574b', boxSizing: 'border-box',
-              }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', width: 'min(100%, 768px)', marginBottom: 10, padding: '12px 16px', borderRadius: 16, background: '#29574b', boxSizing: 'border-box' }}>
                 <span style={{ color: '#bff0e1', fontSize: 12, fontWeight: 700, marginRight: 4 }}>
                   {pendingAttachments.length} file{pendingAttachments.length > 1 ? 's' : ''} selected
                 </span>
@@ -561,19 +832,7 @@ function HealthAssistant() {
             )}
 
             <form className="assistant-composer" onSubmit={sendMessage}>
-              {/* Hidden file input */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept={ACCEPTED_TYPES}
-                multiple
-                style={{ display: 'none' }}
-                onChange={handleFileSelect}
-                aria-hidden="true"
-                tabIndex={-1}
-              />
-
-              {/* Paperclip — opens file picker */}
+              <input ref={fileInputRef} type="file" accept={ACCEPTED_TYPES} multiple style={{ display: 'none' }} onChange={handleFileSelect} aria-hidden="true" tabIndex={-1} />
               <button
                 type="button"
                 aria-label="Attach photo or file"
@@ -583,45 +842,26 @@ function HealthAssistant() {
               >
                 <Paperclip size={20} />
                 {pendingAttachments.length > 0 && (
-                  <span style={{
-                    position: 'absolute', top: 4, right: 4,
-                    width: 15, height: 15, borderRadius: '50%',
-                    background: '#f43f5e', color: '#fff',
-                    fontSize: 9, fontWeight: 800,
-                    display: 'grid', placeItems: 'center', lineHeight: 1,
-                  }}>
+                  <span style={{ position: 'absolute', top: 4, right: 4, width: 15, height: 15, borderRadius: '50%', background: '#f43f5e', color: '#fff', fontSize: 9, fontWeight: 800, display: 'grid', placeItems: 'center', lineHeight: 1 }}>
                     {pendingAttachments.length}
                   </span>
                 )}
               </button>
-
               <input
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="Describe your symptoms naturally…"
                 aria-label="Describe your symptoms"
                 disabled={loading}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() }
-                }}
+                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
               />
-
-              {/* Language selector */}
               <LanguageSelector value={language} onChange={setLanguage} />
-
-              <button
-                type="submit"
-                className="assistant-send"
-                aria-label="Send message"
-                disabled={!canSend}
-              >
+              <button type="submit" className="assistant-send" aria-label="Send message" disabled={!canSend}>
                 <Send size={19} />
               </button>
             </form>
 
-            {error && (
-              <p style={{ color: '#9a4638', fontWeight: 600, margin: '6px 0 0' }}>{error}</p>
-            )}
+            {error && <p style={{ color: '#9a4638', fontWeight: 600, margin: '6px 0 0' }}>{error}</p>}
             <p>MediMate AI can make mistakes. Always consult a doctor for serious concerns.</p>
           </div>
         </div>
@@ -631,3 +871,4 @@ function HealthAssistant() {
 }
 
 export default HealthAssistant
+
