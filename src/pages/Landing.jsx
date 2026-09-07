@@ -55,7 +55,6 @@ function Navbar() {
 
 function Hero() {
 	return <section id="top" className="relative overflow-hidden px-5 pb-20 pt-32 sm:px-8 lg:px-16 lg:pt-40">
-		<div className="absolute -right-32 -top-52 h-[720px] w-[760px] rounded-[45%_22%_60%_35%] bg-[#eff5f1]/80" />
 		<div className="relative mx-auto grid max-w-[1152px] items-center gap-12 lg:grid-cols-[5fr_7fr]">
 			<div className="order-2 lg:order-1"><h1 className="max-w-xl font-serif text-5xl font-bold leading-[1.1] tracking-[-.02em] text-[#29574b] sm:text-6xl">Better care,<br />closer to home.</h1><p className="mt-6 max-w-md text-lg leading-relaxed text-[#404845]">Navigate your health journey with clarity. MediMate connects you to the right care, at the right time, with quiet confidence.</p><div className="mt-8 flex flex-wrap gap-4"><CtaButton>Start your journey</CtaButton><SecondaryButton href="#journey">See how it works</SecondaryButton></div></div>
 			<div className="relative order-1 h-[420px] sm:h-[520px] lg:order-2 lg:h-[600px]"><div className="absolute inset-0 overflow-hidden rounded-[40px] border border-[#c0c8c4]/20 bg-[#c3e9f0]/20 shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)]"><img src={medicalTexture} alt="Abstract medical data visualization" className="h-full w-full object-cover opacity-80 mix-blend-multiply" /></div><MiniReferral /><RiskCard /></div>
