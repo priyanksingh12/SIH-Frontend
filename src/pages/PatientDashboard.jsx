@@ -36,6 +36,7 @@ import {
   AlertCircle,
   Video,
   MessageSquare,
+  Siren,
 } from 'lucide-react'
 import { getStoredUser, logout } from '../api/apiClient.js'
 import { getVitals } from '../api/patientApi.js'
@@ -52,6 +53,7 @@ const navItems = [
   [Building2,    'Hospitals'],
   [ShoppingBag,  'Stores'],
   [Calendar,     'Records'],
+  [Siren,        'Emergency'],
   [User,         'My Profile'],
 ]
 
@@ -254,6 +256,7 @@ export function Sidebar({ userName, activeLabel = 'Dashboard' }) {
             label === 'Health Assistant' ? '/health-assistant' :
             label === 'Hospitals'      ? '/hospitals' :
             label === 'Stores'         ? '/stores' :
+            label === 'Emergency'      ? '/emergency' :
             `#${label.toLowerCase().replaceAll(' ', '-')}`
           return (
             <a
@@ -275,6 +278,8 @@ export function Sidebar({ userName, activeLabel = 'Dashboard' }) {
                   navigate('/hospitals')
                 } else if (label === 'Stores') {
                   navigate('/stores')
+                } else if (label === 'Emergency') {
+                  navigate('/emergency')
                 }
               }}
               key={label}

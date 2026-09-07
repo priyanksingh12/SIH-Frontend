@@ -55,7 +55,7 @@ function getMergedMedicalHistory(backendData) {
   return combined
 }
 
-function ProfileHeader({ onEditClick, onEmergencyClick }) {
+function ProfileHeader({ onEditClick }) {
   return (
     <div className="profile-workspace-header" style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', gap: '20px', marginBottom: '24px' }}>
       <div style={{ flex: 1 }}>
@@ -65,9 +65,6 @@ function ProfileHeader({ onEditClick, onEmergencyClick }) {
         <h1 style={{ margin: '6px 0 0', font: "700 2.2rem/1.1 'Playfair Display', serif", color: '#171d1b' }}>Patient Profile &amp; Health Identity</h1>
       </div>
       <div className="profile-header-actions" style={{ display: 'flex', gap: '12px' }}>
-        <button type="button" className="profile-emergency-button" onClick={onEmergencyClick} style={{ padding: '10px 18px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', font: '700 0.95rem sans-serif', border: '1px solid #c4dcd3', cursor: 'pointer' }}>
-          ▣ <span>Emergency Card</span>
-        </button>
         <button type="button" className="profile-edit-button" onClick={onEditClick} style={{ padding: '10px 18px', borderRadius: '999px', background: '#29574b', color: '#00ff88', font: '700 0.95rem sans-serif', border: 'none', cursor: 'pointer' }}>
           ↗ <span>Edit Profile</span>
         </button>
@@ -117,38 +114,6 @@ function IdentityCard({ userName, profile, user, latestVitals }) {
   )
 }
 
-function EmergencyCard({ profile }) {
-  const bloodGroup = profile?.blood_group || 'Not set'
-  const emergencyContact = profile?.emergency_contact || 'None registered'
-  const allergies = profile?.allergies || 'No known severe allergies'
-  const chronicConditions = profile?.conditions || 'None reported'
-
-  return (
-    <section className="profile-emergency-card" style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #e2eae5', boxShadow: '0 8px 24px rgba(41,87,75,0.06)', marginBottom: '24px' }}>
-      <h2 style={{ margin: '0 0 16px', font: "700 1.3rem 'Playfair Display', serif", color: '#171d1b', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ color: '#c0392b' }}>✱</span> Emergency Medical ID
-      </h2>
-      <div className="profile-emergency-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
-        <article style={{ padding: '16px', borderRadius: '12px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
-          <small style={{ display: 'block', color: '#59756e', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Blood Group</small>
-          <strong style={{ display: 'block', marginTop: '6px', fontSize: '1.2rem', color: '#171d1b', fontWeight: 800 }}>{bloodGroup}</strong>
-        </article>
-        <article style={{ padding: '16px', borderRadius: '12px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
-          <small style={{ display: 'block', color: '#59756e', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Emergency Contact</small>
-          <b style={{ display: 'block', marginTop: '6px', fontSize: '1rem', color: '#171d1b', fontWeight: 700 }}>{emergencyContact}</b>
-        </article>
-        <article className="profile-allergy" style={{ padding: '16px', borderRadius: '12px', background: '#fff1f0', border: '1px solid #fecaca' }}>
-          <small style={{ display: 'block', color: '#991b1b', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Severe Allergies</small>
-          <b style={{ display: 'block', marginTop: '6px', fontSize: '0.95rem', color: '#991b1b', fontWeight: 700 }}>⚠ {allergies}</b>
-        </article>
-        <article style={{ padding: '16px', borderRadius: '12px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
-          <small style={{ display: 'block', color: '#59756e', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Chronic Conditions</small>
-          <b style={{ display: 'block', marginTop: '6px', fontSize: '0.95rem', color: '#171d1b', fontWeight: 700 }}>{chronicConditions}</b>
-        </article>
-      </div>
-    </section>
-  )
-}
 
 function VitalsBaseline({ latestVitals, loading }) {
   const bp = latestVitals?.bp || 'Not recorded'
@@ -522,9 +487,8 @@ export default function PatientProfile() {
             </div>
           )}
 
-          <ProfileHeader onEditClick={openEditModal} onEmergencyClick={handleEmergencyClick} />
+          <ProfileHeader onEditClick={openEditModal} />
           <IdentityCard userName={profile?.name || userName} profile={profile} user={user} latestVitals={latestVitals} />
-          <EmergencyCard profile={profile} />
 
           <div className="profile-info-grid" style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '24px' }}>
             <VitalsBaseline latestVitals={latestVitals} loading={vitalsLoading} />
