@@ -195,18 +195,20 @@ function LanguageSelector({ value, onChange }) {
 function ZoneBadge({ zone }) {
   if (!zone) return null
   const colors = {
-    green:  { bg: '#d1fae5', color: '#065f46', border: '#6ee7b7' },
-    yellow: { bg: '#fef3c7', color: '#92400e', border: '#fcd34d' },
-    red:    { bg: '#fee2e2', color: '#991b1b', border: '#fca5a5' },
+    green:  { bg: '#d1fae5', color: '#065f46', border: '#a7f3d0' },
+    yellow: { bg: '#fef3c7', color: '#92400e', border: '#fde68a' },
+    red:    { bg: '#fee2e2', color: '#991b1b', border: '#fecaca' },
   }
   const c = colors[zone] || colors.green
   return (
     <span style={{
-      display: 'inline-block', padding: '1px 8px', borderRadius: 999,
-      fontSize: 10, fontWeight: 800, letterSpacing: '.08em',
+      display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 999,
+      fontSize: 11.5, fontWeight: 800, letterSpacing: '.05em',
       background: c.bg, color: c.color, border: `1px solid ${c.border}`,
-      textTransform: 'uppercase',
-    }}>{zone}</span>
+      textTransform: 'uppercase', lineHeight: 1.3,
+    }}>
+      {zone}
+    </span>
   )
 }
 
@@ -236,59 +238,110 @@ function ChatHistorySidebar({ sessions, activeSessionId, onNew, onSelect, onRena
 
   return (
     <aside style={{
-      width: collapsed ? 48 : 260,
-      minWidth: collapsed ? 48 : 260,
-      maxWidth: collapsed ? 48 : 260,
-      height: '100%',
-      background: '#1a2e28',
+      width: collapsed ? 64 : 280,
+      minWidth: collapsed ? 64 : 280,
+      maxWidth: collapsed ? 64 : 280,
+      height: '100vh',
+      background: '#eff5f1',
+      borderRight: '1px solid #d8e5de',
       display: 'flex',
       flexDirection: 'column',
       transition: 'width 0.22s cubic-bezier(.4,0,.2,1), min-width 0.22s, max-width 0.22s',
       overflow: 'hidden',
       position: 'relative',
       flexShrink: 0,
+      boxSizing: 'border-box',
+      fontFamily: "'Manrope', sans-serif",
     }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: collapsed ? '14px 8px' : '14px 12px', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: collapsed ? 'center' : 'space-between',
+        padding: collapsed ? '16px 8px 12px' : '16px 14px 12px',
+        borderBottom: '1px solid rgba(41, 87, 75, 0.08)',
+      }}>
         {!collapsed && (
-          <span style={{ color: '#bff0e1', fontWeight: 800, fontSize: 13, letterSpacing: '.04em' }}>CHAT HISTORY</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <MessageSquare size={18} style={{ color: '#29574b' }} />
+            <span style={{ color: '#29574b', fontWeight: 800, fontSize: 15, letterSpacing: '.01em' }}>
+              Chat History
+            </span>
+          </div>
         )}
         <button
+          type="button"
           onClick={onToggle}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          style={{ background: 'transparent', border: 0, cursor: 'pointer', color: '#bff0e1', display: 'flex', alignItems: 'center', padding: 4, borderRadius: 6 }}
+          title={collapsed ? 'Expand history sidebar' : 'Collapse history sidebar'}
+          aria-label={collapsed ? 'Expand history' : 'Collapse history'}
+          style={{
+            background: '#e0ece5',
+            border: '1px solid #ccdcd2',
+            cursor: 'pointer',
+            color: '#29574b',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            transition: 'background .15s',
+          }}
         >
-          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          {collapsed ? <ChevronRight size={17} /> : <ChevronLeft size={17} />}
         </button>
       </div>
 
       {/* New Chat button */}
-      <div style={{ padding: collapsed ? '8px 6px' : '8px 10px' }}>
+      <div style={{ padding: collapsed ? '10px 8px' : '12px 14px 8px' }}>
         <button
+          type="button"
           onClick={onNew}
           disabled={loading}
           title="New Chat"
           style={{
-            width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-            justifyContent: collapsed ? 'center' : 'flex-start',
-            padding: collapsed ? '8px' : '9px 12px',
-            borderRadius: 10, border: '1px solid rgba(0,255,136,0.25)',
-            background: 'rgba(0,255,136,0.07)', color: '#00ff88',
-            fontWeight: 800, fontSize: 13, cursor: 'pointer',
-            transition: 'background .15s',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            justifyContent: 'center',
+            padding: collapsed ? '10px' : '11px 16px',
+            borderRadius: 12,
+            border: 'none',
+            background: '#29574b',
+            color: '#00ff88',
+            fontWeight: 800,
+            fontSize: 14.5,
+            cursor: loading ? 'not-allowed' : 'pointer',
+            boxShadow: '0 3px 10px rgba(41, 87, 75, 0.18)',
+            transition: 'all .15s ease',
           }}
         >
-          <Plus size={15} />
+          <Plus size={18} strokeWidth={2.5} />
           {!collapsed && <span>New Chat</span>}
         </button>
       </div>
 
-      {/* Session list */}
-      {!collapsed && (
-        <div style={{ flex: 1, overflowY: 'auto', padding: '4px 6px 12px' }}>
+      {/* Session list (Expanded) */}
+      {!collapsed ? (
+        <div style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '6px 12px 16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+        }}>
           {sessions.length === 0 && (
-            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, textAlign: 'center', padding: '24px 8px' }}>
-              No past conversations
+            <div style={{
+              color: '#59756e',
+              fontSize: 13.5,
+              textAlign: 'center',
+              padding: '36px 12px',
+              fontWeight: 500,
+              lineHeight: 1.5,
+            }}>
+              No previous chats yet.<br />Click <strong>New Chat</strong> to begin.
             </div>
           )}
           {sessions.map((session) => {
@@ -299,58 +352,176 @@ function ChatHistorySidebar({ sessions, activeSessionId, onNew, onSelect, onRena
                 key={session.id}
                 onClick={() => !isRenaming && onSelect(session.id)}
                 style={{
-                  display: 'flex', alignItems: 'flex-start', gap: 8,
-                  padding: '9px 10px', borderRadius: 10, marginBottom: 2,
-                  cursor: 'pointer', background: isActive ? 'rgba(0,255,136,0.1)' : 'transparent',
-                  border: isActive ? '1px solid rgba(0,255,136,0.2)' : '1px solid transparent',
-                  transition: 'background .13s',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 10,
+                  padding: '11px 13px',
+                  borderRadius: 12,
+                  cursor: 'pointer',
+                  background: isActive ? '#ffffff' : '#f8fbf9',
+                  border: isActive ? '2px solid #29574b' : '1px solid #dce6e1',
+                  boxShadow: isActive ? '0 4px 14px rgba(41, 87, 75, 0.09)' : '0 1px 2px rgba(0,0,0,0.02)',
+                  transition: 'all .15s ease',
                 }}
               >
-                <MessageSquare size={13} style={{ flexShrink: 0, marginTop: 2, color: isActive ? '#00ff88' : 'rgba(255,255,255,0.4)' }} />
+                <MessageSquare
+                  size={16}
+                  style={{
+                    flexShrink: 0,
+                    marginTop: 3,
+                    color: isActive ? '#29574b' : '#717975',
+                  }}
+                />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   {isRenaming ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }} onClick={(e) => e.stopPropagation()}>
+                    <div
+                      style={{ display: 'flex', alignItems: 'center', gap: 5 }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <input
                         ref={renameInputRef}
                         value={renameValue}
                         onChange={(e) => setRenameValue(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') confirmRename(); if (e.key === 'Escape') setRenamingId(null) }}
-                        style={{ flex: 1, background: '#0e1f1a', border: '1px solid #00ff88', borderRadius: 6, color: '#fff', fontSize: 12, padding: '2px 6px', outline: 'none' }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') confirmRename()
+                          if (e.key === 'Escape') setRenamingId(null)
+                        }}
+                        style={{
+                          flex: 1,
+                          background: '#ffffff',
+                          border: '1.5px solid #29574b',
+                          borderRadius: 6,
+                          color: '#171d1b',
+                          fontSize: 13.5,
+                          padding: '3px 8px',
+                          outline: 'none',
+                        }}
                       />
-                      <button onClick={confirmRename} style={{ background: 'transparent', border: 0, cursor: 'pointer', color: '#00ff88', padding: 2 }}><Check size={13} /></button>
+                      <button
+                        type="button"
+                        onClick={confirmRename}
+                        title="Save name"
+                        style={{
+                          background: '#29574b',
+                          border: 0,
+                          cursor: 'pointer',
+                          color: '#00ff88',
+                          padding: '4px 6px',
+                          borderRadius: 6,
+                          display: 'flex',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <Check size={13} strokeWidth={3} />
+                      </button>
                     </div>
                   ) : (
-                    <div style={{ color: isActive ? '#ffffff' : 'rgba(255,255,255,0.7)', fontSize: 12, fontWeight: isActive ? 700 : 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div
+                      title={session.title || 'Untitled Chat'}
+                      style={{
+                        color: isActive ? '#29574b' : '#171d1b',
+                        fontSize: 14,
+                        fontWeight: isActive ? 800 : 600,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        lineHeight: 1.3,
+                      }}
+                    >
                       {session.title || 'Untitled Chat'}
                     </div>
                   )}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                    <ZoneBadge zone={session.zone_result} />
-                    {session.message_count > 0 && (
-                      <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10 }}>{session.message_count} msg</span>
-                    )}
-                  </div>
+
                   {session.preview && !isRenaming && (
-                    <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div
+                      style={{
+                        color: '#59756e',
+                        fontSize: 12.5,
+                        marginTop: 3,
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        lineHeight: 1.35,
+                      }}
+                    >
                       {session.preview}
                     </div>
                   )}
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
+                    <ZoneBadge zone={session.zone_result} />
+                    {session.message_count > 0 && (
+                      <span
+                        style={{
+                          background: '#e3eee7',
+                          color: '#29574b',
+                          fontSize: 11,
+                          fontWeight: 700,
+                          padding: '2px 7px',
+                          borderRadius: 999,
+                        }}
+                      >
+                        {session.message_count} msg
+                      </span>
+                    )}
+                    {session.healthReports && session.healthReports.length > 0 && (
+                      <span
+                        style={{
+                          background: '#bceddd',
+                          color: '#174036',
+                          fontSize: 10.5,
+                          fontWeight: 800,
+                          padding: '2px 6px',
+                          borderRadius: 999,
+                        }}
+                      >
+                        PDF
+                      </span>
+                    )}
+                  </div>
                 </div>
+
                 {!isRenaming && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                  <div
+                    style={{ display: 'flex', flexDirection: 'column', gap: 3, flexShrink: 0 }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <button
-                      title="Rename"
+                      type="button"
+                      title="Rename chat"
                       onClick={(e) => startRename(session, e)}
-                      style={{ background: 'transparent', border: 0, cursor: 'pointer', color: 'rgba(255,255,255,0.35)', padding: 2, borderRadius: 4 }}
+                      style={{
+                        background: 'transparent',
+                        border: 0,
+                        cursor: 'pointer',
+                        color: '#59756e',
+                        padding: 3,
+                        borderRadius: 6,
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
                     >
-                      <Pencil size={11} />
+                      <Pencil size={13} />
                     </button>
                     <button
-                      title="Delete"
-                      onClick={(e) => { e.stopPropagation(); onDelete(session.id) }}
-                      style={{ background: 'transparent', border: 0, cursor: 'pointer', color: 'rgba(255,100,100,0.5)', padding: 2, borderRadius: 4 }}
+                      type="button"
+                      title="Delete chat"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onDelete(session.id)
+                      }}
+                      style={{
+                        background: 'transparent',
+                        border: 0,
+                        cursor: 'pointer',
+                        color: '#9ca3af',
+                        padding: 3,
+                        borderRadius: 6,
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
                     >
-                      <Trash2 size={11} />
+                      <Trash2 size={13} />
                     </button>
                   </div>
                 )}
@@ -358,10 +529,50 @@ function ChatHistorySidebar({ sessions, activeSessionId, onNew, onSelect, onRena
             )
           })}
         </div>
+      ) : (
+        /* Session list (Collapsed) */
+        <div style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '8px 6px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 8,
+        }}>
+          {sessions.map((session) => {
+            const isActive = session.id === activeSessionId
+            return (
+              <button
+                key={session.id}
+                type="button"
+                onClick={() => onSelect(session.id)}
+                title={session.title || 'Chat'}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 10,
+                  border: isActive ? '2px solid #29574b' : '1px solid #dce6e1',
+                  background: isActive ? '#29574b' : '#ffffff',
+                  color: isActive ? '#00ff88' : '#29574b',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 0,
+                  transition: 'all .15s',
+                }}
+              >
+                <MessageSquare size={16} />
+              </button>
+            )
+          })}
+        </div>
       )}
     </aside>
   )
 }
+
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
@@ -708,7 +919,7 @@ function HealthAssistant() {
         {/* ── Main Chat Area ── */}
         <div className="assistant-canvas" style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
           <div className="assistant-decoration" />
-          <div className="assistant-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', minHeight: 0 }}>
+          <div className="assistant-content" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', minHeight: 0, padding: '36px 24px 20px' }}>
             <header className="assistant-header">
               <p>AI Health Assistant</p>
               <h1>Tell me what&apos;s bothering you.</h1>
@@ -819,7 +1030,23 @@ function HealthAssistant() {
           </div>
 
           {/* ── Composer ── */}
-          <div className="assistant-composer-wrap">
+          <div
+            className="assistant-composer-wrap"
+            style={{
+              position: 'relative',
+              width: '100%',
+              left: 'auto',
+              right: 'auto',
+              bottom: 'auto',
+              background: '#f5fbf7',
+              backdropFilter: 'none',
+              WebkitBackdropFilter: 'none',
+              padding: '16px 24px 24px',
+              flexShrink: 0,
+              boxSizing: 'border-box',
+            }}
+          >
+
             {pendingAttachments.length > 0 && (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center', width: 'min(100%, 768px)', marginBottom: 10, padding: '12px 16px', borderRadius: 16, background: '#29574b', boxSizing: 'border-box' }}>
                 <span style={{ color: '#bff0e1', fontSize: 12, fontWeight: 700, marginRight: 4 }}>
