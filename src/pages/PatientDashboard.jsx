@@ -27,16 +27,23 @@ import {
   Sparkles,
   Clock,
   CheckCircle2,
-  Zap,
+  Bell,
   ArrowUpRight,
   BarChart3,
   Stethoscope,
   User,
   LogOut,
   AlertCircle,
+  Video,
+  MessageSquare,
 } from 'lucide-react'
-import { getStoredUser } from '../api/apiClient.js'
+import { getStoredUser, logout } from '../api/apiClient.js'
 import { getVitals } from '../api/patientApi.js'
+import { getAppointments } from '../api/appointmentApi.js'
+import ChatModal from '../components/ChatModal.jsx'
+import VideoCallModal from '../components/VideoCallModal.jsx'
+import IncomingCallModal from '../components/IncomingCallModal.jsx'
+import { useCallListener } from '../hooks/useDoctorCallListener.js'
 
 const navItems = [
   [BarChart3,    'Dashboard'],
@@ -86,6 +93,13 @@ function formatFullRecordDate(isoString) {
   const dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
   const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   return `${dateStr} at ${timeStr}`
+}
+
+function formatSlot(slot) {
+  if (!slot) return 'Scheduled Time'
+  const d = new Date(slot)
+  if (isNaN(d.getTime())) return 'Scheduled Time'
+  return d.toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true })
 }
 
 function getMergedVitalsList(backendList) {
@@ -190,7 +204,7 @@ export function TopBar({ userName }) {
   return (
     <header className="topbar">
       <a className="brand" href="#dashboard" onClick={(e) => { e.preventDefault(); navigate('/patient-dashboard') }} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <Zap style={{ color: '#00ff88', fill: '#00ff88' }} size={24} />
+        <span style={{ display: 'grid', placeItems: 'center', width: '28px', height: '28px', borderRadius: '8px', background: '#00ff88', color: '#171d1b', fontWeight: '900', fontSize: '1.2rem', lineHeight: 1 }}>✚</span>
         <span>MediMate</span>
       </a>
       <div className="top-actions">
@@ -198,7 +212,7 @@ export function TopBar({ userName }) {
           <img src={aiAssistantRobotIcon} alt="" /> AI Assistant
         </motion.button>
         <button className="dashboard-notifications" aria-label="Notifications">
-          <Zap size={16} />
+          <Bell size={16} />
           <span />
         </button>
         <div className="dashboard-profile" onClick={() => navigate('/patient-profile')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -217,9 +231,7 @@ export function Sidebar({ userName, activeLabel = 'Dashboard' }) {
   const initials = userName.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'PT'
 
   const handleLogout = () => {
-    window.localStorage.clear()
-    window.sessionStorage.clear()
-    navigate('/')
+    logout()
   }
 
   return (
@@ -563,6 +575,34 @@ export default function PatientDashboard() {
 
   const [vitalsList, setVitalsList] = useState([])
   const [activeTab, setActiveTab] = useState('all')
+  const [appointments, setAppointments] = useState([])
+  const [appointmentsLoading, setAppointmentsLoading] = useState(true)
+  const [activeChatAppt, setActiveChatAppt] = useState(null)
+  const [activeVideoAppt, setActiveVideoAppt] = useState(null)
+
+  // Background incoming call listener for patient
+  const { incomingCall, setIncomingCall, declineIncomingCall } = useCallListener(appointments, !!activeVideoAppt)
+
+  const handleAcceptIncomingCall = () => {
+    if (incomingCall?.appointment) {
+      const appt = incomingCall.appointment
+      const sdp = incomingCall.sdp
+      setIncomingCall(null)
+      setActiveVideoAppt({
+        ...appt,
+        isInitiator: false,
+        autoAccept: true,
+        initialOffer: sdp,
+      })
+    }
+  }
+
+  useEffect(() => {
+    getAppointments()
+      .then((data) => setAppointments(data || []))
+      .catch(() => setAppointments([]))
+      .finally(() => setAppointmentsLoading(false))
+  }, [])
 
   useEffect(() => {
     if (patientId) {
@@ -720,6 +760,226 @@ export default function PatientDashboard() {
               </motion.button>
             </div>
           </motion.section>
+
+          {/* Doctor Consultations & Appointments Section */}
+          <section style={{ marginBottom: '32px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+              <div>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#171d1b', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Stethoscope size={26} style={{ color: '#29574b' }} /> Consultations &amp; Telehealth Sessions
+                </h2>
+                <p style={{ margin: '4px 0 0', color: '#59756e', fontSize: '1rem' }}>
+                  Track appointment approvals, live consultation chat, and direct WebRTC video calls with your doctors.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  window.sessionStorage.setItem('medimate-doctors-entry', 'true')
+                  navigate('/doctors')
+                }}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '999px',
+                  background: '#eaf3ee',
+                  color: '#29574b',
+                  border: '1.5px solid #c4dcd3',
+                  fontWeight: 800,
+                  fontSize: '0.95rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                + Book Consultation
+              </button>
+            </div>
+
+            {appointmentsLoading ? (
+              <div style={{ padding: '28px', textAlign: 'center', color: '#59756e', background: '#ffffff', borderRadius: '16px', border: '1px solid #dee4e0', fontSize: '1rem' }}>
+                Loading your appointments…
+              </div>
+            ) : appointments.length === 0 ? (
+              <div style={{ padding: '32px', textAlign: 'center', background: '#ffffff', borderRadius: '20px', border: '1px solid #dee4e0', boxShadow: '0 4px 14px rgba(41,87,75,0.04)' }}>
+                <p style={{ color: '#59756e', fontSize: '1.05rem', margin: '0 0 16px', fontWeight: 600 }}>
+                  You have no active doctor consultations or appointments booked yet.
+                </p>
+                <button
+                  onClick={() => {
+                    window.sessionStorage.setItem('medimate-doctors-entry', 'true')
+                    navigate('/doctors')
+                  }}
+                  style={{ padding: '12px 26px', borderRadius: '999px', background: '#29574b', color: '#00ff88', fontWeight: 800, fontSize: '1rem', border: 0, cursor: 'pointer' }}
+                >
+                  Find Doctors &amp; Schedule Visit →
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gap: '16px' }}>
+                {appointments.map((appt) => {
+                  const docName = appt.doctor?.user?.name
+                    ? `Dr. ${appt.doctor.user.name}`
+                    : appt.doctor?.name
+                      ? `Dr. ${appt.doctor.name}`
+                      : 'Consulting Specialist'
+                  const isApproved = appt.status === 'approved'
+                  const isPending = appt.status === 'pending'
+                  const isCompleted = appt.status === 'completed'
+                  const slotFormatted = appt.slot ? formatSlot(appt.slot) : 'Scheduled Time'
+
+                  return (
+                    <motion.article
+                      key={appt.id}
+                      whileHover={{ y: -2 }}
+                      style={{
+                        padding: '20px 24px',
+                        borderRadius: '20px',
+                        background: '#ffffff',
+                        border: isApproved ? '2px solid #a7f3d0' : '1px solid #dee4e0',
+                        boxShadow: isApproved ? '0 8px 24px rgba(16, 185, 129, 0.1)' : '0 4px 14px rgba(41,87,75,0.04)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: '16px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div
+                          style={{
+                            width: '52px',
+                            height: '52px',
+                            borderRadius: '16px',
+                            background: isApproved ? '#d1fae5' : '#eaf3ee',
+                            color: '#29574b',
+                            display: 'grid',
+                            placeItems: 'center',
+                            fontWeight: 800,
+                            fontSize: '1.4rem',
+                            flexShrink: 0,
+                          }}
+                        >
+                          🩺
+                        </div>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                            <strong style={{ fontSize: '1.25rem', color: '#171d1b' }}>{docName}</strong>
+                            {appt.doctor?.specialization && (
+                              <span style={{ fontSize: '0.85rem', color: '#29574b', background: '#dcece5', padding: '3px 10px', borderRadius: '6px', fontWeight: 700 }}>
+                                {appt.doctor.specialization}
+                              </span>
+                            )}
+                            <span
+                              style={{
+                                padding: '4px 12px',
+                                borderRadius: '999px',
+                                fontSize: '0.85rem',
+                                fontWeight: 700,
+                                background: isApproved ? '#d1fae5' : isPending ? '#fef3c7' : isCompleted ? '#e0e7ff' : '#fee2e2',
+                                color: isApproved ? '#065f46' : isPending ? '#92400e' : isCompleted ? '#3730a3' : '#991b1b',
+                              }}
+                            >
+                              {isApproved ? '✓ Approved & Ready' : isPending ? '⏳ Awaiting Doctor Approval' : isCompleted ? 'Completed' : 'Declined'}
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '16px', marginTop: '6px', fontSize: '0.92rem', color: '#59756e', flexWrap: 'wrap' }}>
+                            <span>🗓 <strong>{slotFormatted}</strong></span>
+                            {appt.facility?.name && <span>🏥 {appt.facility.name}</span>}
+                            {appt.reason && <span>📝 Reason: {appt.reason}</span>}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                        {isApproved && (
+                          <>
+                            <motion.button
+                              whileHover={{ scale: 1.03 }}
+                              whileTap={{ scale: 0.97 }}
+                              onClick={() => setActiveChatAppt(appt)}
+                              style={{
+                                padding: '10px 20px',
+                                borderRadius: '999px',
+                                background: '#eaf3ee',
+                                color: '#29574b',
+                                border: '1.5px solid #29574b',
+                                fontWeight: 800,
+                                fontSize: '0.95rem',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                              }}
+                            >
+                              <MessageSquare size={17} /> Chat with Doctor
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.03 }}
+                              whileTap={{ scale: 0.97 }}
+                              onClick={() => setActiveVideoAppt({ ...appt, isInitiator: true, autoAccept: false })}
+                              style={{
+                                padding: '10px 22px',
+                                borderRadius: '999px',
+                                background: '#29574b',
+                                color: '#00ff88',
+                                border: 'none',
+                                fontWeight: 800,
+                                fontSize: '0.95rem',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                boxShadow: '0 4px 14px rgba(41, 87, 75, 0.25)',
+                              }}
+                            >
+                              <Video size={17} /> Video Call Doctor
+                            </motion.button>
+                          </>
+                        )}
+
+                        {isPending && (
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              padding: '8px 16px',
+                              borderRadius: '999px',
+                              background: '#fef3c7',
+                              color: '#92400e',
+                              fontSize: '0.88rem',
+                              fontWeight: 700,
+                            }}
+                          >
+                            <Clock size={16} /> Chat &amp; Video unlock upon doctor approval
+                          </div>
+                        )}
+
+                        {isCompleted && (
+                          <button
+                            onClick={() => setActiveChatAppt(appt)}
+                            style={{
+                              padding: '8px 18px',
+                              borderRadius: '999px',
+                              background: '#eaf3ee',
+                              color: '#29574b',
+                              border: '1px solid #c4dcd3',
+                              fontSize: '0.9rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            View Chat History
+                          </button>
+                        )}
+                      </div>
+                    </motion.article>
+                  )
+                })}
+              </div>
+            )}
+          </section>
 
           {/* Vitals Metrics Cards Grid */}
           <section className="health-grid" aria-label="Health metrics">
@@ -1079,6 +1339,39 @@ export default function PatientDashboard() {
           </motion.div>
         </main>
       </div>
+
+      {/* Incoming Call Ringing Alert Dialog */}
+      {incomingCall && !activeVideoAppt && (
+        <IncomingCallModal
+          incomingCall={incomingCall}
+          onAccept={handleAcceptIncomingCall}
+          onDecline={declineIncomingCall}
+        />
+      )}
+
+      {/* Real-time Consultation Chat Modal */}
+      {activeChatAppt && (
+        <ChatModal
+          appointment={activeChatAppt}
+          currentUser={user}
+          onClose={() => setActiveChatAppt(null)}
+        />
+      )}
+
+      {/* Real-time WebRTC Video Call Modal */}
+      {activeVideoAppt && (
+        <VideoCallModal
+          appointment={activeVideoAppt}
+          currentUser={user}
+          isInitiator={activeVideoAppt.autoAccept ? false : true}
+          autoAccept={!!activeVideoAppt.autoAccept}
+          initialOffer={activeVideoAppt.initialOffer || null}
+          onClose={() => {
+            setActiveVideoAppt(null)
+            setIncomingCall(null)
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -25,7 +25,7 @@ function DoctorTopbar({ doctorName }) {
           {doctorName}
           <small>Attending Physician · OPD Active</small>
         </strong>
-        <button type="button" onClick={logout} style={{ background: '#c0392b', color: '#fff', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}>
+        <button type="button" onClick={logout} style={{ background: '#c0392b', color: '#fff', border: 'none', padding: '0.45rem 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '0.95rem' }}>
           Logout
         </button>
       </div>

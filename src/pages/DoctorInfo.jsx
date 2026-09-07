@@ -75,13 +75,37 @@ export default function DoctorInfo() {
     setError('')
     setLoading(true)
     try {
-      await registerDoctor({
+      const regRes = await registerDoctor({
         specialization,
         qualification: qualification || 'MBBS',
         facility_id: activeFacility.id,
         license_number: medicalId,
         experience_years: Number(experienceYears) || 0,
       })
+
+      const user = getStoredUser()
+      const docToSave = {
+        id: regRes?.doctor?.id || `doc_${Date.now()}`,
+        user_id: user?.id,
+        specialization,
+        qualification: qualification || 'MBBS',
+        license_number: medicalId,
+        experience_years: Number(experienceYears) || 0,
+        is_available: true,
+        verified: true,
+        user: {
+          id: user?.id,
+          name: user?.name ? (user.name.startsWith('Dr.') ? user.name : `Dr. ${user.name}`) : 'Dr. Doctor',
+          email: user?.email,
+          phone: user?.phone,
+        },
+        facility: {
+          id: activeFacility.id,
+          name: activeFacility.name,
+          type: activeFacility.type,
+        },
+      }
+
       window.localStorage.setItem('medimate-doctor-info-complete', 'true')
       window.localStorage.setItem('medimate-doctor-medical-id', medicalId)
       window.localStorage.setItem('medimate-doctor-facility', activeFacility.name)

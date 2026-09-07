@@ -3,7 +3,7 @@
  * Handles base URL, auth headers, and silent token refresh on 401.
  */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sih-otuc.onrender.com'
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sih-otuc.onrender.com'
 
 // ─── Token helpers ───────────────────────────────────────────────────────────
 
@@ -31,16 +31,12 @@ export function clearTokens() {
   localStorage.removeItem('medimate-auth-mode')
 }
 
-/** Full logout: clears all app state and returns to landing. */
+/** Full logout: clears all app state and redirects to landing page. */
 export function logout() {
   clearTokens()
-  localStorage.removeItem('medimate-account-role')
-  localStorage.removeItem('medimate-account-name')
-  localStorage.removeItem('medimate-account-email')
-  localStorage.removeItem('medimate-doctor-medical-id')
-  localStorage.removeItem('medimate-doctor-facility')
+  localStorage.clear()
   sessionStorage.clear()
-  window.location.reload()
+  window.location.href = '/'
 }
 
 export function getStoredUser() {
@@ -60,7 +56,7 @@ export function storeUser(user) {
 let isRefreshing = false
 let refreshQueue = []
 
-async function runRefresh() {
+export async function runRefresh() {
   const refreshToken = getRefreshToken()
   if (!refreshToken) throw new Error('No refresh token')
 

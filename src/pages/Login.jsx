@@ -41,8 +41,26 @@ export default function Login() {
       window.localStorage.removeItem('medimate-account-created')
       window.localStorage.removeItem('medimate-auth-mode')
       if (user.role === 'doctor') {
-        const doctorInfoDone = window.localStorage.getItem('medimate-doctor-info-complete') === 'true'
-        navigate(doctorInfoDone ? '/doctor-patients' : '/doctor-info')
+        // Check via API if the doctor has already completed onboarding.
+        // This works across devices/browsers unlike the localStorage flag.
+        try {
+          const { getDoctorProfile } = await import('../api/doctorApi.js')
+          const profileRes = await getDoctorProfile()
+          if (profileRes?.doctor?.license_number) {
+            // Doctor profile already registered — go straight to dashboard
+            window.localStorage.setItem('medimate-doctor-info-complete', 'true')
+            if (profileRes.doctor.facility?.name) {
+              window.localStorage.setItem('medimate-doctor-facility', profileRes.doctor.facility.name)
+            }
+            navigate('/doctor-dashboard')
+          } else {
+            navigate('/doctor-info')
+          }
+        } catch {
+          // API call failed — fall back to localStorage flag
+          const doctorInfoDone = window.localStorage.getItem('medimate-doctor-info-complete') === 'true'
+          navigate(doctorInfoDone ? '/doctor-dashboard' : '/doctor-info')
+        }
       } else {
         // Returning patient logging in -> directly navigate to patient dashboard
         window.localStorage.setItem('medimate-vitals-complete', 'true')

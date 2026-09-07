@@ -15,7 +15,7 @@ export default function AccountCreated() {
     window.localStorage.removeItem('medimate-account-created')
     if (isDoctor) {
       const doctorInfoDone = window.localStorage.getItem('medimate-doctor-info-complete') === 'true'
-      navigate(doctorInfoDone ? '/doctor-patients' : '/doctor-info')
+      navigate(doctorInfoDone ? '/doctor-dashboard' : '/doctor-info')
     } else {
       // First-time signup patient -> go to vitals page first
       navigate('/vitals')
@@ -26,7 +26,7 @@ export default function AccountCreated() {
     <section className="account-created-hero">
       <div className="account-created-image" style={{ backgroundImage: `url(${confirmationImage})` }} />
       <div className="account-created-overlay" />
-      <header className="account-created-brand"><div><span>＋</span><section><strong>MediMate</strong><small>WELCOME TO THE NETWORK</small></section></div><button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontWeight: 600 }}>← &nbsp;Back to website</button></header>
+      <header className="account-created-brand"><div><span>＋</span><section><strong>MediMate</strong><small>WELCOME TO THE NETWORK</small></section></div><button type="button" onClick={() => navigate('/')} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontWeight: 600, fontSize: '14px' }}>← &nbsp;Back to website</button></header>
       <div className="account-created-quote"><blockquote>"Welcome to a synchronized continuum of care designed for rural clinics, specialized doctors, and empowered patients."</blockquote><div><span>CARE CONTINUITY ARCHITECTURE • ABHA SYNCED</span><b><i /><i /><i /><em /></b></div></div>
     </section>
     <section className="account-created-content">

@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { getStoredUser, logout } from '../api/apiClient.js'
 import { getAppointments, approveAppointment, rejectAppointment, completeAppointment } from '../api/appointmentApi.js'
+import ChatModal from '../components/ChatModal.jsx'
+import VideoCallModal from '../components/VideoCallModal.jsx'
+import IncomingCallModal from '../components/IncomingCallModal.jsx'
+import { useDoctorCallListener } from '../hooks/useDoctorCallListener.js'
 
 const toneMap = ['sage', 'rose', 'blue', 'sand', 'mint', 'lilac']
 
@@ -30,6 +34,7 @@ function statusLabel(status) {
 }
 
 export default function DoctorPatients() {
+  const navigate = useNavigate()
   const user = getStoredUser()
   const doctorName = user?.name ? `Dr. ${user.name}` : 'Dr. Doctor'
 
@@ -37,6 +42,25 @@ export default function DoctorPatients() {
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState('')
   const [actionLoading, setActionLoading] = useState('')
+  const [activeChatAppt, setActiveChatAppt] = useState(null)
+  const [activeVideoAppt, setActiveVideoAppt] = useState(null)
+
+  // Background incoming call listener for doctor
+  const { incomingCall, declineIncomingCall } = useDoctorCallListener(appointments, !!activeVideoAppt)
+
+  const handleAcceptIncomingCall = () => {
+    if (incomingCall?.appointment) {
+      const appt = incomingCall.appointment
+      const sdp = incomingCall.sdp
+      setIncomingCall(null)
+      setActiveVideoAppt({
+        ...appt,
+        isInitiator: false,
+        autoAccept: true,
+        initialOffer: sdp,
+      })
+    }
+  }
 
   useEffect(() => {
     getAppointments()
@@ -81,17 +105,18 @@ export default function DoctorPatients() {
       <Link className="brand" to="/">MediMate</Link>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <span>▣ Secure Clinical Session</span>
-        <b>{doctorName}</b>
-        <Link to="/doctor-profile" style={{ fontSize: '0.85rem', fontWeight: 600, color: 'inherit', textDecoration: 'underline' }}>My Profile</Link>
-        <button onClick={logout} style={{ background: '#c0392b', color: '#fff', border: 'none', padding: '0.3rem 0.75rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 600, fontSize: '0.8rem' }}>Logout</button>
+        <Link to="/doctor-dashboard" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '1rem', fontWeight: 700, textDecoration: 'none', background: '#eaf3ee', color: '#29574b', padding: '7px 16px', borderRadius: '999px' }}>
+          👤 My Profile
+        </Link>
+        <button onClick={logout} style={{ background: '#c0392b', color: '#fff', border: 'none', padding: '0.45rem 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '0.95rem' }}>Logout</button>
       </div>
     </header>
     <main className="doctor-patients-main">
       <div className="doctor-patients-heading"><div><span className="doctors-kicker">PATIENT INTAKE</span><h1>Patients</h1><p>Review appointment requests and continue care for patients connected to your practice.</p></div><div className="patient-request-count"><strong>{loading ? '…' : String(appointments.length).padStart(2, '0')}</strong><span>active patient<br />requests</span></div></div>
       <div className="patient-request-toolbar"><div className="patient-tabs"><button className="active">All patients <b>{appointments.length}</b></button><button>New requests <b>{pendingCount}</b></button><button>Scheduled <b>{scheduledCount}</b></button></div><label>⌕ <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search patients, conditions, or area" /></label></div>
       <section className="patient-request-list">
-        {loading ? <p style={{ padding: '2rem', opacity: 0.6 }}>Loading patients…</p>
-          : filtered.length === 0 ? <p style={{ padding: '2rem', opacity: 0.6 }}>No patients found.</p>
+        {loading ? <p style={{ padding: '2rem', opacity: 0.6, fontSize: '1.1rem' }}>Loading patients…</p>
+          : filtered.length === 0 ? <p style={{ padding: '2rem', opacity: 0.6, fontSize: '1.1rem' }}>No patients found.</p>
           : filtered.map((appt, index) => {
             const patientName = appt.patient?.name || 'Unknown Patient'
             const tone = toneMap[index % toneMap.length]
@@ -105,10 +130,34 @@ export default function DoctorPatients() {
               </button>
               <span className="patient-request-arrow" style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginLeft: 'auto' }}>
                 {isNew && <>
-                  <button onClick={() => handleAction(appt.id, 'approve')} disabled={actionLoading === appt.id + 'approve'} style={{ padding: '0.25rem 0.6rem', background: '#27ae60', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}>{actionLoading === appt.id + 'approve' ? '…' : '✓ Approve'}</button>
-                  <button onClick={() => handleAction(appt.id, 'reject')} disabled={actionLoading === appt.id + 'reject'} style={{ padding: '0.25rem 0.6rem', background: '#e74c3c', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}>{actionLoading === appt.id + 'reject' ? '…' : '✕ Reject'}</button>
+                  <button onClick={() => handleAction(appt.id, 'approve')} disabled={actionLoading === appt.id + 'approve'} style={{ padding: '0.4rem 0.8rem', background: '#27ae60', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 700 }}>{actionLoading === appt.id + 'approve' ? '…' : '✓ Approve'}</button>
+                  <button onClick={() => handleAction(appt.id, 'reject')} disabled={actionLoading === appt.id + 'reject'} style={{ padding: '0.4rem 0.8rem', background: '#e74c3c', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 700 }}>{actionLoading === appt.id + 'reject' ? '…' : '✕ Reject'}</button>
                 </>}
-                {isApproved && <button onClick={() => handleAction(appt.id, 'complete')} disabled={actionLoading === appt.id + 'complete'} style={{ padding: '0.25rem 0.6rem', background: '#2c3e50', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.75rem' }}>{actionLoading === appt.id + 'complete' ? '…' : '● Complete'}</button>}
+                {isApproved && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                    <div style={{ display: 'flex', gap: '0.35rem' }}>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setActiveChatAppt(appt) }}
+                        style={{ padding: '0.35rem 0.65rem', background: '#eaf3ee', color: '#29574b', border: '1.5px solid #29574b', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700 }}
+                      >
+                        💬 Chat
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setActiveVideoAppt({ ...appt, isInitiator: true, autoAccept: false }) }}
+                        style={{ padding: '0.35rem 0.65rem', background: '#29574b', color: '#00ff88', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 800 }}
+                      >
+                        📹 Video
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => handleAction(appt.id, 'complete')}
+                      disabled={actionLoading === appt.id + 'complete'}
+                      style={{ padding: '0.35rem 0.65rem', background: '#2c3e50', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700 }}
+                    >
+                      {actionLoading === appt.id + 'complete' ? '…' : '● Complete'}
+                    </button>
+                  </div>
+                )}
                 {!isNew && !isApproved && <span>→</span>}
               </span>
             </div>
@@ -116,5 +165,38 @@ export default function DoctorPatients() {
       </section>
       <p className="patient-request-note">Select a patient to view their complete clinical profile, vitals, reports, and appointment history.</p>
     </main>
+
+    {/* Incoming Call Ringing Alert Dialog */}
+    {incomingCall && !activeVideoAppt && (
+      <IncomingCallModal
+        incomingCall={incomingCall}
+        onAccept={handleAcceptIncomingCall}
+        onDecline={declineIncomingCall}
+      />
+    )}
+
+    {/* Real-time Consultation Chat Modal */}
+    {activeChatAppt && (
+      <ChatModal
+        appointment={activeChatAppt}
+        currentUser={user}
+        onClose={() => setActiveChatAppt(null)}
+      />
+    )}
+
+    {/* Real-time WebRTC Video Call Modal */}
+    {activeVideoAppt && (
+      <VideoCallModal
+        appointment={activeVideoAppt}
+        currentUser={user}
+        isInitiator={activeVideoAppt.autoAccept ? false : true}
+        autoAccept={!!activeVideoAppt.autoAccept}
+        initialOffer={activeVideoAppt.initialOffer || null}
+        onClose={() => {
+          setActiveVideoAppt(null)
+          setIncomingCall(null)
+        }}
+      />
+    )}
   </div>
 }

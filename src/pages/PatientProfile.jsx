@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react'
 import { getStoredUser } from '../api/apiClient.js'
 import { getPatientProfile, updatePatientProfile, getVitals, getReports, getMedicalHistory } from '../api/patientApi.js'
+import { getAppointments } from '../api/appointmentApi.js'
 import { Sidebar, TopBar } from './PatientDashboard.jsx'
 import { convertBase64ToPdfBlobUrl, downloadPdfFile } from '../utils/pdfHelper.js'
+import ChatModal from '../components/ChatModal.jsx'
+import VideoCallModal from '../components/VideoCallModal.jsx'
+import IncomingCallModal from '../components/IncomingCallModal.jsx'
+import { useCallListener } from '../hooks/useDoctorCallListener.js'
 
 function getInitials(name) {
   return (name || '').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'PT'
@@ -31,6 +36,23 @@ function getMergedVitalsList(backendList) {
   })
 
   return unique
+}
+
+function getMergedMedicalHistory(backendData) {
+  const localList = JSON.parse(window.localStorage.getItem('medimate-medical-history') || '[]')
+  const backendList = Array.isArray(backendData) ? backendData : (backendData ? [backendData] : [])
+  const combined = [...localList, ...backendList]
+
+  const getTime = (rec) => {
+    const raw = rec?.updated_at || rec?.created_at || rec?.date
+    const t = raw ? new Date(raw).getTime() : 0
+    return isNaN(t) ? 0 : t
+  }
+
+  // Local entries are unshifted first, so on a tie (e.g. backend gives no
+  // usable timestamp) the just-saved local record still wins.
+  combined.sort((a, b) => getTime(b) - getTime(a))
+  return combined
 }
 
 function ProfileHeader({ onEditClick, onEmergencyClick }) {
@@ -303,6 +325,26 @@ export default function PatientProfile() {
   const [reportsLoading, setReportsLoading] = useState(true)
   const [medicalHistory, setMedicalHistory] = useState(null)
   const [medHistoryLoading, setMedHistoryLoading] = useState(true)
+  const [appointments, setAppointments] = useState([])
+  const [activeChatAppt, setActiveChatAppt] = useState(null)
+  const [activeVideoAppt, setActiveVideoAppt] = useState(null)
+
+  // Background incoming call listener for patient
+  const { incomingCall, setIncomingCall, declineIncomingCall } = useCallListener(appointments, !!activeVideoAppt)
+
+  const handleAcceptIncomingCall = () => {
+    if (incomingCall?.appointment) {
+      const appt = incomingCall.appointment
+      const sdp = incomingCall.sdp
+      setIncomingCall(null)
+      setActiveVideoAppt({
+        ...appt,
+        isInitiator: false,
+        autoAccept: true,
+        initialOffer: sdp,
+      })
+    }
+  }
 
   // Edit Modal State
   const [isEditingModalOpen, setIsEditingModalOpen] = useState(false)
@@ -321,6 +363,12 @@ export default function PatientProfile() {
   const [saveSuccessMsg, setSaveSuccessMsg] = useState('')
 
   const [pdfModal, setPdfModal] = useState(null)
+
+  useEffect(() => {
+    getAppointments()
+      .then(setAppointments)
+      .catch(() => setAppointments([]))
+  }, [])
 
   useEffect(() => {
     const localReports = JSON.parse(window.localStorage.getItem('medimate-clinical-reports') || '[]')
@@ -361,18 +409,15 @@ export default function PatientProfile() {
         })
         .finally(() => setReportsLoading(false))
 
-      getMedicalHistory(patientId)
+                 getMedicalHistory(patientId)
         .then((data) => {
-          // data may be an array (history list) or a single object
-          if (Array.isArray(data) && data.length > 0) {
-            setMedicalHistory(data[0])
-          } else if (data && !Array.isArray(data)) {
-            setMedicalHistory(data)
-          } else {
-            setMedicalHistory(null)
-          }
+          const merged = getMergedMedicalHistory(data)
+          setMedicalHistory(merged[0] || null)
         })
-        .catch(() => setMedicalHistory(null))
+        .catch(() => {
+          const merged = getMergedMedicalHistory(null)
+          setMedicalHistory(merged[0] || null)
+        })
         .finally(() => setMedHistoryLoading(false))
     } else {
       const merged = getMergedVitalsList([])
@@ -380,6 +425,8 @@ export default function PatientProfile() {
       setVitalsLoading(false)
       setReports(localReports)
       setReportsLoading(false)
+      const mergedHistory = getMergedMedicalHistory(null)
+      setMedicalHistory(mergedHistory[0] || null)
       setMedHistoryLoading(false)
     }
   }, [patientId])
@@ -485,6 +532,92 @@ export default function PatientProfile() {
           </div>
 
           <ClinicalReportsCard reports={reports} loading={reportsLoading} onViewPdf={handleViewPdf} />
+
+          {/* Appointments & Teleconsultations Card */}
+          <section style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #e2eae5', boxShadow: '0 8px 24px rgba(41,87,75,0.06)', marginTop: '24px' }}>
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+              <div>
+                <h2 style={{ margin: 0, font: "700 1.4rem 'Playfair Display', serif", color: '#171d1b' }}>🩺 Doctor Consultations &amp; Telehealth</h2>
+                <p style={{ margin: '4px 0 0', color: '#59756e', fontSize: '0.85rem' }}>Direct consultation rooms and real-time video sessions</p>
+              </div>
+              <b style={{ padding: '6px 14px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', fontSize: '0.85rem', fontWeight: 700 }}>
+                {appointments.length} Scheduled
+              </b>
+            </header>
+
+            {appointments.length === 0 ? (
+              <div style={{ padding: '24px', textAlign: 'center', background: '#f5fbf7', borderRadius: '14px', border: '1px solid #e2eae5' }}>
+                <p style={{ margin: 0, color: '#59756e', fontSize: '0.95rem', fontWeight: 600 }}>
+                  No appointments scheduled. Visit the <strong>Doctors</strong> directory to schedule a consultation.
+                </p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gap: '12px' }}>
+                {appointments.map((appt) => {
+                  const docName = appt.doctor?.user?.name
+                    ? `Dr. ${appt.doctor.user.name}`
+                    : appt.doctor?.name
+                      ? `Dr. ${appt.doctor.name}`
+                      : 'Doctor'
+                  const isApproved = appt.status === 'approved'
+                  const isPending = appt.status === 'pending'
+                  const isCompleted = appt.status === 'completed'
+                  const slotDate = appt.slot ? new Date(appt.slot).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Scheduled'
+
+                  return (
+                    <article key={appt.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '16px 20px', borderRadius: '14px', background: '#f5fbf7', border: isApproved ? '1.5px solid #a7f3d0' : '1px solid #e2eae5', flexWrap: 'wrap' }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <strong style={{ fontSize: '1.05rem', color: '#171d1b' }}>{docName}</strong>
+                          <span style={{ padding: '2px 8px', borderRadius: '999px', fontSize: '0.8rem', fontWeight: 700, background: isApproved ? '#d1fae5' : isPending ? '#fef3c7' : '#e0e7ff', color: isApproved ? '#065f46' : isPending ? '#92400e' : '#3730a3' }}>
+                            {isApproved ? '✓ Approved' : isPending ? '⏳ Awaiting Doctor' : 'Completed'}
+                          </span>
+                        </div>
+                        <small style={{ color: '#59756e', fontSize: '0.85rem', display: 'block', marginTop: '4px' }}>
+                          🗓 {slotDate} {appt.reason ? `• ${appt.reason}` : ''}
+                        </small>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        {isApproved && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => setActiveChatAppt(appt)}
+                              style={{ padding: '8px 16px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', fontWeight: 700, fontSize: '0.85rem', border: '1.5px solid #29574b', cursor: 'pointer' }}
+                            >
+                              💬 Chat
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setActiveVideoAppt({ ...appt, isInitiator: true, autoAccept: false })}
+                              style={{ padding: '8px 18px', borderRadius: '999px', background: '#29574b', color: '#00ff88', fontWeight: 800, fontSize: '0.85rem', border: 'none', cursor: 'pointer' }}
+                            >
+                              📹 Video Call
+                            </button>
+                          </>
+                        )}
+                        {isPending && (
+                          <span style={{ fontSize: '0.85rem', color: '#92400e', fontWeight: 600, background: '#fef3c7', padding: '6px 12px', borderRadius: '999px' }}>
+                            ⏳ Unlocks on approval
+                          </span>
+                        )}
+                        {isCompleted && (
+                          <button
+                            type="button"
+                            onClick={() => setActiveChatAppt(appt)}
+                            style={{ padding: '8px 14px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', fontWeight: 700, fontSize: '0.85rem', border: '1px solid #c4dcd3', cursor: 'pointer' }}
+                          >
+                            Chat History
+                          </button>
+                        )}
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            )}
+          </section>
 
           {/* Medical History Card */}
           <section style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #e2eae5', boxShadow: '0 8px 24px rgba(41,87,75,0.06)', marginTop: '24px' }}>
@@ -674,6 +807,39 @@ export default function PatientProfile() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Incoming Call Ringing Alert Dialog */}
+      {incomingCall && !activeVideoAppt && (
+        <IncomingCallModal
+          incomingCall={incomingCall}
+          onAccept={handleAcceptIncomingCall}
+          onDecline={declineIncomingCall}
+        />
+      )}
+
+      {/* Real-time Consultation Chat Modal */}
+      {activeChatAppt && (
+        <ChatModal
+          appointment={activeChatAppt}
+          currentUser={user}
+          onClose={() => setActiveChatAppt(null)}
+        />
+      )}
+
+      {/* Real-time WebRTC Video Call Modal */}
+      {activeVideoAppt && (
+        <VideoCallModal
+          appointment={activeVideoAppt}
+          currentUser={user}
+          isInitiator={activeVideoAppt.autoAccept ? false : true}
+          autoAccept={!!activeVideoAppt.autoAccept}
+          initialOffer={activeVideoAppt.initialOffer || null}
+          onClose={() => {
+            setActiveVideoAppt(null)
+            setIncomingCall(null)
+          }}
+        />
       )}
     </div>
   )
