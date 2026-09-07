@@ -52,7 +52,6 @@ const navItems = [
   [Building2,    'Hospitals'],
   [ShoppingBag,  'Stores'],
   [Calendar,     'Records'],
-  [Activity,     'Command Center'],
   [User,         'My Profile'],
 ]
 

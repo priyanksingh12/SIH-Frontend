@@ -46,7 +46,7 @@ export default function DoctorPatients() {
   const [activeVideoAppt, setActiveVideoAppt] = useState(null)
 
   // Background incoming call listener for doctor
-  const { incomingCall, declineIncomingCall } = useDoctorCallListener(appointments, !!activeVideoAppt)
+  const { incomingCall, setIncomingCall, declineIncomingCall } = useDoctorCallListener(appointments, !!activeVideoAppt)
 
   const handleAcceptIncomingCall = () => {
     if (incomingCall?.appointment) {

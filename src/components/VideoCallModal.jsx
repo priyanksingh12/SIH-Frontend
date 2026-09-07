@@ -104,26 +104,25 @@ export default function VideoCallModal({
       try {
         setCallStatus(isInitiator ? 'ringing' : autoAccept ? 'connecting' : 'waiting')
 
-        // 1. Fetch ICE servers from backend video-token API
-        let iceServers = DEFAULT_ICE_SERVERS
-        try {
-          const tokenRes = await getVideoToken(appointmentId)
-          if (tokenRes?.ice_servers && Array.isArray(tokenRes.ice_servers) && tokenRes.ice_servers.length > 0) {
-            iceServers = tokenRes.ice_servers
-          }
-        } catch (tokenErr) {
-          console.warn('Using default STUN servers due to token endpoint error:', tokenErr.message)
-        }
-
-        if (isCancelled) return
-
-        // 2. Connect to /video socket namespace
+        // 1. Connect socket and setup WebRTC IMMEDIATELY with fast default STUN servers (zero network delay)
         const socket = createVideoSocket()
         socketRef.current = socket
 
-        // 3. Setup RTCPeerConnection
-        const pc = new RTCPeerConnection({ iceServers })
+        const pc = new RTCPeerConnection({ iceServers: DEFAULT_ICE_SERVERS })
         peerConnectionRef.current = pc
+
+        // 2. Fetch backend video-token asynchronously in background (non-blocking)
+        getVideoToken(appointmentId)
+          .then((tokenRes) => {
+            if (!isCancelled && pc.signalingState !== 'closed' && tokenRes?.ice_servers?.length) {
+              try {
+                pc.setConfiguration({ iceServers: tokenRes.ice_servers })
+              } catch (e) {}
+            }
+          })
+          .catch((err) => {
+            console.warn('[Video] Using default STUN servers:', err.message)
+          })
 
         // Handle remote stream tracks
         pc.ontrack = (event) => {
@@ -143,10 +142,27 @@ export default function VideoCallModal({
           }
         }
 
-        // Helper: join the room (handle already-connected and future-connected)
+        // Helper: join the room
         const joinRoom = () => {
-          if (!isCancelled) {
+          if (!isCancelled && socket.connected) {
             socket.emit('join', { appointment_id: appointmentId })
+          }
+        }
+
+        let mediaStreamReady = false
+        const sendOffer = async () => {
+          if (!isInitiator || isCancelled || pc.signalingState === 'closed') return
+          try {
+            const offer = await pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true })
+            if (pc.signalingState === 'closed' || isCancelled) return
+            await pc.setLocalDescription(offer)
+            socket.emit('offer', {
+              appointment_id: appointmentId,
+              sdp: offer,
+            })
+            console.log('[Video] Sent SDP offer to peer')
+          } catch (offerErr) {
+            console.warn('[Video] Offer creation error:', offerErr)
           }
         }
 
@@ -154,32 +170,29 @@ export default function VideoCallModal({
         socket.on('connect', () => {
           console.log('[Video] Socket connected, joining room:', appointmentId)
           joinRoom()
+          // If media already acquired before socket connected, send offer now
+          if (isInitiator && mediaStreamReady) {
+            sendOffer()
+          }
         })
 
         socket.on('joined', (data) => {
           console.log('[Video] Joined video room:', data)
-        })
-
-        // peer-joined payload: { user_id, role }  — no appointment_id per API docs
-        // If WE are the initiator: create and send SDP offer now that peer is here
-        socket.on('peer-joined', async (data) => {
-          console.log('[Video] Peer joined:', data)
-          if (isInitiator && pc.signalingState !== 'closed') {
-            try {
-              const offer = await pc.createOffer()
-              await pc.setLocalDescription(offer)
-              socket.emit('offer', {
-                appointment_id: appointmentId,
-                sdp: offer,
-              })
-              console.log('[Video] Sent SDP offer to peer')
-            } catch (err) {
-              console.error('[Video] Failed to create offer:', err)
-            }
+          if (isInitiator && mediaStreamReady) {
+            sendOffer()
           }
         })
 
-        // offer payload from server: { sdp, from_user_id, from_role }  — no appointment_id
+        // peer-joined payload: { user_id, role }
+        // When peer joins, ensure offer is ready and delivered
+        socket.on('peer-joined', async (data) => {
+          console.log('[Video] Peer joined:', data)
+          if (isInitiator && pc.signalingState !== 'closed') {
+            sendOffer()
+          }
+        })
+
+        // offer payload from server: { sdp, from_user_id, from_role }
         socket.on('offer', async (data) => {
           console.log('[Video] Received offer from peer, hasAccepted:', hasAccepted, 'autoAccept:', autoAccept)
           if (hasAccepted || autoAccept) {
@@ -197,7 +210,6 @@ export default function VideoCallModal({
             try {
               await pc.setRemoteDescription(new RTCSessionDescription(data.sdp))
               setCallStatus('connected')
-              // Drain queued ICE candidates
               while (iceCandidatesQueueRef.current.length > 0) {
                 const candidate = iceCandidatesQueueRef.current.shift()
                 try {
@@ -246,7 +258,7 @@ export default function VideoCallModal({
           joinRoom()
         }
 
-        // 4. Acquire media for initiator (patient) or autoAccept (doctor)
+        // 3. Acquire media in parallel immediately
         if (isInitiator || autoAccept) {
           try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -259,31 +271,33 @@ export default function VideoCallModal({
               localVideoRef.current.srcObject = stream
             }
             stream.getTracks().forEach((track) => pc.addTrack(track, stream))
+            mediaStreamReady = true
             console.log('[Video] Local media acquired')
 
-            // If initiator: send initial offer right away
+            // If initiator: send initial offer immediately
             if (isInitiator) {
-              try {
-                const offer = await pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true })
-                await pc.setLocalDescription(offer)
-                socket.emit('offer', {
-                  appointment_id: appointmentId,
-                  sdp: offer,
-                })
-                console.log('[Video] Sent initial SDP offer')
-              } catch (offerErr) {
-                console.warn('[Video] Initial offer error:', offerErr)
-              }
+              await sendOffer()
+
+              // Retry offer once after 1.2s if still in ringing state to ensure delivery
+              setTimeout(() => {
+                if (!isCancelled && pc.signalingState === 'have-local-offer' && socket.connected) {
+                  console.log('[Video] Re-transmitting offer to ensure delivery')
+                  if (pc.localDescription) {
+                    socket.emit('offer', {
+                      appointment_id: appointmentId,
+                      sdp: pc.localDescription,
+                    })
+                  }
+                }
+              }, 1200)
             }
 
             // autoAccept: doctor answering an incoming call
-            // initialOffer was captured before VideoCallModal opened
             if (autoAccept && initialOffer) {
               try {
                 await pc.setRemoteDescription(new RTCSessionDescription(initialOffer))
                 const answer = await pc.createAnswer()
                 await pc.setLocalDescription(answer)
-                // Make sure we're in the room before answering
                 if (socket.connected) {
                   joinRoom()
                 }
@@ -292,7 +306,6 @@ export default function VideoCallModal({
                   sdp: answer,
                 })
                 console.log('[Video] Sent SDP answer (autoAccept)')
-                // Drain any queued ICE candidates
                 while (iceCandidatesQueueRef.current.length > 0) {
                   const candidate = iceCandidatesQueueRef.current.shift()
                   try { await pc.addIceCandidate(new RTCIceCandidate(candidate)) } catch (e) {}

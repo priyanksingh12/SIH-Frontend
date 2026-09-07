@@ -2,6 +2,10 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
+      "source": "/api/overpass/:path*",
+      "destination": "https://overpass-api.de/api/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

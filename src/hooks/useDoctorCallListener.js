@@ -65,7 +65,12 @@ export function useCallListener(appointments, isCallActive = false) {
       if (peerId) {
         const found = approvedAppts.find((a) => {
           if (isDoctor) {
-            return a.patient_id === peerId || a.patient?.id === peerId
+            return (
+              a.patient_id === peerId ||
+              a.patient?.id === peerId ||
+              a.patient?.user_id === peerId ||
+              a.patient?.user?.id === peerId
+            )
           } else {
             return (
               a.doctor_id === peerId ||
@@ -78,31 +83,23 @@ export function useCallListener(appointments, isCallActive = false) {
         if (found) return found
       }
 
-      // 3. Fallback to first approved appointment
+      // 3. Fallback to first approved appointment so calls are never dropped
       return approvedAppts[0] || null
     }
 
     // peer-joined: { user_id, role }
+    // NOTE: A peer connecting to the socket room is NOT an incoming call.
+    // Both parties join their rooms upon dashboard load, page navigation, or reconnect.
+    // Only the 'offer' event represents a real call invitation.
     socket.on('peer-joined', (data) => {
-      if (!data) return
-      console.log('[CallListener] Received peer-joined:', data)
-      if (isDoctor && data.role === 'doctor') return
-      if (!isDoctor && data.role === 'patient') return
-
-      const matchedAppt = findMatchingAppt(data)
-      if (!matchedAppt) return
-
-      const { callerName, callerRole } = getCallerInfo(matchedAppt, isDoctor)
-      setIncomingCall((prev) => {
-        if (prev) return prev
-        return { appointment: matchedAppt, sdp: null, callerName, callerRole }
-      })
+      console.log('[CallListener] Peer present in room (standby):', data)
     })
 
     // offer: { sdp, from_user_id, from_role }
+    // An actual incoming call is signaled ONLY when the caller emits an SDP offer.
     socket.on('offer', (data) => {
       if (!data) return
-      console.log('[CallListener] Received offer from peer:', data)
+      console.log('[CallListener] Received incoming call offer from peer:', data)
 
       const matchedAppt = findMatchingAppt(data)
       if (!matchedAppt) return
