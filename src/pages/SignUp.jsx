@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { signup } from '../api/authApi.js'
 
 const clinicImage = 'https://www.figma.com/api/mcp/asset/ea0832b8-8024-4aa8-a597-822e199eea9f.png'
@@ -208,9 +209,9 @@ export default function SignUp() {
                     type="button"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-lg text-[#1b342e] opacity-50 cursor-pointer hover:opacity-100"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 bg-transparent border-none text-[#59756e] hover:text-[#1b342e] cursor-pointer flex items-center justify-center p-1 transition-colors"
                   >
-                    {showPassword ? '◉' : '◌'}
+                    {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
                   </button>
                 </div>
               </label>
@@ -229,9 +230,9 @@ export default function SignUp() {
                     type="button"
                     aria-label={showConfirm ? 'Hide password' : 'Show password'}
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-lg text-[#1b342e] opacity-50 cursor-pointer hover:opacity-100"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 bg-transparent border-none text-[#59756e] hover:text-[#1b342e] cursor-pointer flex items-center justify-center p-1 transition-colors"
                   >
-                    {showConfirm ? '◉' : '◌'}
+                    {showConfirm ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
                   </button>
                 </div>
               </label>
