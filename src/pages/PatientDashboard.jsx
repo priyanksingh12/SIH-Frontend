@@ -37,6 +37,7 @@ import {
   Video,
   MessageSquare,
   Siren,
+  Baby,
 } from 'lucide-react'
 import { getStoredUser, logout } from '../api/apiClient.js'
 import { getVitals } from '../api/patientApi.js'
@@ -47,14 +48,15 @@ import IncomingCallModal from '../components/IncomingCallModal.jsx'
 import { useCallListener } from '../hooks/useDoctorCallListener.js'
 
 const navItems = [
-  [BarChart3,    'Dashboard'],
-  [Sparkles,     'Health Assistant'],
-  [Stethoscope,  'Doctors'],
-  [Building2,    'Hospitals'],
-  [ShoppingBag,  'Stores'],
-  [Calendar,     'Records'],
-  [Siren,        'Emergency'],
-  [User,         'My Profile'],
+  [BarChart3,             'Dashboard'],
+  [Sparkles,              'Health Assistant'],
+  [Stethoscope,           'Doctors'],
+  [Building2,             'Hospitals'],
+  [ShoppingBag,           'Stores'],
+  [Calendar,              'Records'],
+  [Siren,                 'Emergency'],
+  [Baby,                  'Child & Maternal Health'],
+  [User,                  'My Profile'],
 ]
 
 const aiAssistantRobotIcon = 'https://www.figma.com/api/mcp/asset/bb9f184c-e1eb-46d6-be83-b9c84347fa7d.svg'
@@ -203,24 +205,24 @@ export function TopBar({ userName }) {
   const navigate = useNavigate()
   const initials = userName.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'PT'
   return (
-    <header className="topbar">
-      <a className="brand" href="#dashboard" onClick={(e) => { e.preventDefault(); navigate('/patient-dashboard') }} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ display: 'grid', placeItems: 'center', width: '28px', height: '28px', borderRadius: '8px', background: '#00ff88', color: '#171d1b', fontWeight: '900', fontSize: '1.2rem', lineHeight: 1 }}>✚</span>
+    <header className="h-[88px] flex items-center justify-between px-4 md:px-16 py-6 bg-transparent border-b border-[rgba(41,87,75,0.12)]">
+      <a className="text-[#29574b] font-bold text-3xl font-serif flex items-center gap-2 no-underline" href="#dashboard" onClick={(e) => { e.preventDefault(); navigate('/patient-dashboard') }}>
+        <span className="grid place-items-center w-7 h-7 rounded-lg bg-[#00ff88] text-[#171d1b] font-extrabold text-xl leading-none">✚</span>
         <span>MediMate</span>
       </a>
-      <div className="top-actions">
-        <motion.button onClick={() => navigate('/health-assistant')} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="dashboard-assistant">
-          <img src={aiAssistantRobotIcon} alt="" /> AI Assistant
+      <div className="flex items-center gap-4">
+        <motion.button onClick={() => navigate('/health-assistant')} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-2 px-5 py-2.5 rounded-full text-white bg-[#29574b] font-semibold text-base">
+          <img src={aiAssistantRobotIcon} alt="" className="w-5 h-5" /> AI Assistant
         </motion.button>
-        <button className="dashboard-notifications" aria-label="Notifications">
+        <button className="relative grid place-items-center w-8 h-10 p-2 rounded-full bg-transparent" aria-label="Notifications">
           <Bell size={16} />
           <span />
         </button>
-        <div className="dashboard-profile" onClick={() => navigate('/patient-profile')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#29574b', color: '#00ff88', display: 'grid', placeItems: 'center', fontWeight: '800', fontSize: '0.95rem' }}>
+        <div className="flex items-center gap-3 pl-2 border-l border-[rgba(41,87,75,0.2)] text-[#171d1b] text-sm font-semibold cursor-pointer" onClick={() => navigate('/patient-profile')}>
+          <div className="w-9 h-9 rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-base">
             {initials}
           </div>
-          <span style={{ fontWeight: 700, fontSize: '1rem', color: '#171d1b' }}>{userName}</span>
+          <span className="font-bold text-base text-[#171d1b]">{userName}</span>
         </div>
       </div>
     </header>
@@ -236,17 +238,17 @@ export function Sidebar({ userName, activeLabel = 'Dashboard' }) {
   }
 
   return (
-    <aside className="sidebar">
-      <div className="profile" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#29574b', color: '#00ff88', display: 'grid', placeItems: 'center', fontWeight: '800', fontSize: '1.2rem', flexShrink: 0, boxShadow: '0 4px 10px rgba(41,87,75,0.2)' }}>
+    <aside className="hidden md:flex flex-col w-72 shrink-0 min-h-[calc(100vh-88px)] p-6 gap-8 bg-transparent border-r border-[rgba(41,87,75,0.12)]">
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-xl shrink-0 shadow-md">
           {initials}
         </div>
         <div>
-          <strong style={{ fontSize: '1.05rem', color: '#171d1b' }}>{userName}</strong>
-          <span style={{ fontSize: '0.85rem', color: '#404845', fontWeight: 600 }}>Premium Patient</span>
+          <strong className="text-lg text-[#171d1b]">{userName}</strong>
+          <span className="text-sm text-[#404845] font-semibold block">Premium Patient</span>
         </div>
       </div>
-      <nav className="side-links" aria-label="Dashboard navigation">
+      <nav className="grid gap-2" aria-label="Dashboard navigation">
         {navItems.map(([Icon, label]) => {
           const isActive = label === activeLabel
           const href =
@@ -257,10 +259,11 @@ export function Sidebar({ userName, activeLabel = 'Dashboard' }) {
             label === 'Hospitals'      ? '/hospitals' :
             label === 'Stores'         ? '/stores' :
             label === 'Emergency'      ? '/emergency' :
+            label === 'Child & Maternal Health' ? '/child-maternal-care' :
             `#${label.toLowerCase().replaceAll(' ', '-')}`
           return (
             <a
-              className={isActive ? 'active' : ''}
+              className={`flex items-center gap-4 px-4 py-3 rounded-full text-sm font-semibold ${isActive ? 'text-[#29574b] font-bold bg-[rgba(41,87,75,0.1)]' : 'text-[#404845] hover:bg-[rgba(41,87,75,0.06)]'}`}
               href={href}
               onClick={(event) => {
                 event.preventDefault()
@@ -280,10 +283,11 @@ export function Sidebar({ userName, activeLabel = 'Dashboard' }) {
                   navigate('/stores')
                 } else if (label === 'Emergency') {
                   navigate('/emergency')
+                } else if (label === 'Child & Maternal Health') {
+                  navigate('/child-maternal-care')
                 }
               }}
               key={label}
-              style={{ fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: '12px' }}
             >
               <Icon size={18} />
               {label}
@@ -291,7 +295,7 @@ export function Sidebar({ userName, activeLabel = 'Dashboard' }) {
           )
         })}
       </nav>
-      <div style={{ marginTop: 'auto', display: 'grid', gap: '12px' }}>
+      <div className="mt-auto grid gap-3">
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -299,13 +303,13 @@ export function Sidebar({ userName, activeLabel = 'Dashboard' }) {
             window.localStorage.removeItem('medimate-vitals-complete')
             navigate('/vitals')
           }}
-          style={{ width: '100%', padding: '14px 20px', borderRadius: '999px', background: '#00ff88', color: '#171d1b', fontWeight: 800, fontSize: '1rem', border: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+          className="w-full px-5 py-3.5 rounded-full bg-[#00ff88] text-[#171d1b] font-extrabold text-base border-0 cursor-pointer flex items-center justify-center gap-2"
         >
           <PlusCircle size={18} /> Log New Vitals
         </motion.button>
         <button
           onClick={handleLogout}
-          style={{ width: '100%', padding: '12px 20px', borderRadius: '999px', background: 'transparent', color: '#9a4638', fontWeight: 700, fontSize: '0.95rem', border: '1px solid rgba(154,70,56,0.3)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+          className="w-full px-5 py-3 rounded-full bg-transparent text-[#9a4638] font-bold text-sm border border-[rgba(154,70,56,0.3)] cursor-pointer flex items-center justify-center gap-2"
         >
           <LogOut size={16} /> Sign Out
         </button>
@@ -687,11 +691,11 @@ export default function PatientDashboard() {
   }
 
   return (
-    <div className="dashboard" id="dashboard">
+    <div className="min-h-screen bg-transparent text-[#171d1b]" id="dashboard">
       <TopBar userName={userName} />
-      <div className="dashboard-body">
+      <div className="flex flex-col md:flex-row min-h-[calc(100vh-88px)]">
         <Sidebar userName={userName} />
-        <main className="dashboard-main" style={{ paddingBottom: '60px' }}>
+        <main className="w-full max-w-5xl px-4 md:px-16 py-8 md:py-12 mx-auto" style={{ paddingBottom: '60px' }}>
           {/* Header Banner */}
           <motion.section
             initial={{ opacity: 0, y: 15 }}
@@ -986,13 +990,13 @@ export default function PatientDashboard() {
           </section>
 
           {/* Vitals Metrics Cards Grid */}
-          <section className="health-grid" aria-label="Health metrics">
-            <div className="metrics-grid" style={{ gap: '24px' }}>
+          <section className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mt-8" aria-label="Health metrics">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               {/* Blood Pressure Card */}
               <motion.article
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.2 }}
-                className="metric-card"
+                className="min-h-[286px] flex flex-col justify-between p-8 bg-white/80 rounded-3xl border border-[rgba(222,228,224,0.85)] shadow-lg backdrop-blur-sm"
                 style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #dee4e0', boxShadow: '0 8px 24px rgba(41,87,75,0.06)' }}
               >
                 <div className="metric-heading">
@@ -1029,7 +1033,7 @@ export default function PatientDashboard() {
               <motion.article
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.2 }}
-                className="metric-card"
+                className="min-h-[286px] flex flex-col justify-between p-8 bg-white/80 rounded-3xl border border-[rgba(222,228,224,0.85)] shadow-lg backdrop-blur-sm"
                 style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #dee4e0', boxShadow: '0 8px 24px rgba(41,87,75,0.06)' }}
               >
                 <div className="metric-heading">
@@ -1066,7 +1070,7 @@ export default function PatientDashboard() {
               <motion.article
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.2 }}
-                className="metric-card"
+                className="min-h-[286px] flex flex-col justify-between p-8 bg-white/80 rounded-3xl border border-[rgba(222,228,224,0.85)] shadow-lg backdrop-blur-sm"
                 style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #dee4e0', boxShadow: '0 8px 24px rgba(41,87,75,0.06)' }}
               >
                 <div className="metric-heading">
@@ -1103,7 +1107,7 @@ export default function PatientDashboard() {
               <motion.article
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.2 }}
-                className="metric-card"
+                className="min-h-[286px] flex flex-col justify-between p-8 bg-white/80 rounded-3xl border border-[rgba(222,228,224,0.85)] shadow-lg backdrop-blur-sm"
                 style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #dee4e0', boxShadow: '0 8px 24px rgba(41,87,75,0.06)' }}
               >
                 <div className="metric-heading">
@@ -1326,7 +1330,7 @@ export default function PatientDashboard() {
 
           {/* Care Journey Section */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-            <section className="timeline" id="journey" style={{ marginTop: '36px' }}>
+            <section className="mt-8 p-8 bg-white/85 rounded-3xl border border-[rgba(222,228,224,0.85)] shadow-lg" id="journey" style={{ marginTop: '36px' }}>
               <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '24px' }}>Your Care Journey</h2>
               <div className="journey-track">
                 <div className="track-base" />

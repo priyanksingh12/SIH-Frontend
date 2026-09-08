@@ -18,6 +18,7 @@ import Vitals from './pages/Vitals'
 import NearbyHospitals from './pages/NearbyHospitals'
 import NearbyMedicalStores from './pages/NearbyMedicalStores'
 import EmergencyPage from './pages/EmergencyPage'
+import ChildMaternalCare from './pages/ChildMaternalCare'
 import './App.css'
 
 /**
@@ -104,6 +105,7 @@ function App() {
           <Route path="/hospitals" element={<NearbyHospitals />} />
           <Route path="/stores" element={<NearbyMedicalStores />} />
           <Route path="/emergency" element={<ProtectedRoute><EmergencyPage /></ProtectedRoute>} />
+          <Route path="/child-maternal-care" element={<ProtectedRoute><ChildMaternalCare /></ProtectedRoute>} />
           <Route path="/doctor-patients" element={<ProtectedRoute><DoctorPatients /></ProtectedRoute>} />
           <Route path="/doctor-patient-profile" element={<ProtectedRoute><DoctorPatientProfile /></ProtectedRoute>} />
           <Route path="/doctor-profile" element={<ProtectedRoute><DoctorProfile /></ProtectedRoute>} />

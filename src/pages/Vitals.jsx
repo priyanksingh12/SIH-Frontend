@@ -16,13 +16,13 @@ const inputFields = [
 function InputField({ field, value, onChange }) {
   const [name, label, placeholder, unit, helper] = field
   return (
-    <label className="vitals-field">
+    <label className="grid gap-2 text-[#171d1b] text-sm font-bold">
       <span>{label}</span>
-      <div className="vitals-input-wrap">
-        <input name={name} value={value} placeholder={placeholder} onChange={onChange} inputMode="decimal" />
-        <b>{unit}</b>
+      <div className="flex items-center h-12 bg-white/90 border border-[#9aa39f] rounded-xl overflow-hidden">
+        <input name={name} value={value} placeholder={placeholder} onChange={onChange} inputMode="decimal" className="flex-1 min-w-0 w-full px-4 py-3 border-0 outline-none text-[#171d1b] bg-transparent text-base font-normal" />
+        <b className="pr-4 text-[#404845] text-sm whitespace-nowrap font-semibold">{unit}</b>
       </div>
-      {helper && <small>{helper}</small>}
+      {helper && <small className="text-[#717975] text-xs">{helper}</small>}
     </label>
   )
 }
@@ -135,22 +135,22 @@ export default function Vitals() {
 
   if (saved) {
     return (
-      <div className="vitals-saved">
-        <div>
-          <span>✓</span>
-          <h1>Your vitals are saved.</h1>
+      <div className="min-h-screen grid place-items-center bg-transparent text-center">
+        <div className="p-12">
+          <span className="grid place-items-center w-14 h-14 mx-auto mb-5 rounded-full text-white bg-[#426f63] text-3xl">✓</span>
+          <h1 className="m-0 text-5xl font-semibold font-serif">Your vitals are saved.</h1>
           {savedVitals?.risk_level && (
-            <p style={{ fontSize: '1.2rem', margin: '0.75rem 0' }}>
+            <p className="text-xl my-3">
               Risk level: <strong>{savedVitals.risk_level}</strong>
             </p>
           )}
           {savedVitals?.recommendation && (
-            <p style={{ fontSize: '1.05rem', opacity: 0.85, marginTop: '0.5rem' }}>
+            <p className="text-lg opacity-85 mt-2">
               {savedVitals.recommendation}
             </p>
           )}
-          <p style={{ fontSize: '1.1rem' }}>We&apos;ll use them to personalize your health journey.</p>
-          <button onClick={() => navigate('/patient-dashboard')} style={{ fontSize: '1.1rem', padding: '16px 32px' }}>
+          <p className="text-lg mt-3">We&apos;ll use them to personalize your health journey.</p>
+          <button onClick={() => navigate('/patient-dashboard')} className="mt-4 px-8 py-4 rounded-full text-white bg-[#29574b] text-lg font-bold cursor-pointer border-0">
             View your dashboard →
           </button>
         </div>

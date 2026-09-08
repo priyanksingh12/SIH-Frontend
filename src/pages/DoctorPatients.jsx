@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { getStoredUser, logout } from '../api/apiClient.js'
 import { getAppointments, approveAppointment, rejectAppointment, completeAppointment } from '../api/appointmentApi.js'
@@ -8,6 +8,14 @@ import IncomingCallModal from '../components/IncomingCallModal.jsx'
 import { useDoctorCallListener } from '../hooks/useDoctorCallListener.js'
 
 const toneMap = ['sage', 'rose', 'blue', 'sand', 'mint', 'lilac']
+const avatarColors = {
+  sage: 'bg-[#dcece5] text-[#29574b]',
+  rose: 'bg-[#f1e1e3] text-[#87565a]',
+  blue: 'bg-[#dce9ed] text-[#3d6270]',
+  sand: 'bg-[#f1e8d9] text-[#806346]',
+  mint: 'bg-[#e0f2eb] text-[#206a4f]',
+  lilac: 'bg-[#e7e3f0] text-[#655e7d]',
+}
 
 function getInitials(name) {
   if (!name) return 'DR'
@@ -32,33 +40,33 @@ const SIDEBAR_ITEMS = [
 function DoctorSidebar({ doctorName, facilityName }) {
   const navigate = useNavigate()
   return (
-    <aside className="profile-sidebar">
-      <div className="profile-suite-brand">
-        <span style={{ fontSize: '1.2rem' }}>✚</span>
-        <div><strong>MediMate</strong><small>CLINICAL SUITE</small></div>
+    <aside className="w-[260px] shrink-0 hidden md:flex flex-col p-6 bg-transparent border-r border-[rgba(41,87,75,0.12)] min-h-screen">
+      <div className="flex items-center gap-3 pb-6">
+        <span className="text-[1.2rem]">✚</span>
+        <div><strong className="block">MediMate</strong><small className="text-xs">CLINICAL SUITE</small></div>
       </div>
-      <div className="profile-doctor-mini">
-        <div style={{ width: '46px', height: '46px', borderRadius: '50%', background: '#29574b', color: '#00ff88', display: 'grid', placeItems: 'center', fontWeight: 'bold', fontSize: '1.05rem', flexShrink: 0 }}>
+      <div className="flex items-center gap-2 p-3 border border-[#e2eae5] rounded-2xl bg-white/50 backdrop-blur-sm">
+        <div className="w-[46px] h-[46px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[1.05rem] shrink-0">
           {getInitials(doctorName)}
         </div>
-        <div><b>{doctorName}</b><small>Attending Physician</small></div>
+        <div><b className="block text-sm">{doctorName}</b><small className="text-xs text-[#59756e]">Attending Physician</small></div>
         <i />
       </div>
-      <button className="profile-consult" onClick={() => navigate('/doctor-patients')}>+ New Consultation</button>
-      <nav>
+      <button className="my-5 p-3 w-full rounded-xl text-white bg-[#29574b] text-sm font-bold cursor-pointer border-0" onClick={() => navigate('/doctor-patients')}>+ New Consultation</button>
+      <nav className="grid gap-1">
         {SIDEBAR_ITEMS.map((item) => {
           const isActive = item.label === 'Patients'
           return (
-            <Link key={item.label} to={item.path} className={isActive ? 'active' : ''}>
-              <span>{item.icon}</span>{item.label}
+            <Link key={item.label} to={item.path} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold no-underline ${isActive ? 'text-white bg-[#29574b]' : 'text-[#404845]'}`}>
+              <span className="w-[18px] text-center text-base">{item.icon}</span>{item.label}
             </Link>
           )
         })}
       </nav>
-      <div className="profile-sidebar-footer">
-        <small>CLINICAL OUTLET</small>
+      <div className="relative mt-auto p-3 border border-[#dfe8e3] rounded-xl text-[#426f63] bg-[rgba(230,240,235,0.5)] text-sm flex flex-col">
+        <small className="font-bold">CLINICAL OUTLET</small>
         <b>{facilityName}</b>
-        <span>⚙</span>
+        <span className="absolute right-3 top-3">⚙</span>
       </div>
     </aside>
   )
@@ -137,106 +145,107 @@ export default function DoctorPatients() {
   }
 
   return (
-    <div className="doctor-profile-page">
+    <div className="min-h-screen flex bg-transparent text-[#171d1b]">
       <DoctorSidebar doctorName={doctorName} facilityName={facilityName} />
-      <main className="profile-workspace">
-        <header className="profile-topbar">
-          <div>
-            <span>▣ &nbsp; Secure Clinical Session</span>
-            <small>Verified · State Medical Registry</small>
+      <main className="flex-1 min-w-0 w-full">
+        <header className="h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[rgba(41,87,75,0.12)] bg-transparent">
+          <div className="flex flex-col">
+            <span className="text-sm font-bold">▣ &nbsp; Secure Clinical Session</span>
+            <small className="text-xs text-[#59756e]">Verified · State Medical Registry</small>
           </div>
-          <div>
-            <Link to="/doctor-dashboard" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', border: 'none', background: '#eaf3ee', color: '#29574b', padding: '8px 16px', borderRadius: '999px', fontWeight: 700, fontSize: '0.92rem' }}>
+          <div className="flex items-center gap-2 md:gap-3">
+            <Link to="/doctor-dashboard" className="hidden md:flex items-center gap-2 border-0 bg-[#eaf3ee] text-[#29574b] px-4 py-2 rounded-full font-bold text-[0.92rem] no-underline">
               👤 My Profile
             </Link>
-            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#29574b', color: '#00ff88', display: 'grid', placeItems: 'center', fontWeight: 'bold', fontSize: '0.95rem', flexShrink: 0 }}>
+            <div className="w-[38px] h-[38px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[0.95rem] shrink-0">
               {getInitials(doctorName)}
             </div>
-            <b>{doctorName}<small>Attending Physician</small></b>
-            <button onClick={logout} style={{ background: '#c0392b', color: '#fff', border: 'none', padding: '0.45rem 1rem', borderRadius: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '0.88rem', marginLeft: '8px' }}>
+            <b className="hidden md:flex flex-col text-sm">{doctorName}<small className="font-normal text-xs text-[#59756e]">Attending Physician</small></b>
+            <button onClick={logout} className="bg-[#c0392b] text-white border-0 py-1.5 px-3 md:py-[0.45rem] md:px-4 rounded-lg cursor-pointer font-bold text-xs md:text-[0.88rem] ml-1 md:ml-2">
               Logout
             </button>
           </div>
         </header>
 
-        <div className="doctor-patients-main" style={{ padding: '36px 48px 68px' }}>
-          <div className="doctor-patients-heading">
+        <div className="w-full max-w-[1060px] px-4 md:px-12 py-6 md:py-9 pb-16 mx-auto">
+          <div className="flex flex-col md:flex-row justify-between md:items-end mb-8 gap-4">
             <div>
-              <span className="doctors-kicker">PATIENT INTAKE</span>
-              <h1>Patients</h1>
-              <p>Review appointment requests and continue care for patients connected to your practice.</p>
+              <span className="text-[#29574b] text-xs font-bold uppercase tracking-widest block mb-2">PATIENT INTAKE</span>
+              <h1 className="text-4xl font-['Playfair_Display',serif] text-[#171d1b] font-bold m-0 leading-tight">Patients</h1>
+              <p className="text-[#59756e] mt-2 text-base">Review appointment requests and continue care for patients connected to your practice.</p>
             </div>
-            <div className="patient-request-count">
-              <strong>{loading ? '…' : String(appointments.length).padStart(2, '0')}</strong>
-              <span>active patient<br />requests</span>
+            <div className="flex items-center gap-3 shrink-0">
+              <strong className="text-4xl font-['Playfair_Display',serif] text-[#29574b]">{loading ? '…' : String(appointments.length).padStart(2, '0')}</strong>
+              <span className="text-[#59756e] text-xs font-bold uppercase tracking-wider leading-tight">active patient<br />requests</span>
             </div>
           </div>
 
-          <div className="patient-request-toolbar">
-            <div className="patient-tabs">
-              <button className={activeTab === 'all' ? 'active' : ''} onClick={() => setActiveTab('all')}>
-                All patients <b>{appointments.length}</b>
+          <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-white/70 p-2 md:p-1.5 rounded-full border border-[#e2eae5] mb-6">
+            <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+              <button className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap cursor-pointer border-0 ${activeTab === 'all' ? 'bg-[#29574b] text-white' : 'bg-transparent text-[#59756e]'}`} onClick={() => setActiveTab('all')}>
+                All patients <b className="ml-1 opacity-80">{appointments.length}</b>
               </button>
-              <button className={activeTab === 'pending' ? 'active' : ''} onClick={() => setActiveTab('pending')}>
-                New requests <b>{pendingCount}</b>
+              <button className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap cursor-pointer border-0 ${activeTab === 'pending' ? 'bg-[#29574b] text-white' : 'bg-transparent text-[#59756e]'}`} onClick={() => setActiveTab('pending')}>
+                New requests <b className="ml-1 opacity-80">{pendingCount}</b>
               </button>
-              <button className={activeTab === 'approved' ? 'active' : ''} onClick={() => setActiveTab('approved')}>
-                Scheduled <b>{scheduledCount}</b>
+              <button className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap cursor-pointer border-0 ${activeTab === 'approved' ? 'bg-[#29574b] text-white' : 'bg-transparent text-[#59756e]'}`} onClick={() => setActiveTab('approved')}>
+                Scheduled <b className="ml-1 opacity-80">{scheduledCount}</b>
               </button>
             </div>
-            <label>
-              ⌕ <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search patients, conditions, or area" />
+            <label className="flex items-center gap-2 px-4 py-2 w-full md:w-auto md:min-w-[280px]">
+              <span className="text-[#59756e] text-lg">⌕</span>
+              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search patients, conditions, or area" className="w-full bg-transparent border-0 outline-none text-[#171d1b] text-sm" />
             </label>
           </div>
 
-          <section className="patient-request-list">
+          <section className="flex flex-col gap-3">
             {loading ? (
-              <p style={{ padding: '2rem', opacity: 0.6, fontSize: '1.1rem' }}>Loading patients…</p>
+              <p className="p-8 opacity-60 text-[1.1rem]">Loading patients…</p>
             ) : filtered.length === 0 ? (
-              <p style={{ padding: '2rem', opacity: 0.6, fontSize: '1.1rem' }}>No patients found.</p>
+              <p className="p-8 opacity-60 text-[1.1rem]">No patients found.</p>
             ) : (
               filtered.map((appt, index) => {
                 const patientName = appt.patient?.name || 'Unknown Patient'
-                const tone = toneMap[index % toneMap.length]
+                const toneClass = avatarColors[toneMap[index % toneMap.length]]
                 const isNew = appt.status === 'pending'
                 const isApproved = appt.status === 'approved'
                 return (
-                  <div className="patient-request-card" key={appt.id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', cursor: 'default' }}>
-                    <button type="button" style={{ display: 'contents' }} onClick={() => openPatient(appt.patient_id, patientName)}>
-                      <span className={`patient-request-avatar ${tone}`}>{getInitials(patientName)}</span>
-                      <span className="patient-request-details">
-                        <strong>{patientName}</strong>
-                        <small>{appt.patient?.phone ? `+91 ${appt.patient.phone}` : ''}</small>
-                        <em>{appt.reason || 'No reason specified'}</em>
+                  <div className="flex flex-col md:flex-row md:items-center gap-4 p-4 border border-[#e2eae5] rounded-2xl bg-white hover:shadow-md transition-all duration-200" key={appt.id}>
+                    <button type="button" className="flex items-center gap-4 text-left border-0 bg-transparent flex-1 cursor-pointer" onClick={() => openPatient(appt.patient_id, patientName)}>
+                      <span className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${toneClass}`}>{getInitials(patientName)}</span>
+                      <span className="flex flex-col">
+                        <strong className="text-base text-[#171d1b]">{patientName}</strong>
+                        <small className="text-[#59756e]">{appt.patient?.phone ? `+91 ${appt.patient.phone}` : ''}</small>
+                        <em className="text-[#404845] not-italic text-sm mt-0.5">{appt.reason || 'No reason specified'}</em>
                       </span>
-                      <span className="patient-request-meta">
-                        <b className={isNew ? 'new' : ''}>{statusLabel(appt.status)}</b>
-                        <small>Scheduled {(appt.slot || appt.scheduled_at) ? new Date(appt.slot || appt.scheduled_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : ''}</small>
+                      <span className="flex flex-col items-end ml-auto pr-4 border-r border-[#e2eae5] md:w-[150px]">
+                        <b className={`text-sm ${isNew ? 'text-[#e67e22]' : 'text-[#29574b]'}`}>{statusLabel(appt.status)}</b>
+                        <small className="text-[#59756e] text-xs">Scheduled {(appt.slot || appt.scheduled_at) ? new Date(appt.slot || appt.scheduled_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : ''}</small>
                       </span>
                     </button>
-                    <span className="patient-request-arrow" style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', marginLeft: 'auto' }}>
+                    <span className="flex flex-row md:flex-col gap-2 md:gap-1.5 md:ml-auto md:w-[120px] justify-end md:justify-center">
                       {isNew && (
                         <>
-                          <button onClick={() => handleAction(appt.id, 'approve')} disabled={actionLoading === appt.id + 'approve'} style={{ padding: '0.4rem 0.8rem', background: '#27ae60', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 700 }}>
+                          <button onClick={() => handleAction(appt.id, 'approve')} disabled={actionLoading === appt.id + 'approve'} className="px-3 py-1.5 bg-[#27ae60] text-white border-0 rounded-lg cursor-pointer text-sm font-bold flex-1 md:flex-none">
                             {actionLoading === appt.id + 'approve' ? '…' : '✓ Approve'}
                           </button>
-                          <button onClick={() => handleAction(appt.id, 'reject')} disabled={actionLoading === appt.id + 'reject'} style={{ padding: '0.4rem 0.8rem', background: '#e74c3c', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 700 }}>
+                          <button onClick={() => handleAction(appt.id, 'reject')} disabled={actionLoading === appt.id + 'reject'} className="px-3 py-1.5 bg-[#e74c3c] text-white border-0 rounded-lg cursor-pointer text-sm font-bold flex-1 md:flex-none">
                             {actionLoading === appt.id + 'reject' ? '…' : '✕ Reject'}
                           </button>
                         </>
                       )}
                       {isApproved && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                          <div style={{ display: 'flex', gap: '0.35rem' }}>
+                        <div className="flex flex-col gap-1.5 w-full">
+                          <div className="flex gap-1.5">
                             <button
                               onClick={(e) => { e.stopPropagation(); setActiveChatAppt(appt) }}
-                              style={{ padding: '0.35rem 0.65rem', background: '#eaf3ee', color: '#29574b', border: '1.5px solid #29574b', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700 }}
+                              className="px-2.5 py-1.5 bg-[#eaf3ee] text-[#29574b] border-[1.5px] border-[#29574b] rounded-lg cursor-pointer text-xs font-bold flex-1"
                             >
                               💬 Chat
                             </button>
                             <button
                               onClick={(e) => { e.stopPropagation(); setActiveVideoAppt({ ...appt, isInitiator: true, autoAccept: false }) }}
-                              style={{ padding: '0.35rem 0.65rem', background: '#29574b', color: '#00ff88', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 800 }}
+                              className="px-2.5 py-1.5 bg-[#29574b] text-[#00ff88] border-0 rounded-lg cursor-pointer text-xs font-extrabold flex-1"
                             >
                               📹 Video
                             </button>
@@ -244,20 +253,20 @@ export default function DoctorPatients() {
                           <button
                             onClick={() => handleAction(appt.id, 'complete')}
                             disabled={actionLoading === appt.id + 'complete'}
-                            style={{ padding: '0.35rem 0.65rem', background: '#2c3e50', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700 }}
+                            className="px-2.5 py-1.5 bg-[#2c3e50] text-white border-0 rounded-lg cursor-pointer text-xs font-bold w-full"
                           >
                             {actionLoading === appt.id + 'complete' ? '…' : '● Complete'}
                           </button>
                         </div>
                       )}
-                      {!isNew && !isApproved && <span>→</span>}
+                      {!isNew && !isApproved && <span className="text-[#8a9b95] text-xl font-bold ml-auto md:ml-0 md:text-center block">→</span>}
                     </span>
                   </div>
                 )
               })
             )}
           </section>
-          <p className="patient-request-note">Select a patient to view their complete clinical profile, vitals, reports, and appointment history.</p>
+          <p className="mt-6 text-sm text-[#59756e] font-semibold text-center italic">Select a patient to view their complete clinical profile, vitals, reports, and appointment history.</p>
         </div>
       </main>
 

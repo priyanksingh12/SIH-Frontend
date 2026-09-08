@@ -57,15 +57,15 @@ function getMergedMedicalHistory(backendData) {
 
 function ProfileHeader({ onEditClick }) {
   return (
-    <div className="profile-workspace-header" style={{ display: 'flex', alignItems: 'center', justifyBetween: 'space-between', gap: '20px', marginBottom: '24px' }}>
-      <div style={{ flex: 1 }}>
-        <div className="profile-breadcrumb" style={{ color: '#29574b', fontSize: '0.85rem', fontWeight: 800, letterSpacing: '1px' }}>
+    <div className="flex items-center justify-between gap-5 mb-6">
+      <div className="flex-1">
+        <div className="text-[#29574b] text-sm font-extrabold tracking-widest uppercase">
           <span>PORTAL</span><i> / </i><span>PATIENT WORKSPACE</span><i> / </i><b>MY PROFILE</b>
         </div>
-        <h1 style={{ margin: '6px 0 0', font: "700 2.2rem/1.1 'Playfair Display', serif", color: '#171d1b' }}>Patient Profile &amp; Health Identity</h1>
+        <h1 className="mt-1.5 font-bold text-4xl leading-tight font-serif text-[#171d1b]">Patient Profile &amp; Health Identity</h1>
       </div>
-      <div className="profile-header-actions" style={{ display: 'flex', gap: '12px' }}>
-        <button type="button" className="profile-edit-button" onClick={onEditClick} style={{ padding: '10px 18px', borderRadius: '999px', background: '#29574b', color: '#00ff88', font: '700 0.95rem sans-serif', border: 'none', cursor: 'pointer' }}>
+      <div className="flex gap-3">
+        <button type="button" onClick={onEditClick} className="px-5 py-2.5 rounded-full bg-[#29574b] text-[#00ff88] font-bold text-sm border-0 cursor-pointer">
           ↗ <span>Edit Profile</span>
         </button>
       </div>
@@ -91,19 +91,19 @@ function IdentityCard({ userName, profile, user, latestVitals }) {
   const doctorText = latestVitals?.doctor_name || 'Dr. Ananya Sharma (Attending OPD)'
 
   return (
-    <section className="profile-identity-card" style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #e2eae5', boxShadow: '0 8px 24px rgba(41,87,75,0.06)', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '20px' }}>
-      <div style={{ width: '76px', height: '76px', borderRadius: '50%', background: '#29574b', color: '#00ff88', display: 'grid', placeItems: 'center', fontWeight: '800', fontSize: '1.8rem', flexShrink: 0, boxShadow: '0 4px 14px rgba(41,87,75,0.25)', border: '3px solid #dcece5' }}>
+    <section className="p-6 rounded-[20px] bg-white border border-[#e2eae5] shadow-[0_8px_24px_rgba(41,87,75,0.06)] mb-6 flex items-center gap-5">
+      <div className="w-[76px] h-[76px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-3xl shrink-0 shadow-[0_4px_14px_rgba(41,87,75,0.25)] border-4 border-[#dcece5]">
         {getInitials(userName)}
       </div>
-      <div className="profile-identity-details" style={{ flex: 1 }}>
-        <div className="profile-identity-title" style={{ display: 'flex', alignItems: 'baseline', gap: '14px', flexWrap: 'wrap' }}>
-          <h2 style={{ margin: 0, font: "700 1.6rem 'Playfair Display', serif", color: '#171d1b' }}>{userName}</h2>
-          <span style={{ fontSize: '0.9rem', color: '#59756e', fontWeight: 600 }}>Patient ID: #{patientIdText}</span>
-          <b style={{ padding: '4px 12px', borderRadius: '999px', background: '#dcece5', color: '#29574b', fontSize: '0.85rem', fontWeight: 700 }}>
+      <div className="flex-1">
+        <div className="flex items-baseline gap-3.5 flex-wrap">
+          <h2 className="m-0 font-bold text-2xl font-serif text-[#171d1b]">{userName}</h2>
+          <span className="text-sm text-[#59756e] font-semibold">Patient ID: #{patientIdText}</span>
+          <b className="px-3 py-1 rounded-full bg-[#dcece5] text-[#29574b] text-xs font-bold">
             {ageText} • {genderText}
           </b>
         </div>
-        <div className="profile-contact-row" style={{ display: 'flex', flexWrap: 'wrap', gap: '18px', marginTop: '14px', color: '#404845', fontSize: '0.95rem', fontWeight: 600 }}>
+        <div className="flex flex-wrap gap-4 mt-3.5 text-[#404845] text-sm font-semibold">
           <span>📱 {phoneText}</span>
           <span>📧 {emailText}</span>
           <span>📍 {addressText}</span>
@@ -131,43 +131,42 @@ function VitalsBaseline({ latestVitals, loading }) {
 
   const riskLevel = (latestVitals?.risk_level || 'low').toLowerCase()
   const pillLabel = riskLevel === 'high' ? 'High Risk Alert' : riskLevel === 'moderate' ? 'Moderate' : 'Normal Baseline'
-  const pillBg = riskLevel === 'high' ? '#ffe4e6' : riskLevel === 'moderate' ? '#fef3c7' : '#dcece5'
-  const pillColor = riskLevel === 'high' ? '#991b1b' : riskLevel === 'moderate' ? '#92400e' : '#29574b'
+  const pillClass = riskLevel === 'high' ? 'bg-[#ffe4e6] text-[#991b1b]' : riskLevel === 'moderate' ? 'bg-[#fef3c7] text-[#92400e]' : 'bg-[#dcece5] text-[#29574b]'
 
   return (
-    <section className="profile-info-card" style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #e2eae5', boxShadow: '0 8px 24px rgba(41,87,75,0.06)' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div className="profile-card-heading">
-          <h2 style={{ margin: 0, font: "700 1.4rem 'Playfair Display', serif", color: '#171d1b' }}>Vitals Baseline &amp; Telemetry</h2>
-          <p style={{ margin: '4px 0 0', color: '#59756e', fontSize: '0.85rem' }}>Clinician verified health summary from recent intake</p>
+    <section className="p-6 rounded-[20px] bg-white border border-[#e2eae5] shadow-[0_8px_24px_rgba(41,87,75,0.06)]">
+      <header className="flex justify-between items-center mb-5">
+        <div>
+          <h2 className="m-0 font-bold text-xl font-serif text-[#171d1b]">Vitals Baseline &amp; Telemetry</h2>
+          <p className="m-0 mt-1 text-[#59756e] text-xs">Clinician verified health summary from recent intake</p>
         </div>
-        <b className="profile-normal-pill" style={{ padding: '6px 14px', borderRadius: '999px', background: pillBg, color: pillColor, fontSize: '0.85rem', fontWeight: 800 }}>
+        <b className={`px-3.5 py-1.5 rounded-full text-xs font-extrabold ${pillClass}`}>
           {pillLabel}
         </b>
       </header>
 
       {loading ? (
-        <p style={{ padding: '1rem', opacity: 0.6 }}>Loading vitals baseline…</p>
+        <p className="p-4 opacity-60">Loading vitals baseline…</p>
       ) : (
-        <div className="profile-vital-rows" style={{ display: 'grid', gap: '16px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px', borderRadius: '12px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
-            <span style={{ fontWeight: 600, color: '#404845' }}>Resting Blood Pressure</span>
-            <strong style={{ fontSize: '1.2rem', color: '#171d1b', font: "700 1.2rem 'Playfair Display', serif" }}>{bp}</strong>
+        <div className="grid gap-4">
+          <div className="flex justify-between p-3.5 rounded-xl bg-[#f5fbf7] border border-[#e2eae5]">
+            <span className="font-semibold text-[#404845]">Resting Blood Pressure</span>
+            <strong className="text-xl font-bold font-serif text-[#171d1b]">{bp}</strong>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px', borderRadius: '12px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
-            <span style={{ fontWeight: 600, color: '#404845' }}>Heart Rate</span>
-            <strong style={{ fontSize: '1.2rem', color: '#171d1b', font: "700 1.2rem 'Playfair Display', serif" }}>{hr}</strong>
+          <div className="flex justify-between p-3.5 rounded-xl bg-[#f5fbf7] border border-[#e2eae5]">
+            <span className="font-semibold text-[#404845]">Heart Rate</span>
+            <strong className="text-xl font-bold font-serif text-[#171d1b]">{hr}</strong>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '14px', borderRadius: '12px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
-            <span style={{ fontWeight: 600, color: '#404845' }}>Fasting Blood Sugar</span>
-            <strong style={{ fontSize: '1.2rem', color: '#171d1b', font: "700 1.2rem 'Playfair Display', serif" }}>{sugar}</strong>
+          <div className="flex justify-between p-3.5 rounded-xl bg-[#f5fbf7] border border-[#e2eae5]">
+            <span className="font-semibold text-[#404845]">Fasting Blood Sugar</span>
+            <strong className="text-xl font-bold font-serif text-[#171d1b]">{sugar}</strong>
           </div>
-          <div className="profile-body-stats" style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '16px', borderRadius: '12px', background: '#effaf6', border: '1px solid #b8dfd1', marginTop: '6px' }}>
-            <span><small style={{ display: 'block', color: '#59756e', fontSize: '0.8rem' }}>Height</small><b style={{ fontSize: '1.05rem', color: '#29574b' }}>{height}</b></span>
-            <i style={{ width: '1px', height: '24px', background: '#c4dcd3' }} />
-            <span><small style={{ display: 'block', color: '#59756e', fontSize: '0.8rem' }}>Weight</small><b style={{ fontSize: '1.05rem', color: '#29574b' }}>{weight}</b></span>
-            <i style={{ width: '1px', height: '24px', background: '#c4dcd3' }} />
-            <span><small style={{ display: 'block', color: '#59756e', fontSize: '0.8rem' }}>BMI</small><b style={{ fontSize: '1.05rem', color: '#29574b' }}>{bmiText}</b></span>
+          <div className="flex justify-around items-center p-4 rounded-xl bg-[#effaf6] border border-[#b8dfd1] mt-1.5">
+            <span className="text-center"><small className="block text-[#59756e] text-xs">Height</small><b className="text-base text-[#29574b]">{height}</b></span>
+            <i className="w-[1px] h-6 bg-[#c4dcd3]" />
+            <span className="text-center"><small className="block text-[#59756e] text-xs">Weight</small><b className="text-base text-[#29574b]">{weight}</b></span>
+            <i className="w-[1px] h-6 bg-[#c4dcd3]" />
+            <span className="text-center"><small className="block text-[#59756e] text-xs">BMI</small><b className="text-base text-[#29574b]">{bmiText}</b></span>
           </div>
         </div>
       )}
@@ -180,34 +179,34 @@ function CareNetwork({ latestVitals }) {
   const secondaryDoctor = 'Dr. Ananya Sharma'
 
   return (
-    <section className="profile-info-card profile-network-card" style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #e2eae5', boxShadow: '0 8px 24px rgba(41,87,75,0.06)' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div className="profile-card-heading">
-          <h2 style={{ margin: 0, font: "700 1.4rem 'Playfair Display', serif", color: '#171d1b' }}>Care &amp; Facility Network</h2>
-          <p style={{ margin: '4px 0 0', color: '#59756e', fontSize: '0.85rem' }}>Connected health centers</p>
+    <section className="p-6 rounded-[20px] bg-white border border-[#e2eae5] shadow-[0_8px_24px_rgba(41,87,75,0.06)]">
+      <header className="flex justify-between items-center mb-5">
+        <div>
+          <h2 className="m-0 font-bold text-xl font-serif text-[#171d1b]">Care &amp; Facility Network</h2>
+          <p className="m-0 mt-1 text-[#59756e] text-xs">Connected health centers</p>
         </div>
-        <b className="profile-facility-count" style={{ padding: '6px 14px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', fontSize: '0.85rem', fontWeight: 700 }}>
+        <b className="px-3.5 py-1.5 rounded-full bg-[#eaf3ee] text-[#29574b] text-xs font-bold">
           2 Facilities
         </b>
       </header>
 
-      <div className="profile-facilities" style={{ display: 'grid', gap: '14px' }}>
-        <article style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '16px', borderRadius: '14px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#29574b', color: '#00ff88', display: 'grid', placeItems: 'center', fontWeight: 'bold' }}>✚</div>
-          <div style={{ flex: 1 }}>
-            <b style={{ display: 'block', fontSize: '1rem', color: '#171d1b' }}>PHC Badshahpur <em style={{ fontSize: '0.8rem', fontStyle: 'normal', color: '#29574b', background: '#dcece5', padding: '2px 8px', borderRadius: '999px' }}>Primary Center</em></b>
-            <small style={{ color: '#59756e', fontSize: '0.85rem' }}>Attending: {primaryDoctor}</small>
+      <div className="grid gap-3.5">
+        <article className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-[#f5fbf7] border border-[#e2eae5]">
+          <div className="w-10 h-10 rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold">✚</div>
+          <div className="flex-1">
+            <b className="block text-base text-[#171d1b]">PHC Badshahpur <em className="text-xs not-italic text-[#29574b] bg-[#dcece5] px-2 py-0.5 rounded-full ml-1">Primary Center</em></b>
+            <small className="text-[#59756e] text-sm">Attending: {primaryDoctor}</small>
           </div>
-          <span style={{ fontWeight: 700, color: '#29574b', fontSize: '0.9rem' }}>2.4 km</span>
+          <span className="font-bold text-[#29574b] text-sm">2.4 km</span>
         </article>
 
-        <article style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '16px', borderRadius: '14px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#426f63', color: '#ffffff', display: 'grid', placeItems: 'center', fontWeight: 'bold' }}>🏥</div>
-          <div style={{ flex: 1 }}>
-            <b style={{ display: 'block', fontSize: '1rem', color: '#171d1b' }}>CHC Manesar <em style={{ fontSize: '0.8rem', fontStyle: 'normal', color: '#426f63', background: '#eaf3ee', padding: '2px 8px', borderRadius: '999px' }}>Secondary Referral</em></b>
-            <small style={{ color: '#59756e', fontSize: '0.85rem' }}>Attending Specialist: {secondaryDoctor}</small>
+        <article className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-[#f5fbf7] border border-[#e2eae5]">
+          <div className="w-10 h-10 rounded-full bg-[#426f63] text-white grid place-items-center font-bold">🏥</div>
+          <div className="flex-1">
+            <b className="block text-base text-[#171d1b]">CHC Manesar <em className="text-xs not-italic text-[#426f63] bg-[#eaf3ee] px-2 py-0.5 rounded-full ml-1">Secondary Referral</em></b>
+            <small className="text-[#59756e] text-sm">Attending Specialist: {secondaryDoctor}</small>
           </div>
-          <span style={{ fontWeight: 700, color: '#426f63', fontSize: '0.9rem' }}>9.8 km</span>
+          <span className="font-bold text-[#426f63] text-sm">9.8 km</span>
         </article>
       </div>
     </section>
@@ -216,55 +215,55 @@ function CareNetwork({ latestVitals }) {
 
 function ClinicalReportsCard({ reports, loading, onViewPdf }) {
   return (
-    <section className="profile-info-card" style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #e2eae5', boxShadow: '0 8px 24px rgba(41,87,75,0.06)', marginTop: '24px' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <div className="profile-card-heading">
-          <h2 style={{ margin: 0, font: "700 1.4rem 'Playfair Display', serif", color: '#171d1b' }}>📄 Saved Clinical Reports &amp; AI Summaries</h2>
-          <p style={{ margin: '4px 0 0', color: '#59756e', fontSize: '0.85rem' }}>Generated from AI Health Assistant triage sessions &amp; clinical intakes</p>
+    <section className="p-6 rounded-[20px] bg-white border border-[#e2eae5] shadow-[0_8px_24px_rgba(41,87,75,0.06)] mt-6">
+      <header className="flex justify-between items-center mb-5">
+        <div>
+          <h2 className="m-0 font-bold text-xl font-serif text-[#171d1b]">📄 Saved Clinical Reports &amp; AI Summaries</h2>
+          <p className="m-0 mt-1 text-[#59756e] text-xs">Generated from AI Health Assistant triage sessions &amp; clinical intakes</p>
         </div>
-        <b style={{ padding: '6px 14px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', fontSize: '0.85rem', fontWeight: 700 }}>
+        <b className="px-3.5 py-1.5 rounded-full bg-[#eaf3ee] text-[#29574b] text-xs font-bold">
           {reports.length} File{reports.length !== 1 ? 's' : ''}
         </b>
       </header>
 
       {loading ? (
-        <p style={{ padding: '1rem', opacity: 0.6 }}>Loading clinical reports…</p>
+        <p className="p-4 opacity-60">Loading clinical reports…</p>
       ) : reports.length === 0 ? (
-        <div style={{ padding: '24px', textAlign: 'center', background: '#f5fbf7', borderRadius: '14px', border: '1px solid #e2eae5' }}>
-          <p style={{ margin: 0, color: '#59756e', fontSize: '0.95rem', fontWeight: 600 }}>
+        <div className="p-6 text-center bg-[#f5fbf7] rounded-2xl border border-[#e2eae5]">
+          <p className="m-0 text-[#59756e] text-sm font-semibold">
             No clinical PDF reports generated yet. Use the <strong>AI Health Assistant</strong> to evaluate symptoms and generate downloadable PDF reports.
           </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: '12px' }}>
+        <div className="grid gap-3">
           {reports.map((rep, idx) => {
             const pdfSource = rep.pdf_url || rep.report_url || rep.pdf_base64 || rep.report_base64 || rep.base64 || rep.pdf || rep.file_url
             const dateLabel = rep.generated_at ? new Date(rep.generated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently'
             const title = rep.title || rep.file_name || 'AI Triage Clinical Summary PDF'
 
             return (
-              <article key={rep.id || idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '14px 18px', borderRadius: '14px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#29574b', color: '#00ff88', display: 'grid', placeItems: 'center', fontWeight: 'bold', fontSize: '1.2rem' }}>
+              <article key={rep.id || idx} className="flex items-center justify-between gap-4 px-4 py-3.5 rounded-2xl bg-[#f5fbf7] border border-[#e2eae5]">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-lg">
                     📄
                   </div>
                   <div>
-                    <strong style={{ display: 'block', fontSize: '1rem', color: '#171d1b' }}>{title}</strong>
-                    <small style={{ color: '#59756e', fontSize: '0.85rem' }}>Generated on {dateLabel} • ABHA Encrypted PDF</small>
+                    <strong className="block text-base text-[#171d1b]">{title}</strong>
+                    <small className="text-[#59756e] text-xs">Generated on {dateLabel} • ABHA Encrypted PDF</small>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => onViewPdf(pdfSource, title)}
-                    style={{ padding: '8px 14px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', fontWeight: 700, fontSize: '0.85rem', border: '1px solid #c4dcd3', cursor: 'pointer' }}
+                    className="px-3.5 py-2 rounded-full bg-[#eaf3ee] text-[#29574b] font-bold text-xs border border-[#c4dcd3] cursor-pointer"
                   >
                     👁 View PDF
                   </button>
                   <button
                     type="button"
                     onClick={() => downloadPdfFile(pdfSource, `${title}.pdf`)}
-                    style={{ padding: '8px 14px', borderRadius: '999px', background: '#29574b', color: '#00ff88', fontWeight: 800, fontSize: '0.85rem', border: 0, cursor: 'pointer' }}
+                    className="px-3.5 py-2 rounded-full bg-[#29574b] text-[#00ff88] font-extrabold text-xs border-0 cursor-pointer"
                   >
                     ⬇ Download
                   </button>
@@ -476,11 +475,11 @@ export default function PatientProfile() {
   }
 
   return (
-    <div className="profile-dashboard-shell">
+    <div className="min-h-screen bg-transparent text-[#171d1b] font-[Manrope,sans-serif]">
       <TopBar userName={profile?.name || userName} />
-      <div className="profile-dashboard-body">
+      <div className="flex flex-col md:flex-row min-h-[calc(100vh-88px)]">
         <Sidebar userName={profile?.name || userName} activeLabel="My Profile" />
-        <main className="profile-workspace" style={{ padding: '36px 48px 80px' }}>
+        <main className="flex-1 min-w-0 w-full max-w-6xl px-4 md:px-16 py-8 md:py-10 mx-auto" style={{ padding: '36px 48px 80px' }}>
           {saveSuccessMsg && (
             <div style={{ padding: '14px 20px', background: '#d4edda', color: '#155724', borderRadius: '12px', marginBottom: '20px', fontWeight: 700, fontSize: '1rem', border: '1px solid #c3e6cb' }}>
               ✓ {saveSuccessMsg}
@@ -498,25 +497,25 @@ export default function PatientProfile() {
           <ClinicalReportsCard reports={reports} loading={reportsLoading} onViewPdf={handleViewPdf} />
 
           {/* Appointments & Teleconsultations Card */}
-          <section style={{ padding: '24px', borderRadius: '20px', background: '#ffffff', border: '1px solid #e2eae5', boxShadow: '0 8px 24px rgba(41,87,75,0.06)', marginTop: '24px' }}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+          <section className="p-6 rounded-[20px] bg-white border border-[#e2eae5] shadow-[0_8px_24px_rgba(41,87,75,0.06)] mt-6">
+            <header className="flex justify-between items-center mb-5 flex-wrap gap-2.5">
               <div>
-                <h2 style={{ margin: 0, font: "700 1.4rem 'Playfair Display', serif", color: '#171d1b' }}>🩺 Doctor Consultations &amp; Telehealth</h2>
-                <p style={{ margin: '4px 0 0', color: '#59756e', fontSize: '0.85rem' }}>Direct consultation rooms and real-time video sessions</p>
+                <h2 className="m-0 font-bold text-xl font-serif text-[#171d1b]">🩺 Doctor Consultations &amp; Telehealth</h2>
+                <p className="m-0 mt-1 text-[#59756e] text-xs">Direct consultation rooms and real-time video sessions</p>
               </div>
-              <b style={{ padding: '6px 14px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', fontSize: '0.85rem', fontWeight: 700 }}>
+              <b className="px-3.5 py-1.5 rounded-full bg-[#eaf3ee] text-[#29574b] text-xs font-bold">
                 {appointments.length} Scheduled
               </b>
             </header>
 
             {appointments.length === 0 ? (
-              <div style={{ padding: '24px', textAlign: 'center', background: '#f5fbf7', borderRadius: '14px', border: '1px solid #e2eae5' }}>
-                <p style={{ margin: 0, color: '#59756e', fontSize: '0.95rem', fontWeight: 600 }}>
+              <div className="p-6 text-center bg-[#f5fbf7] rounded-2xl border border-[#e2eae5]">
+                <p className="m-0 text-[#59756e] text-sm font-semibold">
                   No appointments scheduled. Visit the <strong>Doctors</strong> directory to schedule a consultation.
                 </p>
               </div>
             ) : (
-              <div style={{ display: 'grid', gap: '12px' }}>
+              <div className="grid gap-3">
                 {appointments.map((appt) => {
                   const docName = appt.doctor?.user?.name
                     ? `Dr. ${appt.doctor.user.name}`
@@ -528,41 +527,44 @@ export default function PatientProfile() {
                   const isCompleted = appt.status === 'completed'
                   const slotDate = appt.slot ? new Date(appt.slot).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Scheduled'
 
+                  const borderClass = isApproved ? 'border-[1.5px] border-[#a7f3d0]' : 'border border-[#e2eae5]'
+                  const statusBgClass = isApproved ? 'bg-[#d1fae5] text-[#065f46]' : isPending ? 'bg-[#fef3c7] text-[#92400e]' : 'bg-[#e0e7ff] text-[#3730a3]'
+                  
                   return (
-                    <article key={appt.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', padding: '16px 20px', borderRadius: '14px', background: '#f5fbf7', border: isApproved ? '1.5px solid #a7f3d0' : '1px solid #e2eae5', flexWrap: 'wrap' }}>
+                    <article key={appt.id} className={`flex items-center justify-between gap-4 px-5 py-4 rounded-2xl bg-[#f5fbf7] flex-wrap ${borderClass}`}>
                       <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                          <strong style={{ fontSize: '1.05rem', color: '#171d1b' }}>{docName}</strong>
-                          <span style={{ padding: '2px 8px', borderRadius: '999px', fontSize: '0.8rem', fontWeight: 700, background: isApproved ? '#d1fae5' : isPending ? '#fef3c7' : '#e0e7ff', color: isApproved ? '#065f46' : isPending ? '#92400e' : '#3730a3' }}>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <strong className="text-base text-[#171d1b]">{docName}</strong>
+                          <span className={`px-2 py-0.5 rounded-full text-[0.8rem] font-bold ${statusBgClass}`}>
                             {isApproved ? '✓ Approved' : isPending ? '⏳ Awaiting Doctor' : 'Completed'}
                           </span>
                         </div>
-                        <small style={{ color: '#59756e', fontSize: '0.85rem', display: 'block', marginTop: '4px' }}>
+                        <small className="block mt-1 text-[#59756e] text-xs">
                           🗓 {slotDate} {appt.reason ? `• ${appt.reason}` : ''}
                         </small>
                       </div>
 
-                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <div className="flex gap-2 flex-wrap">
                         {isApproved && (
                           <>
                             <button
                               type="button"
                               onClick={() => setActiveChatAppt(appt)}
-                              style={{ padding: '8px 16px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', fontWeight: 700, fontSize: '0.85rem', border: '1.5px solid #29574b', cursor: 'pointer' }}
+                              className="px-4 py-2 rounded-full bg-[#eaf3ee] text-[#29574b] font-bold text-xs border-[1.5px] border-[#29574b] cursor-pointer"
                             >
                               💬 Chat
                             </button>
                             <button
                               type="button"
                               onClick={() => setActiveVideoAppt({ ...appt, isInitiator: true, autoAccept: false })}
-                              style={{ padding: '8px 18px', borderRadius: '999px', background: '#29574b', color: '#00ff88', fontWeight: 800, fontSize: '0.85rem', border: 'none', cursor: 'pointer' }}
+                              className="px-4.5 py-2 rounded-full bg-[#29574b] text-[#00ff88] font-extrabold text-xs border-0 cursor-pointer"
                             >
                               📹 Video Call
                             </button>
                           </>
                         )}
                         {isPending && (
-                          <span style={{ fontSize: '0.85rem', color: '#92400e', fontWeight: 600, background: '#fef3c7', padding: '6px 12px', borderRadius: '999px' }}>
+                          <span className="px-3 py-1.5 rounded-full bg-[#fef3c7] text-[#92400e] font-semibold text-xs">
                             ⏳ Unlocks on approval
                           </span>
                         )}
@@ -570,7 +572,7 @@ export default function PatientProfile() {
                           <button
                             type="button"
                             onClick={() => setActiveChatAppt(appt)}
-                            style={{ padding: '8px 14px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', fontWeight: 700, fontSize: '0.85rem', border: '1px solid #c4dcd3', cursor: 'pointer' }}
+                            className="px-3.5 py-2 rounded-full bg-[#eaf3ee] text-[#29574b] font-bold text-xs border border-[#c4dcd3] cursor-pointer"
                           >
                             Chat History
                           </button>

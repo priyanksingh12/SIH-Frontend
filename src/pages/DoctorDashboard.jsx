@@ -21,16 +21,16 @@ function formatSlot(slot) {
 
 function statusBadge(status) {
   const map = {
-    pending: { label: 'Pending', bg: '#fef3c7', color: '#92400e' },
-    approved: { label: 'Approved', bg: '#dcece5', color: '#29574b' },
-    completed: { label: 'Completed', bg: '#e0e7ff', color: '#3730a3' },
-    rejected: { label: 'Rejected', bg: '#fee2e2', color: '#991b1b' },
+    pending: { label: 'Pending', bg: 'bg-[#fef3c7]', color: 'text-[#92400e]' },
+    approved: { label: 'Approved', bg: 'bg-[#dcece5]', color: 'text-[#29574b]' },
+    completed: { label: 'Completed', bg: 'bg-[#e0e7ff]', color: 'text-[#3730a3]' },
+    rejected: { label: 'Rejected', bg: 'bg-[#fee2e2]', color: 'text-[#991b1b]' },
   }
-  return map[status] || { label: status, bg: '#e9efec', color: '#404845' }
+  return map[status] || { label: status, bg: 'bg-[#e9efec]', color: 'text-[#404845]' }
 }
 
-const AVATAR_COLORS = ['#dcece5', '#dce9ed', '#f1e1e3', '#f1e8d9', '#e7e3f0']
-const AVATAR_TEXT_COLORS = ['#29574b', '#3d6270', '#87565a', '#806346', '#655e7d']
+const AVATAR_COLORS = ['bg-[#dcece5]', 'bg-[#dce9ed]', 'bg-[#f1e1e3]', 'bg-[#f1e8d9]', 'bg-[#e7e3f0]']
+const AVATAR_TEXT_COLORS = ['text-[#29574b]', 'text-[#3d6270]', 'text-[#87565a]', 'text-[#806346]', 'text-[#655e7d]']
 
 // Sidebar
 const SIDEBAR_ITEMS = [
@@ -43,37 +43,37 @@ const SIDEBAR_ITEMS = [
 function DoctorSidebar({ doctorName, specialization, facilityName, activeTab, setActiveTab }) {
   const navigate = useNavigate()
   return (
-    <aside className="profile-sidebar">
-      <div className="profile-suite-brand">
-        <span style={{ fontSize: '1.2rem' }}>✚</span>
-        <div><strong>MediMate</strong><small>CLINICAL SUITE</small></div>
+    <aside className="w-[260px] shrink-0 hidden md:flex flex-col p-6 bg-transparent border-r border-[rgba(41,87,75,0.12)] min-h-screen">
+      <div className="flex items-center gap-3 pb-6">
+        <span className="text-[1.2rem]">✚</span>
+        <div><strong>MediMate</strong><small className="block">CLINICAL SUITE</small></div>
       </div>
-      <div className="profile-doctor-mini">
-        <div style={{ width: '46px', height: '46px', borderRadius: '50%', background: '#29574b', color: '#00ff88', display: 'grid', placeItems: 'center', fontWeight: 'bold', fontSize: '1.05rem', flexShrink: 0 }}>
+      <div className="flex items-center gap-2 p-3 border border-[#e2eae5] rounded-2xl bg-white/50 backdrop-blur-sm">
+        <div className="w-[46px] h-[46px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[1.05rem] shrink-0">
           {getInitials(doctorName)}
         </div>
-        <div><b>{doctorName}</b><small>{specialization || 'Doctor'} · Attending</small></div>
+        <div><b>{doctorName}</b><small className="block">{specialization || 'Doctor'} · Attending</small></div>
         <i />
       </div>
-      <button className="profile-consult" onClick={() => navigate('/doctor-patients')}>+ New Consultation</button>
-      <nav>
+      <button className="my-5 p-3 w-full rounded-xl text-white bg-[#29574b] text-sm font-bold cursor-pointer border-0" onClick={() => navigate('/doctor-patients')}>+ New Consultation</button>
+      <nav className="grid gap-1">
         {SIDEBAR_ITEMS.map((item) => {
           const isActive = (item.label === 'Appointments' && activeTab === 'appointments') || (item.label !== 'Appointments' && item.label !== 'Patients' && activeTab === 'dashboard')
           return item.path.startsWith('#') ? (
-            <button key={item.label} onClick={() => setActiveTab('appointments')} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', color: isActive ? 'white' : '#404845', background: isActive ? '#29574b' : 'transparent', fontSize: '14px', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left', fontWeight: 600 }}>
-              <span style={{ width: '18px', textAlign: 'center', fontSize: '16px' }}>{item.icon}</span>{item.label}
+            <button key={item.label} onClick={() => setActiveTab('appointments')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm border-0 cursor-pointer w-full text-left font-semibold ${isActive ? 'text-white bg-[#29574b]' : 'text-[#404845] bg-transparent'}`}>
+              <span className="w-[18px] text-center text-[16px]">{item.icon}</span>{item.label}
             </button>
           ) : (
-            <Link key={item.label} to={item.path} className={isActive && item.label !== 'Patients' ? 'active' : ''} onClick={() => item.label === 'Patients' ? null : setActiveTab('dashboard')}>
-              <span>{item.icon}</span>{item.label}
+            <Link key={item.label} to={item.path} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold no-underline ${isActive && item.label !== 'Patients' ? 'text-white bg-[#29574b]' : 'text-[#404845]'}`} onClick={() => item.label === 'Patients' ? null : setActiveTab('dashboard')}>
+              <span className="w-[18px] text-center text-[16px]">{item.icon}</span>{item.label}
             </Link>
           )
         })}
       </nav>
-      <div className="profile-sidebar-footer">
+      <div className="relative mt-auto p-3 border border-[#dfe8e3] rounded-xl text-[#426f63] bg-[rgba(230,240,235,0.5)] text-sm flex flex-col">
         <small>CLINICAL OUTLET</small>
         <b>{facilityName}</b>
-        <span>⚙</span>
+        <span className="absolute right-3 top-3">⚙</span>
       </div>
     </aside>
   )
@@ -84,54 +84,36 @@ function AppointmentCard({ appt, onApprove, onReject, onComplete, loading, onOpe
   const idx = (appt.patient?.name || '').charCodeAt(0) % AVATAR_COLORS.length
   const badge = statusBadge(appt.status)
   return (
-    <article style={{ display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '20px 22px', borderRadius: '16px', background: 'rgba(255,255,255,0.85)', border: '1px solid #e2eae5', boxShadow: '0 4px 14px -6px rgba(41,87,75,0.12)' }}>
-      <div style={{ flexShrink: 0, width: '50px', height: '50px', borderRadius: '14px', display: 'grid', placeItems: 'center', fontFamily: "'Playfair Display',serif", fontWeight: 700, fontSize: '1.2rem', background: AVATAR_COLORS[idx], color: AVATAR_TEXT_COLORS[idx] }}>
+    <article className="flex items-start gap-4 p-5 rounded-2xl bg-white/85 border border-[#e2eae5] shadow-[0_4px_14px_-6px_rgba(41,87,75,0.12)]">
+      <div className={`shrink-0 w-[50px] h-[50px] rounded-2xl grid place-items-center font-['Playfair_Display',serif] font-bold text-lg ${AVATAR_COLORS[idx]} ${AVATAR_TEXT_COLORS[idx]}`}>
         {getInitials(appt.patient?.name || 'P')}
       </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap' }}>
-          <strong style={{ fontSize: '1.2rem', color: '#1d302a', fontFamily: "'Playfair Display',serif", fontWeight: 700 }}>{appt.patient?.name || 'Patient'}</strong>
-          <span style={{ padding: '4px 10px', borderRadius: '999px', fontSize: '0.85rem', fontWeight: 700, background: badge.bg, color: badge.color }}>{badge.label}</span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-2.5 flex-wrap">
+          <strong className="text-lg text-[#1d302a] font-['Playfair_Display',serif] font-bold">{appt.patient?.name || 'Patient'}</strong>
+          <span className={`px-2.5 py-1 rounded-full text-[0.85rem] font-bold ${badge.bg} ${badge.color}`}>{badge.label}</span>
         </div>
-        <small style={{ display: 'block', marginTop: '4px', color: '#59756e', fontSize: '0.92rem' }}>📞 {appt.patient?.phone || 'N/A'}</small>
-        <small style={{ display: 'block', marginTop: '4px', color: '#29574b', fontSize: '0.95rem', fontWeight: 700 }}>🗓 {formatSlot(appt.slot)}{appt.facility?.name && <> · {appt.facility.name}</>}</small>
-        {appt.share_records && <small style={{ display: 'block', marginTop: '4px', color: '#426f63', fontSize: '0.88rem', fontWeight: 600 }}>✓ Patient shared medical records</small>}
+        <small className="block mt-1 text-[#59756e] text-[0.92rem]">📞 {appt.patient?.phone || 'N/A'}</small>
+        <small className="block mt-1 text-[#29574b] text-[0.95rem] font-bold">🗓 {formatSlot(appt.slot)}{appt.facility?.name && <> · {appt.facility.name}</>}</small>
+        {appt.share_records && <small className="block mt-1 text-[#426f63] text-[0.88rem] font-semibold">✓ Patient shared medical records</small>}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
+      <div className="flex flex-col gap-2 shrink-0">
         {appt.status === 'pending' && <>
-          <button disabled={loading} onClick={() => onApprove(appt.id)} style={{ padding: '8px 16px', borderRadius: '999px', border: 'none', background: '#29574b', color: '#00ff88', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}>✓ Approve</button>
-          <button disabled={loading} onClick={() => onReject(appt.id)} style={{ padding: '8px 16px', borderRadius: '999px', border: '1px solid #fecaca', background: '#fee2e2', color: '#991b1b', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}>✕ Reject</button>
+          <button disabled={loading} onClick={() => onApprove(appt.id)} className="px-4 py-2 rounded-full border-0 bg-[#29574b] text-[#00ff88] font-bold text-[0.9rem] cursor-pointer">✓ Approve</button>
+          <button disabled={loading} onClick={() => onReject(appt.id)} className="px-4 py-2 rounded-full border border-[#fecaca] bg-[#fee2e2] text-[#991b1b] font-bold text-[0.9rem] cursor-pointer">✕ Reject</button>
         </>}
         {appt.status === 'approved' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <div style={{ display: 'flex', gap: '6px' }}>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex gap-1.5">
               <button
                 onClick={() => onOpenChat && onOpenChat(appt)}
-                style={{
-                  padding: '7px 14px',
-                  borderRadius: '999px',
-                  border: '1.5px solid #29574b',
-                  background: '#eaf3ee',
-                  color: '#29574b',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                }}
+                className="px-3.5 py-1.5 rounded-full border-[1.5px] border-[#29574b] bg-[#eaf3ee] text-[#29574b] font-bold text-[0.85rem] cursor-pointer"
               >
                 💬 Chat
               </button>
               <button
                 onClick={() => onOpenVideo && onOpenVideo(appt)}
-                style={{
-                  padding: '7px 14px',
-                  borderRadius: '999px',
-                  border: 'none',
-                  background: '#29574b',
-                  color: '#00ff88',
-                  fontWeight: 800,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                }}
+                className="px-3.5 py-1.5 rounded-full border-0 bg-[#29574b] text-[#00ff88] font-extrabold text-[0.85rem] cursor-pointer"
               >
                 📹 Video
               </button>
@@ -139,22 +121,13 @@ function AppointmentCard({ appt, onApprove, onReject, onComplete, loading, onOpe
             <button
               disabled={loading}
               onClick={() => onComplete(appt.id)}
-              style={{
-                padding: '7px 14px',
-                borderRadius: '999px',
-                border: 'none',
-                background: '#404845',
-                color: '#fff',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-              }}
+              className="px-3.5 py-1.5 rounded-full border-0 bg-[#404845] text-white font-bold text-[0.85rem] cursor-pointer"
             >
               ✓ Complete
             </button>
           </div>
         )}
-        {(appt.status === 'completed' || appt.status === 'rejected') && <span style={{ fontSize: '0.85rem', color: '#8a9b95', fontStyle: 'italic', fontWeight: 600 }}>{appt.status === 'completed' ? 'Session ended' : 'Declined'}</span>}
+        {(appt.status === 'completed' || appt.status === 'rejected') && <span className="text-[0.85rem] text-[#8a9b95] italic font-semibold">{appt.status === 'completed' ? 'Session ended' : 'Declined'}</span>}
       </div>
     </article>
   )
@@ -195,42 +168,42 @@ function AppointmentsPanel({ appointments, loadingAppts, apptError, onRefresh, o
 
   return (
     <div>
-      {toast && <div style={{ padding: '14px 20px', borderRadius: '12px', background: '#dcece5', color: '#29574b', fontWeight: 700, fontSize: '1rem', marginBottom: '20px', border: '1px solid #c4dcd3' }}>{toast}</div>}
-      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '22px', flexWrap: 'wrap', gap: '14px' }}>
+      {toast && <div className="px-5 py-3.5 rounded-xl bg-[#dcece5] text-[#29574b] font-bold text-base mb-5 border border-[#c4dcd3]">{toast}</div>}
+      <div className="flex items-end justify-between mb-5 flex-wrap gap-3.5">
         <div>
-          <h2 style={{ margin: 0, font: "600 2.4rem/1.1 'Playfair Display',serif", color: '#171d1b' }}>Appointments</h2>
-          <p style={{ margin: '6px 0 0', color: '#59756e', fontSize: '1.05rem', fontWeight: 500 }}>Manage consultation requests and approvals</p>
+          <h2 className="m-0 font-['Playfair_Display',serif] font-semibold text-[2.4rem] leading-[1.1] text-[#171d1b]">Appointments</h2>
+          <p className="m-0 mt-1.5 text-[#59756e] text-[1.05rem] font-medium">Manage consultation requests and approvals</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <span style={{ padding: '7px 16px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', fontWeight: 700, fontSize: '0.9rem' }}>{appointments.length} Total</span>
-          <button onClick={onRefresh} style={{ padding: '8px 18px', borderRadius: '999px', border: '1px solid #d5dbd8', background: 'white', color: '#29574b', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer' }}>↺ Refresh</button>
+        <div className="flex gap-3">
+          <span className="px-4 py-1.5 rounded-full bg-[#eaf3ee] text-[#29574b] font-bold text-[0.9rem]">{appointments.length} Total</span>
+          <button onClick={onRefresh} className="px-4.5 py-2 rounded-full border border-[#d5dbd8] bg-white text-[#29574b] font-bold text-[0.9rem] cursor-pointer">↺ Refresh</button>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '14px', marginBottom: '22px' }}>
-        {[{ label: 'Pending', count: counts.pending || 0, bg: '#fef3c7', color: '#92400e' }, { label: 'Approved', count: counts.approved || 0, bg: '#dcece5', color: '#29574b' }, { label: 'Completed', count: counts.completed || 0, bg: '#e0e7ff', color: '#3730a3' }, { label: 'Rejected', count: counts.rejected || 0, bg: '#fee2e2', color: '#991b1b' }].map(({ label, count, bg, color }) => (
-          <div key={label} style={{ padding: '16px 18px', borderRadius: '16px', background: bg, textAlign: 'center' }}>
-            <strong style={{ display: 'block', fontSize: '1.9rem', fontFamily: "'Playfair Display',serif", color }}>{count}</strong>
-            <small style={{ color, fontSize: '0.88rem', fontWeight: 700 }}>{label}</small>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 mb-5">
+        {[{ label: 'Pending', count: counts.pending || 0, bg: 'bg-[#fef3c7]', color: 'text-[#92400e]' }, { label: 'Approved', count: counts.approved || 0, bg: 'bg-[#dcece5]', color: 'text-[#29574b]' }, { label: 'Completed', count: counts.completed || 0, bg: 'bg-[#e0e7ff]', color: 'text-[#3730a3]' }, { label: 'Rejected', count: counts.rejected || 0, bg: 'bg-[#fee2e2]', color: 'text-[#991b1b]' }].map(({ label, count, bg, color }) => (
+          <div key={label} className={`px-4.5 py-4 rounded-2xl text-center ${bg}`}>
+            <strong className={`block text-[1.9rem] font-['Playfair_Display',serif] ${color}`}>{count}</strong>
+            <small className={`${color} text-[0.88rem] font-bold`}>{label}</small>
           </div>
         ))}
       </div>
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
+      <div className="flex gap-2 mb-5 flex-wrap">
         {FILTERS.map((f) => (
-          <button key={f} onClick={() => setFilter(f)} style={{ padding: '8px 18px', borderRadius: '999px', border: '1px solid #d5dfda', background: filter === f ? '#29574b' : 'transparent', color: filter === f ? 'white' : '#59756e', fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer', textTransform: 'capitalize' }}>
+          <button key={f} onClick={() => setFilter(f)} className={`px-4.5 py-2 rounded-full border border-[#d5dfda] font-bold text-[0.9rem] cursor-pointer capitalize ${filter === f ? 'bg-[#29574b] text-white' : 'bg-transparent text-[#59756e]'}`}>
             {f === 'all' ? 'All' : f}{f !== 'all' && counts[f] !== undefined ? ` (${counts[f]})` : ''}
           </button>
         ))}
       </div>
       {loadingAppts ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: '#59756e', fontSize: '1.1rem' }}>Loading appointments…</div>
+        <div className="p-10 text-center text-[#59756e] text-[1.1rem]">Loading appointments…</div>
       ) : apptError ? (
-        <div style={{ padding: '20px', borderRadius: '14px', background: '#fee2e2', color: '#991b1b', fontWeight: 600, fontSize: '1rem' }}>{apptError}</div>
+        <div className="p-5 rounded-2xl bg-[#fee2e2] text-[#991b1b] font-semibold text-base">{apptError}</div>
       ) : filtered.length === 0 ? (
-        <div style={{ padding: '40px', textAlign: 'center', borderRadius: '16px', background: 'rgba(255,255,255,0.7)', border: '1px solid #e2eae5' }}>
-          <p style={{ margin: 0, color: '#59756e', fontSize: '1.1rem', fontWeight: 600 }}>{filter === 'all' ? 'No appointments yet.' : `No ${filter} appointments.`}</p>
+        <div className="p-10 text-center rounded-2xl bg-white/70 border border-[#e2eae5]">
+          <p className="m-0 text-[#59756e] text-[1.1rem] font-semibold">{filter === 'all' ? 'No appointments yet.' : `No ${filter} appointments.`}</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: '12px' }}>
+        <div className="grid gap-3">
           {filtered.map((appt) => (
             <AppointmentCard
               key={appt.id}
@@ -267,113 +240,142 @@ function ProfileTab({ doctor, user, appointments, onToggleAvailability, availabi
 
   return (
     <>
-      <div className="profile-breadcrumb">PORTAL &nbsp;/&nbsp; PHYSICIAN WORKSPACE &nbsp;/&nbsp; DOCTOR PROFILE</div>
-      <div className="profile-title-row">
+      <div className="text-[#29574b] text-xs font-bold tracking-widest uppercase mb-4">PORTAL &nbsp;/&nbsp; PHYSICIAN WORKSPACE &nbsp;/&nbsp; DOCTOR PROFILE</div>
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
         <div>
-          <h1>Doctor Profile &amp;<br />Practice</h1>
-          <p>Manage your verified clinical credentials, facility affiliations, and consultation availability.</p>
+          <h1 className="text-4xl font-['Playfair_Display',serif] text-[#171d1b] font-bold m-0 leading-tight">Doctor Profile &amp;<br />Practice</h1>
+          <p className="text-[#59756e] mt-2 text-base">Manage your verified clinical credentials, facility affiliations, and consultation availability.</p>
         </div>
-        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-          <button onClick={onToggleAvailability} disabled={availabilityLoading} style={{ padding: '10px 18px', borderRadius: '999px', border: 'none', background: isAvailable ? '#29574b' : '#e9efec', color: isAvailable ? '#00ff88' : '#59756e', fontSize: '0.92rem', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+        <div className="flex gap-2.5 flex-wrap">
+          <button onClick={onToggleAvailability} disabled={availabilityLoading} className={`px-4.5 py-2.5 rounded-full border-0 text-[0.92rem] font-bold cursor-pointer whitespace-nowrap ${isAvailable ? 'bg-[#29574b] text-[#00ff88]' : 'bg-[#e9efec] text-[#59756e]'}`}>
             {availabilityLoading ? '…' : isAvailable ? '● Available for Consults' : '○ Set as Available'}
           </button>
-          <button onClick={logout} style={{ padding: '10px 18px', borderRadius: '999px', border: 'none', background: '#fee2e2', color: '#991b1b', fontSize: '0.92rem', fontWeight: 700, cursor: 'pointer' }}>⎋ Logout</button>
+          <button onClick={logout} className="px-4.5 py-2.5 rounded-full border-0 bg-[#fee2e2] text-[#991b1b] text-[0.92rem] font-bold cursor-pointer">⎋ Logout</button>
         </div>
       </div>
 
-      <section className="profile-hero-card">
-        <div style={{ width: '88px', height: '88px', borderRadius: '50%', background: '#29574b', color: '#00ff88', display: 'grid', placeItems: 'center', fontWeight: 'bold', fontSize: '2.2rem', flexShrink: 0 }}>{getInitials(displayName)}</div>
+      <section className="flex flex-col md:flex-row items-start md:items-center gap-4 p-6 rounded-2xl bg-white/85 backdrop-blur-sm">
+        <div className="w-[88px] h-[88px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[2.2rem] shrink-0">{getInitials(displayName)}</div>
         <div>
-          <h2>{displayName}</h2>
-          <span>Attending Physician · {specialization}</span>
-          <p>Medical Professional · MediMate Rural Health Network</p>
-          <small>⌖ {facilityName} &nbsp; ◉ Registry: {licenseNumber}</small>
+          <h2 className="text-2xl font-bold font-['Playfair_Display',serif] text-[#171d1b] m-0">{displayName}</h2>
+          <span className="text-[#59756e] font-semibold text-sm">Attending Physician · {specialization}</span>
+          <p className="text-[#404845] mt-1 text-sm">Medical Professional · MediMate Rural Health Network</p>
+          <small className="text-[#59756e] text-xs block mt-1">⌖ {facilityName} &nbsp; ◉ Registry: {licenseNumber}</small>
         </div>
-        <div className="hero-status">
-          {verified && <b>✓ VERIFIED CLINICIAN</b>}
-          <strong>{isAvailable ? '↗ AVAILABLE' : '✕ UNAVAILABLE'}</strong>
+        <div className="mt-4 md:mt-0 md:ml-auto flex flex-col items-end gap-1 text-sm">
+          {verified && <b className="text-[#29574b]">✓ VERIFIED CLINICIAN</b>}
+          <strong className={isAvailable ? 'text-[#29574b]' : 'text-[#8a9b95]'}>{isAvailable ? '↗ AVAILABLE' : '✕ UNAVAILABLE'}</strong>
         </div>
       </section>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '14px', marginTop: '18px' }}>
-        {[{ label: 'Pending Requests', value: pendingCount, bg: '#fef3c7', color: '#92400e' }, { label: 'Active / Approved', value: approvedCount, bg: '#dcece5', color: '#29574b' }, { label: 'Completed Sessions', value: completedCount, bg: '#e0e7ff', color: '#3730a3' }].map(({ label, value, bg, color }) => (
-          <div key={label} style={{ padding: '20px', borderRadius: '16px', background: bg, textAlign: 'center' }}>
-            <strong style={{ display: 'block', fontSize: '2.2rem', fontFamily: "'Playfair Display',serif", color }}>{value}</strong>
-            <small style={{ color, fontSize: '0.88rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</small>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mt-4.5">
+        {[{ label: 'Pending Requests', value: pendingCount, bg: 'bg-[#fef3c7]', color: 'text-[#92400e]' }, { label: 'Active / Approved', value: approvedCount, bg: 'bg-[#dcece5]', color: 'text-[#29574b]' }, { label: 'Completed Sessions', value: completedCount, bg: 'bg-[#e0e7ff]', color: 'text-[#3730a3]' }].map(({ label, value, bg, color }) => (
+          <div key={label} className={`p-5 rounded-2xl text-center ${bg}`}>
+            <strong className={`block text-[2.2rem] font-['Playfair_Display',serif] ${color}`}>{value}</strong>
+            <small className={`${color} text-[0.88rem] font-bold uppercase tracking-wide`}>{label}</small>
           </div>
         ))}
       </div>
 
-      <section className="affiliation-card" style={{ marginTop: '16px' }}>
-        <span>▣</span>
+      <section className="flex flex-col md:flex-row md:items-center gap-4 mt-4 p-5 rounded-2xl bg-[rgba(234,243,238,0.85)] backdrop-blur-sm">
+        <span className="text-2xl text-[#29574b]">▣</span>
         <div>
-          <small>PRIMARY AFFILIATION &nbsp;•&nbsp; Public Health Network</small>
-          <h2>{facilityName}</h2>
-          <p>{specialization} Department · MediMate Network</p>
+          <small className="text-xs text-[#59756e] font-bold uppercase tracking-wide">PRIMARY AFFILIATION &nbsp;•&nbsp; Public Health Network</small>
+          <h2 className="text-xl font-bold font-['Playfair_Display',serif] text-[#171d1b] m-0 mt-1">{facilityName}</h2>
+          <p className="text-sm text-[#404845] mt-1">{specialization} Department · MediMate Network</p>
         </div>
       </section>
 
-      <div className="profile-grid">
-        <article className="profile-card credentials-card">
-          <header><span>♧</span><h2>Professional<br />Credentials &amp; License</h2><b>▢</b></header>
-          <div className="credential-panel">
-            <div className="credential-columns">
-              <div><small>MEDICAL COUNCIL LICENSE</small><strong>{licenseNumber}</strong>{verified && <em>✓ Verified</em>}</div>
-              <div><small>CLINICAL EXPERIENCE</small><strong>{experienceYears ? `${experienceYears}+ Years` : '—'}</strong></div>
+      <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-5 mt-5">
+        <article className="p-5 rounded-2xl bg-white/85 backdrop-blur-sm">
+          <header className="flex items-start justify-between mb-4">
+            <div className="flex gap-2">
+              <span className="text-xl text-[#29574b]">♧</span>
+              <h2 className="text-lg font-bold font-['Playfair_Display',serif] text-[#171d1b] m-0 leading-tight">Professional<br />Credentials &amp; License</h2>
             </div>
-            <div className="credential-columns" style={{ marginTop: '14px' }}>
-              <div><small>QUALIFICATION</small><strong>{qualification}</strong></div>
-              <div><small>SPECIALIZATION</small><strong>{specialization}</strong></div>
+            <b className="text-xl text-[#29574b]">▢</b>
+          </header>
+          <div className="flex flex-col gap-3.5">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col"><small className="text-xs text-[#59756e] font-bold uppercase">MEDICAL COUNCIL LICENSE</small><strong className="text-[#171d1b]">{licenseNumber}</strong>{verified && <em className="text-[#29574b] text-xs font-bold not-italic mt-0.5">✓ Verified</em>}</div>
+              <div className="flex flex-col"><small className="text-xs text-[#59756e] font-bold uppercase">CLINICAL EXPERIENCE</small><strong className="text-[#171d1b]">{experienceYears ? `${experienceYears}+ Years` : '—'}</strong></div>
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-3.5">
+              <div className="flex flex-col"><small className="text-xs text-[#59756e] font-bold uppercase">QUALIFICATION</small><strong className="text-[#171d1b]">{qualification}</strong></div>
+              <div className="flex flex-col"><small className="text-xs text-[#59756e] font-bold uppercase">SPECIALIZATION</small><strong className="text-[#171d1b]">{specialization}</strong></div>
             </div>
           </div>
         </article>
 
-        <article className="profile-card account-card">
-          <header><span>♙</span><h2>Account<br />Settings</h2><b>⚙</b></header>
-          <div className="setting-list">
-            <div><small>FULL LEGAL NAME</small><strong>{displayName}</strong></div>
-            {user?.email && <div><small>CONTACT EMAIL</small><strong>{user.email}</strong></div>}
-            {user?.phone && <div><small>CONTACT PHONE</small><strong>{user.phone}</strong></div>}
-            <div><small>FACILITY</small><strong>{facilityName}</strong></div>
+        <article className="p-5 rounded-2xl bg-white/85 backdrop-blur-sm">
+          <header className="flex items-start justify-between mb-4">
+             <div className="flex gap-2">
+               <span className="text-xl text-[#29574b]">♙</span>
+               <h2 className="text-lg font-bold font-['Playfair_Display',serif] text-[#171d1b] m-0 leading-tight">Account<br />Settings</h2>
+             </div>
+             <b className="text-xl text-[#29574b]">⚙</b>
+          </header>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col"><small className="text-xs text-[#59756e] font-bold uppercase">FULL LEGAL NAME</small><strong className="text-[#171d1b]">{displayName}</strong></div>
+            {user?.email && <div className="flex flex-col"><small className="text-xs text-[#59756e] font-bold uppercase">CONTACT EMAIL</small><strong className="text-[#171d1b]">{user.email}</strong></div>}
+            {user?.phone && <div className="flex flex-col"><small className="text-xs text-[#59756e] font-bold uppercase">CONTACT PHONE</small><strong className="text-[#171d1b]">{user.phone}</strong></div>}
+            <div className="flex flex-col"><small className="text-xs text-[#59756e] font-bold uppercase">FACILITY</small><strong className="text-[#171d1b]">{facilityName}</strong></div>
           </div>
         </article>
 
-        <article className="profile-card specialization-card">
-          <header><span>♧</span><h2>Specialization &amp;<br />Clinical Focus</h2></header>
-          <div className="specialty-tags">
-            <span>{specialization}</span>
-            {qualification && qualification !== '—' && <span>{qualification}</span>}
+        <article className="p-5 rounded-2xl bg-white/85 backdrop-blur-sm">
+          <header className="flex items-start justify-between mb-4">
+             <div className="flex gap-2">
+               <span className="text-xl text-[#29574b]">♧</span>
+               <h2 className="text-lg font-bold font-['Playfair_Display',serif] text-[#171d1b] m-0 leading-tight">Specialization &amp;<br />Clinical Focus</h2>
+             </div>
+          </header>
+          <div className="flex gap-2 flex-wrap mb-4">
+            <span className="px-3 py-1 rounded-full bg-[#eaf3ee] text-[#29574b] text-xs font-bold">{specialization}</span>
+            {qualification && qualification !== '—' && <span className="px-3 py-1 rounded-full bg-[#eaf3ee] text-[#29574b] text-xs font-bold">{qualification}</span>}
           </div>
-          <h4>CLINICAL BIOGRAPHY</h4>
-          <p>{bio}</p>
+          <h4 className="text-xs text-[#59756e] font-bold uppercase mb-1">CLINICAL BIOGRAPHY</h4>
+          <p className="text-sm text-[#404845] leading-relaxed m-0">{bio}</p>
         </article>
 
-        <article className="profile-card schedule-card">
-          <header><span>▣</span><h2>Consultation<br />Schedule</h2><b>·</b></header>
-          <div className="schedule-list">
-            <div><span>▣</span><p>IN-PERSON OPD TIMINGS<strong>Mon – Fri: 09:00 AM – 02:00 PM</strong><small>{facilityName}</small></p></div>
-            <div><span>⌁</span><p>TELE-TRIAGE WINDOW<strong>Mon – Sat: 04:00 PM – 06:00 PM</strong><small>Prioritized rural referral queue</small></p></div>
+        <article className="p-5 rounded-2xl bg-white/85 backdrop-blur-sm">
+          <header className="flex items-start justify-between mb-4">
+             <div className="flex gap-2">
+               <span className="text-xl text-[#29574b]">▣</span>
+               <h2 className="text-lg font-bold font-['Playfair_Display',serif] text-[#171d1b] m-0 leading-tight">Consultation<br />Schedule</h2>
+             </div>
+             <b className="text-xl text-[#29574b]">·</b>
+          </header>
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-3">
+              <span className="text-lg text-[#29574b] mt-1">▣</span>
+              <p className="m-0 flex flex-col"><span className="text-xs text-[#59756e] font-bold uppercase">IN-PERSON OPD TIMINGS</span><strong className="text-[#171d1b]">Mon – Fri: 09:00 AM – 02:00 PM</strong><small className="text-xs text-[#404845]">{facilityName}</small></p>
+            </div>
+            <div className="flex gap-3">
+              <span className="text-lg text-[#29574b] mt-1">⌁</span>
+              <p className="m-0 flex flex-col"><span className="text-xs text-[#59756e] font-bold uppercase">TELE-TRIAGE WINDOW</span><strong className="text-[#171d1b]">Mon – Sat: 04:00 PM – 06:00 PM</strong><small className="text-xs text-[#404845]">Prioritized rural referral queue</small></p>
+            </div>
           </div>
         </article>
       </div>
 
       {appointments.length > 0 && (
-        <div style={{ marginTop: '26px', padding: '24px', borderRadius: '18px', background: 'rgba(255,255,255,0.85)', border: '1px solid #e2eae5' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 style={{ margin: 0, font: "600 1.5rem 'Playfair Display',serif", color: '#171d1b' }}>Recent Appointments</h3>
-            <span style={{ padding: '6px 14px', borderRadius: '999px', background: '#eaf3ee', color: '#29574b', fontSize: '0.9rem', fontWeight: 700 }}>{pendingCount} pending</span>
+        <div className="mt-6 p-6 rounded-[18px] bg-white/85 border border-[#e2eae5]">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="m-0 font-['Playfair_Display',serif] font-semibold text-2xl text-[#171d1b]">Recent Appointments</h3>
+            <span className="px-3.5 py-1.5 rounded-full bg-[#eaf3ee] text-[#29574b] text-[0.9rem] font-bold">{pendingCount} pending</span>
           </div>
-          <div style={{ display: 'grid', gap: '10px' }}>
+          <div className="grid gap-2.5">
             {appointments.slice(0, 5).map((a) => {
               const badge = statusBadge(a.status)
               return (
-                <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '12px 16px', borderRadius: '12px', background: '#f5fbf7', border: '1px solid #e2eae5' }}>
-                  <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: '#29574b', color: '#00ff88', display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: '0.95rem', flexShrink: 0 }}>{getInitials(a.patient?.name || 'P')}</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <strong style={{ display: 'block', fontSize: '1.05rem', color: '#171d1b', fontWeight: 700 }}>{a.patient?.name || 'Patient'}</strong>
-                    <small style={{ color: '#59756e', fontSize: '0.88rem' }}>{formatSlot(a.slot)}</small>
+                <div key={a.id} className="flex items-center gap-3.5 p-3 px-4 rounded-xl bg-[#f5fbf7] border border-[#e2eae5]">
+                  <div className="w-[42px] h-[42px] rounded-xl bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[0.95rem] shrink-0">{getInitials(a.patient?.name || 'P')}</div>
+                  <div className="flex-1 min-w-0">
+                    <strong className="block text-[1.05rem] text-[#171d1b] font-bold truncate">{a.patient?.name || 'Patient'}</strong>
+                    <small className="text-[#59756e] text-[0.88rem]">{formatSlot(a.slot)}</small>
                   </div>
-                  <span style={{ padding: '4px 10px', borderRadius: '999px', background: badge.bg, color: badge.color, fontSize: '0.82rem', fontWeight: 700, whiteSpace: 'nowrap' }}>{badge.label}</span>
+                  <span className={`px-2.5 py-1 rounded-full text-[0.82rem] font-bold whitespace-nowrap ${badge.bg} ${badge.color}`}>{badge.label}</span>
                 </div>
               )
             })}
@@ -381,9 +383,9 @@ function ProfileTab({ doctor, user, appointments, onToggleAvailability, availabi
         </div>
       )}
 
-      <blockquote className="profile-quote">
+      <blockquote className="mt-8 mb-4 border-l-4 border-[#29574b] pl-4 italic text-[#404845] text-lg font-['Playfair_Display',serif]">
         "Precision diagnostics paired<br />with rural accessibility defines<br />modern medicine."
-        <small>MEDIMATE CLINICIAN NETWORK • 2026</small>
+        <small className="block mt-2 text-xs font-sans text-[#59756e] not-italic font-bold tracking-wide">MEDIMATE CLINICIAN NETWORK • 2026</small>
       </blockquote>
     </>
   )
@@ -460,21 +462,21 @@ export default function DoctorDashboard() {
   }
 
   return (
-    <div className="doctor-profile-page">
+    <div className="min-h-screen flex bg-transparent text-[#171d1b]">
       <DoctorSidebar doctorName={displayName} specialization={specialization} facilityName={facilityName} activeTab={activeTab} setActiveTab={setActiveTab} />
-      <main className="profile-workspace">
-        <header className="profile-topbar">
-          <div>
-            <span>▣ &nbsp; Secure Session</span>
-            <small>{doctorLoading ? 'Loading profile…' : doctor?.verified ? 'Verified · State Medical Registry' : 'Pending Verification'}</small>
+      <main className="flex-1 min-w-0 w-full">
+        <header className="h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[rgba(41,87,75,0.12)] bg-transparent">
+          <div className="flex flex-col">
+            <span className="text-sm font-bold text-[#171d1b]">▣ &nbsp; Secure Session</span>
+            <small className="text-xs text-[#59756e]">{doctorLoading ? 'Loading profile…' : doctor?.verified ? 'Verified · State Medical Registry' : 'Pending Verification'}</small>
           </div>
-          <div>
-            <button onClick={() => navigate('/doctor-patients')} style={{ border: 'none', background: '#eaf3ee', color: '#29574b', padding: '8px 16px', borderRadius: '999px', fontWeight: 700, fontSize: '0.92rem', cursor: 'pointer' }}>♧ Patients</button>
-            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: '#29574b', color: '#00ff88', display: 'grid', placeItems: 'center', fontWeight: 'bold', fontSize: '0.95rem', flexShrink: 0 }}>{getInitials(displayName)}</div>
-            <b>{displayName}<small>Attending Physician</small></b>
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate('/doctor-patients')} className="border-0 bg-[#eaf3ee] text-[#29574b] px-4 py-2 rounded-full font-bold text-[0.92rem] cursor-pointer">♧ Patients</button>
+            <div className="w-[38px] h-[38px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[0.95rem] shrink-0 hidden md:grid">{getInitials(displayName)}</div>
+            <b className="hidden md:flex flex-col text-sm">{displayName}<small className="text-xs font-normal">Attending Physician</small></b>
           </div>
         </header>
-        <div className="profile-content">
+        <div className="w-full max-w-[1060px] px-4 md:px-12 py-6 md:py-9 pb-16 mx-auto">
           {activeTab === 'appointments' ? (
             <AppointmentsPanel
               appointments={appointments}
