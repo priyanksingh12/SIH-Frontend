@@ -68,6 +68,11 @@ export default function DoctorInfo() {
 
   const activeFacility = selected !== null ? facilities.find((f) => f.id === selected) : null
 
+  const handleMedicalIdChange = (e) => {
+    const filtered = e.target.value.replace(/[^a-zA-Z0-9-]/g, '')
+    setMedicalId(filtered)
+  }
+
   const finish = async (event) => {
     event.preventDefault()
     if (!medicalId.trim() || !activeFacility) return setError('Add your medical registration number and select a facility.')
@@ -155,7 +160,7 @@ export default function DoctorInfo() {
             <label className="block">
               <span className="text-xs font-bold text-[#404845] uppercase tracking-wide">MEDICAL REGISTRATION / MEDICAL ID NUMBER <em className="text-[#e74c3c] not-italic">*</em></span>
               <div className="flex items-center gap-3 mt-2">
-                <input className="flex-1 px-4 py-3 rounded-xl border border-[#dcece5] bg-[#fafdfb] text-[#171d1b] font-semibold text-base focus:outline-none focus:border-[#29574b] focus:ring-2 focus:ring-[#29574b]/10 transition-all" value={medicalId} onChange={(e) => setMedicalId(e.target.value)} placeholder="e.g. MCI-DL-2016-084920" />
+                <input className="flex-1 px-4 py-3 rounded-xl border border-[#dcece5] bg-[#fafdfb] text-[#171d1b] font-semibold text-base focus:outline-none focus:border-[#29574b] focus:ring-2 focus:ring-[#29574b]/10 transition-all" value={medicalId} onChange={handleMedicalIdChange} placeholder="e.g. MCI-DL-2016-084920" />
                 <small className="hidden md:block px-3 py-2 bg-[#f0fdf4] text-[#166534] border border-[#bbf7d0] rounded-lg text-xs font-bold whitespace-nowrap">✓ State Registry Ready</small>
               </div>
               <small className="block mt-2 text-[#59756e] text-xs">ⓘ &nbsp;Accepted formats: Medical Council of India (MCI), National Medical Commission (NMC), or State Medical Registry number.</small>
