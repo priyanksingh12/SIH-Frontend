@@ -32,65 +32,34 @@ function UrgencyBanner({ urgency, specialty, needs }) {
   const isHigh = urgency === "high"
   return (
     <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: "16px",
-        flexWrap: "wrap",
-        padding: "20px 24px",
-        borderRadius: "16px",
-        background: isHigh ? "rgba(186,26,26,0.07)" : "rgba(183,155,8,0.07)",
-        border: `1.5px solid ${isHigh ? "#f9b8b8" : "#f5d97a"}`,
-        marginBottom: "24px",
-      }}
+      className={`flex items-center justify-between gap-4 flex-wrap px-6 py-5 rounded-2xl mb-6 border-2 ${
+        isHigh
+          ? 'bg-[rgba(186,26,26,0.07)] border-[#f9b8b8]'
+          : 'bg-[rgba(183,155,8,0.07)] border-[#f5d97a]'
+      }`}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+      <div className="flex items-center gap-3.5">
         <div
-          style={{
-            width: "48px",
-            height: "48px",
-            borderRadius: "12px",
-            background: isHigh ? "#ba1a1a" : "#8a6d00",
-            display: "grid",
-            placeItems: "center",
-            flexShrink: 0,
-          }}
+          className={`w-12 h-12 rounded-xl grid place-items-center shrink-0 ${isHigh ? 'bg-[#ba1a1a]' : 'bg-[#8a6d00]'}`}
         >
           <AlertTriangle size={22} color="#fff" />
         </div>
         <div>
           <div
-            style={{
-              fontSize: "0.78rem",
-              fontWeight: 800,
-              letterSpacing: "1.2px",
-              textTransform: "uppercase",
-              color: isHigh ? "#ba1a1a" : "#7a5f00",
-              marginBottom: "4px",
-            }}
+            className={`text-xs font-extrabold tracking-widest uppercase mb-1 ${isHigh ? 'text-[#ba1a1a]' : 'text-[#7a5f00]'}`}
           >
-            {isHigh ? "🔴 High Urgency — Seek Immediate Help" : "🟡 Normal Urgency — Clinic Visit Advised"}
+            {isHigh ? "ðŸ”´ High Urgency â€” Seek Immediate Help" : "ðŸŸ¡ Normal Urgency â€” Clinic Visit Advised"}
           </div>
-          <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "#171d1b" }}>
+          <div className="text-base font-bold text-[#171d1b]">
             Recommended Department:{" "}
-            <span style={{ color: isHigh ? "#ba1a1a" : "#5a4300", fontWeight: 800 }}>{specialty}</span>
+            <span className={`font-extrabold ${isHigh ? 'text-[#ba1a1a]' : 'text-[#5a4300]'}`}>{specialty}</span>
           </div>
         </div>
       </div>
       <span
-        style={{
-          padding: "6px 16px",
-          borderRadius: "999px",
-          background: isHigh ? "#ba1a1a" : "#8a6d00",
-          color: "#fff",
-          fontSize: "0.85rem",
-          fontWeight: 700,
-          letterSpacing: "0.5px",
-          flexShrink: 0,
-        }}
+        className={`px-4 py-1.5 rounded-full text-white text-sm font-bold tracking-wide shrink-0 ${isHigh ? 'bg-[#ba1a1a]' : 'bg-[#8a6d00]'}`}
       >
-        {needs === "hospital" ? "🏥 Hospital Required" : "🩺 Doctor / Clinic"}
+        {needs === "hospital" ? "ðŸ¥ Hospital Required" : "ðŸ©º Doctor / Clinic"}
       </span>
     </div>
   )
@@ -101,77 +70,37 @@ function FacilityCard({ facility, index }) {
   const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
   const isHospital = type === "hospital"
   return (
-    <div
-      style={{
-        padding: "20px 24px",
-        borderRadius: "16px",
-        background: "#fff",
-        border: "1px solid #e2eae5",
-        boxShadow: "0 4px 16px rgba(41,87,75,0.06)",
-        display: "flex",
-        gap: "16px",
-        alignItems: "flex-start",
-      }}
-    >
+    <div className="p-5 rounded-2xl bg-white border border-[#e2eae5] shadow-sm flex gap-4 items-start">
       <div
-        style={{
-          width: "44px",
-          height: "44px",
-          borderRadius: "12px",
-          background: isHospital ? "#eaf3ee" : "#f0f4ff",
-          display: "grid",
-          placeItems: "center",
-          flexShrink: 0,
-          border: `1px solid ${isHospital ? "#c4dcd3" : "#c7d3f5"}`,
-        }}
+        className={`w-11 h-11 rounded-xl grid place-items-center shrink-0 border ${
+          isHospital ? 'bg-[#eaf3ee] border-[#c4dcd3]' : 'bg-[#f0f4ff] border-[#c7d3f5]'
+        }`}
       >
         {isHospital ? <Building2 size={20} color="#29574b" /> : <Stethoscope size={20} color="#3a52a3" />}
       </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexWrap: "wrap" }}>
+      <div className="flex-1 min-w-0">
+        <div className="flex justify-between items-start gap-3 flex-wrap">
           <div>
-            <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "#59756e", textTransform: "uppercase", letterSpacing: "0.8px", marginBottom: "4px" }}>
-              #{index + 1} · {type}
+            <div className="text-xs font-bold text-[#59756e] uppercase tracking-widest mb-1">
+              #{index + 1} Â· {type}
             </div>
-            <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 700, color: "#171d1b", lineHeight: 1.3 }}>{name}</h3>
+            <h3 className="m-0 text-lg font-bold text-[#171d1b] leading-snug">{name}</h3>
           </div>
-          <span
-            style={{
-              padding: "5px 14px",
-              borderRadius: "999px",
-              background: "#eaf3ee",
-              color: "#29574b",
-              fontSize: "0.88rem",
-              fontWeight: 800,
-              flexShrink: 0,
-              border: "1px solid #c4dcd3",
-            }}
-          >
+          <span className="px-3.5 py-1 rounded-full bg-[#eaf3ee] text-[#29574b] text-sm font-extrabold shrink-0 border border-[#c4dcd3]">
             {distance_km?.toFixed ? `${distance_km.toFixed(2)} km away` : `${distance_km} km away`}
           </span>
         </div>
         {address && (
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "8px", color: "#59756e", fontSize: "0.92rem" }}>
+          <div className="flex items-center gap-1.5 mt-2 text-[#59756e] text-sm">
             <MapPin size={14} color="#59756e" />
             <span>{address}</span>
           </div>
         )}
-        <div style={{ display: "flex", gap: "10px", marginTop: "14px", flexWrap: "wrap" }}>
+        <div className="flex gap-2.5 mt-3.5 flex-wrap">
           {phone && (
             <a
               href={`tel:${phone}`}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "8px 18px",
-                borderRadius: "999px",
-                background: "#29574b",
-                color: "#00ff88",
-                fontSize: "0.9rem",
-                fontWeight: 700,
-                textDecoration: "none",
-              }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#29574b] text-[#00ff88] text-sm font-bold no-underline"
             >
               <Phone size={14} />
               {phone}
@@ -181,19 +110,7 @@ function FacilityCard({ facility, index }) {
             href={mapsUrl}
             target="_blank"
             rel="noreferrer"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "8px 18px",
-              borderRadius: "999px",
-              background: "#eaf3ee",
-              color: "#29574b",
-              fontSize: "0.9rem",
-              fontWeight: 700,
-              textDecoration: "none",
-              border: "1px solid #c4dcd3",
-            }}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#eaf3ee] text-[#29574b] text-sm font-bold no-underline border border-[#c4dcd3]"
           >
             <Navigation2 size={14} />
             Get Directions
@@ -238,30 +155,30 @@ export default function EmergencyPage() {
   const handleReset = () => { setSymptoms(""); setResult(null); setError(null) }
 
   return (
-    <div className="profile-dashboard-shell">
+    <div className="min-h-screen bg-transparent text-[#171d1b]">
       <TopBar userName={userName} />
-      <div className="profile-dashboard-body">
+      <div className="flex min-h-[calc(100vh-88px)]">
         <Sidebar userName={userName} activeLabel="Emergency" />
-        <main className="profile-workspace" style={{ padding: "36px 48px 80px" }}>
+        <main className="flex-1 min-w-0 w-full max-w-4xl mx-auto px-4 md:px-10 lg:px-12 pt-9 pb-20">
 
           {/* Page Header */}
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "20px", marginBottom: "28px", flexWrap: "wrap" }}>
+          <div className="flex items-start justify-between gap-5 mb-7 flex-wrap">
             <div>
-              <div style={{ color: "#ba1a1a", fontSize: "0.82rem", fontWeight: 800, letterSpacing: "1.2px", textTransform: "uppercase", marginBottom: "6px" }}>
+              <div className="text-[#ba1a1a] text-xs font-extrabold tracking-widest uppercase mb-1.5">
                 PORTAL / PATIENT WORKSPACE / <b>EMERGENCY</b>
               </div>
-              <h1 style={{ margin: 0, font: "700 2.2rem/1.15 'Playfair Display', serif", color: "#171d1b", display: "flex", alignItems: "center", gap: "12px" }}>
-                <Siren size={32} color="#ba1a1a" />
+              <h1 className="m-0 text-3xl md:text-4xl font-bold font-serif text-[#171d1b] flex items-center gap-3">
+                <Siren size={32} color="#ba1a1a" className="shrink-0" />
                 Emergency Medical Finder
               </h1>
-              <p style={{ margin: "8px 0 0", color: "#59756e", fontSize: "1rem", fontWeight: 500 }}>
-                Describe your symptoms — our AI will triage your case and find the nearest appropriate healthcare facility.
+              <p className="mt-2 text-[#59756e] text-base font-medium">
+                Describe your symptoms â€” our AI will triage your case and find the nearest appropriate healthcare facility.
               </p>
             </div>
             {result && (
               <button
                 onClick={handleReset}
-                style={{ display: "inline-flex", alignItems: "center", gap: "7px", padding: "10px 20px", borderRadius: "999px", background: "#eaf3ee", color: "#29574b", fontSize: "0.95rem", fontWeight: 700, border: "1px solid #c4dcd3", cursor: "pointer", flexShrink: 0 }}
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#eaf3ee] text-[#29574b] text-base font-bold border border-[#c4dcd3] cursor-pointer shrink-0"
               >
                 <RefreshCcw size={15} />
                 New Search
@@ -270,15 +187,15 @@ export default function EmergencyPage() {
           </div>
 
           {/* Disclaimer */}
-          <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "14px 18px", borderRadius: "12px", background: "#fffbea", border: "1px solid #f5e19a", marginBottom: "28px", fontSize: "0.92rem", color: "#7a5f00", fontWeight: 500 }}>
-            <Info size={17} style={{ flexShrink: 0, marginTop: "2px" }} />
-            <span><b>For life-threatening emergencies, call 112 immediately.</b> This tool supplements emergency planning — AI triage + live map data may take 15–25 seconds to respond.</span>
+          <div className="flex items-start gap-2.5 px-4 py-3.5 rounded-xl bg-[#fffbea] border border-[#f5e19a] mb-7 text-sm text-[#7a5f00] font-medium">
+            <Info size={17} className="shrink-0 mt-0.5" />
+            <span><b>For life-threatening emergencies, call 112 immediately.</b> This tool supplements emergency planning â€” AI triage + live map data may take 15â€“25 seconds to respond.</span>
           </div>
 
           {/* Input Card */}
           {!result && (
-            <div style={{ padding: "28px", borderRadius: "20px", background: "#fff", border: "1px solid #e2eae5", boxShadow: "0 8px 24px rgba(41,87,75,0.06)", marginBottom: "24px" }}>
-              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 800, color: "#29574b", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "10px" }}>
+            <div className="p-7 rounded-2xl bg-white border border-[#e2eae5] shadow-md mb-6">
+              <label className="block text-xs font-extrabold text-[#29574b] tracking-widest uppercase mb-2.5">
                 Describe Your Symptoms
               </label>
               <textarea
@@ -286,15 +203,13 @@ export default function EmergencyPage() {
                 onChange={(e) => setSymptoms(e.target.value)}
                 placeholder="e.g. Severe chest pain radiating to my left arm, difficulty breathing and dizziness since 20 minutes..."
                 rows={4}
-                style={{ width: "100%", padding: "16px 18px", borderRadius: "12px", border: "1.5px solid #d0e4db", fontSize: "1rem", fontFamily: "Manrope, sans-serif", color: "#171d1b", background: "#f8fbf9", resize: "vertical", outline: "none", boxSizing: "border-box", lineHeight: 1.6 }}
-                onFocus={(e) => (e.target.style.borderColor = "#29574b")}
-                onBlur={(e) => (e.target.style.borderColor = "#d0e4db")}
+                className="w-full px-4 py-4 rounded-xl border-2 border-[#d0e4db] text-base text-[#171d1b] bg-[#f8fbf9] resize-y outline-none leading-relaxed focus:border-[#29574b] disabled:opacity-60 box-border"
                 disabled={loading}
               />
 
               {error && (
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", marginTop: "14px", padding: "12px 16px", borderRadius: "10px", background: "rgba(186,26,26,0.07)", border: "1px solid #f9b8b8", color: "#ba1a1a", fontSize: "0.95rem", fontWeight: 600 }}>
-                  <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: "2px" }} />
+                <div className="flex items-start gap-2 mt-3.5 px-4 py-3 rounded-xl bg-[rgba(186,26,26,0.07)] border border-[#f9b8b8] text-[#ba1a1a] text-sm font-semibold">
+                  <AlertTriangle size={16} className="shrink-0 mt-0.5" />
                   {error}
                 </div>
               )}
@@ -302,12 +217,14 @@ export default function EmergencyPage() {
               <button
                 onClick={handleSearch}
                 disabled={loading}
-                style={{ marginTop: "18px", width: "100%", padding: "16px", borderRadius: "12px", background: loading ? "#a0b5ae" : "#ba1a1a", color: "#fff", fontSize: "1.05rem", fontWeight: 800, border: "none", cursor: loading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", letterSpacing: "0.3px" }}
+                className={`mt-4 w-full py-4 rounded-xl text-white text-base font-extrabold border-0 flex items-center justify-center gap-2.5 tracking-wide transition-colors ${
+                  loading ? 'bg-[#a0b5ae] cursor-not-allowed' : 'bg-[#ba1a1a] cursor-pointer hover:bg-[#991b1b]'
+                }`}
               >
                 {loading ? (
                   <>
-                    <Loader2 size={20} style={{ animation: "spin 1s linear infinite" }} />
-                    Analyzing Symptoms &amp; Finding Facilities…
+                    <Loader2 size={20} className="animate-spin" />
+                    Analyzing Symptoms &amp; Finding Facilitiesâ€¦
                   </>
                 ) : (
                   <>
@@ -318,8 +235,8 @@ export default function EmergencyPage() {
               </button>
 
               {loading && (
-                <p style={{ textAlign: "center", marginTop: "12px", color: "#59756e", fontSize: "0.9rem", fontWeight: 500 }}>
-                  Our AI is triaging your symptoms and querying live map data — this typically takes 15–25 seconds.
+                <p className="text-center mt-3 text-[#59756e] text-sm font-medium">
+                  Our AI is triaging your symptoms and querying live map data â€” this typically takes 15â€“25 seconds.
                 </p>
               )}
             </div>
@@ -330,33 +247,32 @@ export default function EmergencyPage() {
             <div>
               <UrgencyBanner urgency={result.urgency} specialty={result.specialty} needs={result.needs} />
 
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+              <div className="flex items-center gap-2.5 mb-4">
                 <HeartPulse size={20} color="#29574b" />
-                <h2 style={{ margin: 0, fontSize: "1.25rem", fontWeight: 700, color: "#171d1b" }}>
+                <h2 className="m-0 text-xl font-bold text-[#171d1b]">
                   Nearest Facilities ({result.results?.length || 0} found)
                 </h2>
               </div>
 
               {result.results && result.results.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                <div className="flex flex-col gap-3.5">
                   {result.results.map((facility, idx) => (
                     <FacilityCard key={facility.name + idx} facility={facility} index={idx} />
                   ))}
                 </div>
               ) : (
-                <div style={{ padding: "32px", borderRadius: "16px", background: "#fff", border: "1px solid #e2eae5", textAlign: "center", color: "#59756e", fontSize: "1rem", fontWeight: 600 }}>
+                <div className="p-8 rounded-2xl bg-white border border-[#e2eae5] text-center text-[#59756e] text-base font-semibold">
                   No facilities found nearby. Please try again or call 112.
                 </div>
               )}
 
-              <div style={{ marginTop: "24px", padding: "16px 20px", borderRadius: "12px", background: "#f5fbf7", border: "1px solid #e2eae5", fontSize: "0.92rem", color: "#59756e", fontWeight: 500 }}>
-                <b style={{ color: "#29574b" }}>Your reported symptoms:</b> {symptoms}
+              <div className="mt-6 px-5 py-4 rounded-xl bg-[#f5fbf7] border border-[#e2eae5] text-sm text-[#59756e] font-medium">
+                <b className="text-[#29574b]">Your reported symptoms:</b> {symptoms}
               </div>
             </div>
           )}
         </main>
       </div>
-      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   )
 }

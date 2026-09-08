@@ -274,19 +274,22 @@ function AncFlow() {
 
 function CategoryCards() {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {MATERNAL_CATEGORIES.map(({ icon: Icon, category, guideline, accent, bg }) => (
         <div
           key={category}
-          style={{ padding: '18px', borderRadius: '16px', background: '#ffffff', border: '1px solid #e2eae5', boxShadow: '0 6px 18px rgba(41,87,75,0.05)' }}
+          className="p-5 rounded-2xl bg-white border border-[#e2eae5] shadow-sm"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-            <span style={{ width: '36px', height: '36px', borderRadius: '10px', background: bg, color: accent, display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+          <div className="flex items-center gap-3 mb-3">
+            <span
+              className="w-9 h-9 rounded-xl grid place-items-center shrink-0"
+              style={{ background: bg, color: accent }}
+            >
               <Icon size={18} />
             </span>
-            <strong style={{ fontSize: '1rem', color: '#171d1b', fontWeight: 800 }}>{category}</strong>
+            <strong className="text-base text-[#171d1b] font-extrabold">{category}</strong>
           </div>
-          <p style={{ margin: 0, fontSize: '0.92rem', color: '#526e67', lineHeight: 1.55 }}>{guideline}</p>
+          <p className="m-0 text-sm text-[#526e67] leading-relaxed">{guideline}</p>
         </div>
       ))}
     </div>
@@ -299,20 +302,20 @@ export default function ChildMaternalCare() {
   const [activeSection, setActiveSection] = useState('child')
 
   return (
-    <div className="dashboard" id="child-maternal-care">
+    <div className="min-h-screen bg-transparent text-[#171d1b]" id="child-maternal-care">
       <TopBar userName={userName} />
-      <div className="dashboard-body">
+      <div className="flex min-h-[calc(100vh-88px)]">
         <Sidebar userName={userName} activeLabel="Child & Maternal Health" />
-        <main className="dashboard-main" style={{ paddingBottom: '60px' }}>
-          <section style={{ marginBottom: '28px' }}>
-            <h1 style={{ fontSize: '2.6rem', fontWeight: 800, margin: 0, color: '#171d1b', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Baby size={34} style={{ color: '#29574b' }} /> Child &amp; Maternal Health
+        <main className="flex-1 min-w-0 w-full max-w-5xl mx-auto px-4 md:px-10 lg:px-16 pb-16 pt-8">
+          <section className="mb-7">
+            <h1 className="flex items-center gap-3 text-3xl md:text-4xl font-extrabold m-0 text-[#171d1b]">
+              <Baby size={34} className="text-[#29574b] shrink-0" /> Child &amp; Maternal Health
             </h1>
-            <p style={{ fontSize: '1.15rem', marginTop: '8px', color: '#404845', maxWidth: '680px' }}>
+            <p className="text-base md:text-lg mt-2 text-[#404845] max-w-2xl">
               A quick reference for childhood vaccinations and pregnancy care — general awareness guidance based on published IAP and WHO recommendations. Always confirm specific timing with your doctor.
             </p>
 
-            <div style={{ display: 'inline-flex', gap: '8px', background: '#eff5f1', padding: '6px', borderRadius: '14px', border: '1px solid #c0c8c4', marginTop: '20px' }}>
+            <div className="inline-flex gap-2 bg-[#eff5f1] p-1.5 rounded-2xl border border-[#c0c8c4] mt-5">
               {[
                 ['child', 'Child Vaccination'],
                 ['maternal', 'Maternal & Pregnancy Care'],
@@ -320,11 +323,11 @@ export default function ChildMaternalCare() {
                 <button
                   key={key}
                   onClick={() => setActiveSection(key)}
-                  style={{
-                    padding: '10px 20px', borderRadius: '10px', border: 0, fontWeight: 700, fontSize: '0.95rem',
-                    cursor: 'pointer', background: activeSection === key ? '#29574b' : 'transparent',
-                    color: activeSection === key ? '#00ff88' : '#404845', transition: 'all 0.2s ease',
-                  }}
+                  className={`px-4 md:px-5 py-2.5 rounded-xl border-0 font-bold text-sm md:text-base cursor-pointer transition-all duration-200 ${
+                    activeSection === key
+                      ? 'bg-[#29574b] text-[#00ff88]'
+                      : 'bg-transparent text-[#404845]'
+                  }`}
                 >
                   {label}
                 </button>
@@ -333,31 +336,31 @@ export default function ChildMaternalCare() {
           </section>
 
           {activeSection === 'child' ? (
-            <section style={{ padding: '32px', borderRadius: '24px', background: '#fbfaf6', border: '1px solid #eeece5' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                <ShieldCheck size={24} style={{ color: '#29574b' }} />
-                <h2 style={{ fontSize: '1.7rem', fontWeight: 800, margin: 0, color: '#171d1b' }}>Vaccination schedule, birth to 12 years</h2>
+            <section className="p-5 md:p-8 rounded-3xl bg-[#fbfaf6] border border-[#eeece5]">
+              <div className="flex items-center gap-3 mb-2">
+                <ShieldCheck size={24} className="text-[#29574b] shrink-0" />
+                <h2 className="text-2xl md:text-3xl font-extrabold m-0 text-[#171d1b]">Vaccination schedule, birth to 12 years</h2>
               </div>
-              <p style={{ fontSize: '1rem', color: '#526e67', marginBottom: '24px' }}>
+              <p className="text-base text-[#526e67] mb-6">
                 Tap an age milestone to see which vaccines are due and what each one protects against.
               </p>
               <VaccinationFlow />
             </section>
           ) : (
             <>
-              <section style={{ padding: '32px', borderRadius: '24px', background: '#fbfaf6', border: '1px solid #eeece5', marginBottom: '28px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                  <CalendarCheck size={24} style={{ color: '#29574b' }} />
-                  <h2 style={{ fontSize: '1.7rem', fontWeight: 800, margin: 0, color: '#171d1b' }}>Antenatal visit timeline</h2>
+              <section className="p-5 md:p-8 rounded-3xl bg-[#fbfaf6] border border-[#eeece5] mb-7">
+                <div className="flex items-center gap-3 mb-2">
+                  <CalendarCheck size={24} className="text-[#29574b] shrink-0" />
+                  <h2 className="text-2xl md:text-3xl font-extrabold m-0 text-[#171d1b]">Antenatal visit timeline</h2>
                 </div>
-                <p style={{ fontSize: '1rem', color: '#526e67', marginBottom: '24px' }}>
+                <p className="text-base text-[#526e67] mb-6">
                   What each stage of pregnancy checkups typically covers.
                 </p>
                 <AncFlow />
               </section>
 
               <section>
-                <h2 style={{ fontSize: '1.7rem', fontWeight: 800, margin: '0 0 16px', color: '#171d1b' }}>Care guidelines by category</h2>
+                <h2 className="text-2xl md:text-3xl font-extrabold mb-4 text-[#171d1b]">Care guidelines by category</h2>
                 <CategoryCards />
               </section>
             </>
@@ -367,3 +370,4 @@ export default function ChildMaternalCare() {
     </div>
   )
 }
+

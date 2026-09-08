@@ -250,55 +250,55 @@ export default function NearbyHospitals() {
   const mapUrl     = buildMapUrl(filtered, coords?.lat, coords?.lng)
 
   return (
-    <div className="dashboard" id="hospitals-page">
+    <div className="min-h-screen bg-transparent text-[#171d1b]" id="hospitals-page">
       <TopBar userName={userName} />
-      <div className="dashboard-body">
+      <div className="flex min-h-[calc(100vh-88px)]">
         <Sidebar userName={userName} activeLabel="Hospitals" />
 
-        <main className="dashboard-main" style={{ paddingBottom: '60px' }}>
+        <main className="flex-1 min-w-0 w-full max-w-5xl mx-auto px-4 md:px-10 lg:px-16 pb-16 pt-8">
           {/* Page heading */}
-          <div style={{ marginBottom: '28px' }}>
-            <h1 style={{ fontSize: '2.4rem', fontWeight: 800, margin: 0, color: '#171d1b', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Building2 size={32} style={{ color: '#29574b' }} />
+          <div className="mb-7">
+            <h1 className="flex items-center gap-3 text-3xl md:text-4xl font-extrabold m-0 text-[#171d1b]">
+              <Building2 size={32} className="text-[#29574b] shrink-0" />
               Nearby Hospitals &amp; Clinics
             </h1>
-            <p style={{ margin: '6px 0 0', color: '#404845', fontSize: '1.05rem' }}>
+            <p className="mt-2 text-[#404845] text-base">
               Real-time results from community map data (OpenStreetMap). Call ahead to verify availability.
             </p>
           </div>
 
           {/* Location status / manual form */}
           {geo.status === 'loading' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '16px 20px', borderRadius: '16px', background: '#eff5f1', border: '1px solid #c0c8c4', marginBottom: '24px' }}>
-              <Loader2 size={20} style={{ color: '#29574b', animation: 'spin 1s linear infinite' }} />
-              <span style={{ color: '#29574b', fontWeight: 700 }}>Finding your location…</span>
+            <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-[#eff5f1] border border-[#c0c8c4] mb-6">
+              <Loader2 size={20} className="text-[#29574b] animate-spin shrink-0" />
+              <span className="text-[#29574b] font-bold">Finding your location…</span>
             </div>
           )}
 
           {showManual && !coords && (
-            <div style={{ padding: '24px', borderRadius: '20px', background: '#fff8e1', border: '1px solid #ffe082', marginBottom: '24px' }}>
-              <p style={{ margin: '0 0 16px', color: '#7a5c00', fontWeight: 700, fontSize: '1rem' }}>
+            <div className="p-6 rounded-2xl bg-[#fff8e1] border border-[#ffe082] mb-6">
+              <p className="m-0 mb-4 text-[#7a5c00] font-bold text-base">
                 ⚠ Location access was denied. Enter coordinates manually to search.
               </p>
-              <form onSubmit={handleManualSearch} style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                <label style={{ display: 'grid', gap: '4px', fontSize: '0.9rem', fontWeight: 700, color: '#171d1b' }}>
+              <form onSubmit={handleManualSearch} className="flex gap-3 flex-wrap items-end">
+                <label className="grid gap-1 text-sm font-bold text-[#171d1b]">
                   Latitude
                   <input
                     type="number" step="any" placeholder="e.g. 19.076"
                     value={manualLat} onChange={(e) => setManualLat(e.target.value)} required
-                    style={{ padding: '10px 14px', border: '1px solid #c0c8c4', borderRadius: '10px', fontSize: '1rem', width: '160px', background: 'white' }}
+                    className="px-3 py-2.5 border border-[#c0c8c4] rounded-xl text-base w-40 bg-white"
                   />
                 </label>
-                <label style={{ display: 'grid', gap: '4px', fontSize: '0.9rem', fontWeight: 700, color: '#171d1b' }}>
+                <label className="grid gap-1 text-sm font-bold text-[#171d1b]">
                   Longitude
                   <input
                     type="number" step="any" placeholder="e.g. 72.877"
                     value={manualLng} onChange={(e) => setManualLng(e.target.value)} required
-                    style={{ padding: '10px 14px', border: '1px solid #c0c8c4', borderRadius: '10px', fontSize: '1rem', width: '160px', background: 'white' }}
+                    className="px-3 py-2.5 border border-[#c0c8c4] rounded-xl text-base w-40 bg-white"
                   />
                 </label>
                 <button type="submit"
-                  style={{ padding: '12px 24px', borderRadius: '999px', background: '#29574b', color: '#00ff88', fontWeight: 800, fontSize: '1rem', border: 0, cursor: 'pointer' }}>
+                  className="px-6 py-2.5 rounded-full bg-[#29574b] text-[#00ff88] font-extrabold text-base border-0 cursor-pointer">
                   Search
                 </button>
               </form>
@@ -306,11 +306,11 @@ export default function NearbyHospitals() {
           )}
 
           {coords && (
-            <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '24px', alignItems: 'start' }}>
+            <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6 items-start">
 
               {/* ── LEFT: Category filter column ── */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'sticky', top: '24px' }}>
-                <p style={{ margin: '0 0 8px', fontSize: '0.8rem', fontWeight: 800, color: '#717975', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              <div className="flex flex-col gap-2 md:sticky md:top-6">
+                <p className="m-0 mb-2 text-xs font-extrabold text-[#717975] tracking-widest uppercase">
                   Filter by type
                 </p>
                 {CATEGORIES.map(({ key, label, Icon }) => {
@@ -320,27 +320,15 @@ export default function NearbyHospitals() {
                     <button
                       key={key}
                       onClick={() => { setActiveCategory(key); setSelectedPlace(null) }}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: '10px',
-                        padding: '12px 16px', borderRadius: '14px',
-                        border: isActive ? '2px solid #29574b' : '1px solid #dee4e0',
-                        background: isActive ? '#29574b' : 'white',
-                        color: isActive ? '#00ff88' : '#404845',
-                        fontWeight: isActive ? 800 : 600,
-                        fontSize: '0.95rem',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        transition: 'all 0.15s ease',
-                        boxShadow: isActive ? '0 4px 14px rgba(41,87,75,0.2)' : 'none',
-                      }}
+                      className={`flex items-center gap-2.5 px-4 py-3 rounded-2xl text-left text-sm font-semibold cursor-pointer transition-all ${
+                        isActive
+                          ? 'bg-[#29574b] text-[#00ff88] border-2 border-[#29574b] shadow-[0_4px_14px_rgba(41,87,75,0.2)] font-extrabold'
+                          : 'bg-white text-[#404845] border border-[#dee4e0]'
+                      }`}
                     >
-                      <Icon size={16} style={{ flexShrink: 0 }} />
-                      <span style={{ flex: 1 }}>{label}</span>
-                      <span style={{
-                        padding: '2px 8px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700,
-                        background: isActive ? 'rgba(0,255,136,0.2)' : '#eff5f1',
-                        color: isActive ? '#00ff88' : '#526e67',
-                      }}>
+                      <Icon size={16} className="shrink-0" />
+                      <span className="flex-1">{label}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${isActive ? 'bg-[rgba(0,255,136,0.2)] text-[#00ff88]' : 'bg-[#eff5f1] text-[#526e67]'}`}>
                         {count}
                       </span>
                     </button>
