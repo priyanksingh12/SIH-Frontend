@@ -207,7 +207,7 @@ export function TopBar({ userName }) {
     <header className="relative overflow-hidden h-[88px] flex items-center justify-between px-4 md:px-16 py-6 bg-[#f5fbf7] border-b border-[rgba(41,87,75,0.12)]">
       <MedicalShaderBg isNavbar />
       <div className="relative z-10 w-full flex items-center justify-between">
-        <a className="font-serif text-2xl font-bold md:text-[32px] text-[#29574b] no-underline tracking-tight shrink-0" href="#dashboard" onClick={(e) => { e.preventDefault(); navigate('/patient-dashboard') }}>
+        <a style={{ color: '#29574b' }} className="font-serif text-2xl font-bold md:text-[32px] text-[#29574b] brand-text no-underline tracking-tight shrink-0" href="#dashboard" onClick={(e) => { e.preventDefault(); navigate('/patient-dashboard') }}>
           SwasthyaSahay
         </a>
         <div className="flex items-center gap-4">

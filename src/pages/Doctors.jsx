@@ -106,7 +106,8 @@ export default function Doctors() {
             ← <span className="hidden sm:inline">Back to dashboard</span>
           </button>
           <Link
-            className="font-serif text-2xl font-bold md:text-[32px] text-[#29574b] no-underline tracking-tight shrink-0"
+            style={{ color: '#29574b' }}
+            className="font-serif text-2xl font-bold md:text-[32px] text-[#29574b] brand-text no-underline tracking-tight shrink-0"
             to="/patient-dashboard"
             onClick={() => window.sessionStorage.removeItem('SwasthyaSahay-doctors-entry')}
           >

@@ -43,7 +43,7 @@ function DoctorSidebar({ doctorName, facilityName }) {
   return (
     <aside className="w-[260px] shrink-0 hidden md:flex flex-col p-6 bg-transparent border-r border-[rgba(41,87,75,0.12)] min-h-screen">
       <div className="pb-6">
-        <div className="font-serif text-2xl font-bold text-[#29574b] tracking-tight">SwasthyaSahay</div>
+        <div style={{ color: '#29574b' }} className="font-serif text-2xl font-bold text-[#29574b] brand-text tracking-tight">SwasthyaSahay</div>
         <small className="block text-[10px] font-sans text-[#59756e] font-bold tracking-widest uppercase">CLINICAL SUITE</small>
       </div>
       <div className="flex items-center gap-2 p-3 border border-[#e2eae5] rounded-2xl bg-white/50 backdrop-blur-sm">
