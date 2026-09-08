@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { signup } from '../api/authApi.js'
 
@@ -80,40 +80,41 @@ export default function SignUp() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col md:flex-row bg-[#fcfdfc] text-[#1b342e]">
-      {/* ── Left hero panel ── */}
-      <section className="relative hidden md:flex md:w-1/2 min-h-screen flex-col justify-between p-16 overflow-hidden text-white bg-[rgba(53,89,79,0.95)]">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${clinicImage})` }} />
-        <div className="absolute inset-0 bg-[rgba(41,87,75,0.85)]" />
-        <header className="relative z-10 flex items-center gap-4">
-          <div className="grid place-items-center w-10 h-10 rounded-full bg-[#1b342e] text-white text-lg font-bold">⊙</div>
-          <div>
-            <strong className="block text-xl leading-tight">SwasthyaSahay</strong>
-            <small className="block text-[10px] tracking-widest opacity-80 uppercase">CONNECTED HEALTHCARE ECOSYSTEM</small>
+    <main className="min-h-screen grid place-items-center p-6 bg-transparent text-[#1b342e]">
+      <section className="w-full max-w-[1440px] min-h-[640px] flex flex-col md:flex-row overflow-hidden border border-[rgba(229,235,231,0.8)] rounded-[28px]">
+        {/* ── Left hero panel ── */}
+        <section className="relative md:flex-1 flex flex-col justify-between p-8 md:p-14 overflow-hidden text-white min-h-[300px] order-1 md:order-none">
+          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${clinicImage})` }} />
+          <div className="absolute inset-0 bg-[rgba(41,87,75,0.85)]" />
+          <header className="relative z-10 flex items-center gap-4">
+            <div className="grid place-items-center w-10 h-10 rounded-full bg-[#1b342e] text-white text-lg font-bold">⊙</div>
+            <div>
+              <strong className="block text-xl leading-tight">SwasthyaSahay</strong>
+              <small className="block text-[10px] tracking-widest opacity-80 uppercase">CONNECTED HEALTHCARE ECOSYSTEM</small>
+            </div>
+            <button type="button" onClick={backToLanding} className="ml-auto bg-transparent border-none text-white text-sm font-semibold cursor-pointer hover:underline flex items-center gap-2">
+              Back to website <span>→</span>
+            </button>
+          </header>
+          <div className="relative z-10 mt-12 md:mt-0">
+            <blockquote className="text-2xl md:text-4xl font-serif leading-tight font-medium max-w-[500px]">
+              "Connecting patients, community clinicians, and tertiary hospitals into one synchronized care ecosystem."
+            </blockquote>
+            <p className="mt-8 text-[11px] font-bold tracking-widest flex items-center gap-3">
+              <i className="w-2 h-2 rounded-full bg-[#00ff88]" /> EMPOWERING OVER 120,000 UNIFIED HEALTH RECORDS SECURELY ACROSS CLINICAL NETWORKS
+            </p>
+            <div className="flex gap-2 mt-6">
+              <b className="w-8 h-1 bg-white rounded-full opacity-100" />
+              <i className="w-2 h-1 bg-white rounded-full opacity-30" />
+              <i className="w-2 h-1 bg-white rounded-full opacity-30" />
+            </div>
           </div>
-          <button type="button" onClick={backToLanding} className="ml-auto bg-transparent border-none text-white text-sm font-semibold cursor-pointer hover:underline flex items-center gap-2">
-            Back to website <span>→</span>
-          </button>
-        </header>
-        <div className="relative z-10">
-          <blockquote className="text-2xl md:text-4xl font-serif leading-tight font-medium max-w-[500px]">
-            "Connecting patients, community clinicians, and tertiary hospitals into one synchronized care ecosystem."
-          </blockquote>
-          <p className="mt-8 text-[11px] font-bold tracking-widest flex items-center gap-3">
-            <i className="w-2 h-2 rounded-full bg-[#00ff88]" /> EMPOWERING OVER 120,000 UNIFIED HEALTH RECORDS SECURELY ACROSS CLINICAL NETWORKS
-          </p>
-          <div className="flex gap-2 mt-6">
-            <b className="w-8 h-1 bg-white rounded-full opacity-100" />
-            <i className="w-2 h-1 bg-white rounded-full opacity-30" />
-            <i className="w-2 h-1 bg-white rounded-full opacity-30" />
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ── Right form panel ── */}
-      <section className="w-full md:w-1/2 min-h-screen grid place-items-center p-8 md:p-16 overflow-auto bg-transparent relative">
-        <div className="absolute top-6 right-8 text-xs font-bold tracking-widest border border-[#d5dbd8] rounded-full px-4 py-2 cursor-pointer bg-white hidden md:block text-[#1b342e]">◎ &nbsp; English (IN) &nbsp;⌄</div>
-        <form className="w-full max-w-[480px] grid gap-5" onSubmit={submit}>
+        {/* ── Right form panel ── */}
+        <section className="relative w-full md:w-1/2 flex flex-col justify-between p-8 md:p-12 overflow-auto bg-[rgba(252,253,252,0.92)] order-2 md:order-none">
+          <div className="absolute top-6 right-8 text-xs font-bold tracking-widest border border-[#d5dbd8] rounded-full px-4 py-2 cursor-pointer bg-white hidden md:block text-[#1b342e]">◎ &nbsp; English (IN) &nbsp;⌄</div>
+          <form className="w-full max-w-[480px] mx-auto grid gap-5" onSubmit={submit}>
           <header className="mb-2">
             <h1 className="text-3xl md:text-4xl font-serif text-[#1b342e]">Create your account</h1>
             <p className="text-[#59756e] mt-2 text-[15px]">Personalize your healthcare experience.</p>
@@ -124,21 +125,35 @@ export default function SignUp() {
             <div className="flex gap-4">
               <button
                 type="button"
-                className={`flex-1 grid justify-items-center gap-1 min-h-[76px] p-3 border rounded-xl text-[#1b342e] transition-all cursor-pointer ${role === 'patient' ? 'border-2 border-[#426f63] bg-[#f4faf7]' : 'border-[#e2e8e5] bg-white hover:border-[#b0b8b5]'}`}
+                className={`flex-1 relative grid justify-items-center gap-1 min-h-[82px] p-3.5 border rounded-2xl transition-all cursor-pointer ${
+                  role === 'patient'
+                    ? 'border-2 border-[#29574b] bg-[#daf3e4] text-[#17382f] shadow-sm ring-2 ring-[#29574b]/25 font-semibold scale-[1.02]'
+                    : 'border border-[#d5dbd8] bg-white text-[#59756e] hover:border-[#29574b]/50 hover:bg-[#f9fbf9]'
+                }`}
                 onClick={() => setRole('patient')}
               >
-                <span className="text-xl">♙</span>
-                <strong className="text-[13px]">Patient</strong>
-                <small className="text-[11px] opacity-60">Personal health</small>
+                {role === 'patient' && (
+                  <span className="absolute top-2 right-2.5 w-4 h-4 rounded-full bg-[#29574b] text-[#00ff88] text-[10px] font-extrabold grid place-items-center">✓</span>
+                )}
+                <span className={`text-xl ${role === 'patient' ? 'text-[#29574b] font-bold' : ''}`}>♙</span>
+                <strong className={`text-[14px] ${role === 'patient' ? 'text-[#17382f] font-bold' : 'text-[#1b342e]'}`}>Patient</strong>
+                <small className={`text-[11px] ${role === 'patient' ? 'text-[#29574b] font-medium' : 'opacity-60'}`}>Personal health</small>
               </button>
               <button
                 type="button"
-                className={`flex-1 grid justify-items-center gap-1 min-h-[76px] p-3 border rounded-xl text-[#1b342e] transition-all cursor-pointer ${role === 'doctor' ? 'border-2 border-[#426f63] bg-[#f4faf7]' : 'border-[#e2e8e5] bg-white hover:border-[#b0b8b5]'}`}
+                className={`flex-1 relative grid justify-items-center gap-1 min-h-[82px] p-3.5 border rounded-2xl transition-all cursor-pointer ${
+                  role === 'doctor'
+                    ? 'border-2 border-[#29574b] bg-[#daf3e4] text-[#17382f] shadow-sm ring-2 ring-[#29574b]/25 font-semibold scale-[1.02]'
+                    : 'border border-[#d5dbd8] bg-white text-[#59756e] hover:border-[#29574b]/50 hover:bg-[#f9fbf9]'
+                }`}
                 onClick={() => setRole('doctor')}
               >
-                <span className="text-xl">▣</span>
-                <strong className="text-[13px]">Doctor</strong>
-                <small className="text-[11px] opacity-60">Patient care</small>
+                {role === 'doctor' && (
+                  <span className="absolute top-2 right-2.5 w-4 h-4 rounded-full bg-[#29574b] text-[#00ff88] text-[10px] font-extrabold grid place-items-center">✓</span>
+                )}
+                <span className={`text-xl ${role === 'doctor' ? 'text-[#29574b] font-bold' : ''}`}>▣</span>
+                <strong className={`text-[14px] ${role === 'doctor' ? 'text-[#17382f] font-bold' : 'text-[#1b342e]'}`}>Doctor</strong>
+                <small className={`text-[11px] ${role === 'doctor' ? 'text-[#29574b] font-medium' : 'opacity-60'}`}>Patient care</small>
               </button>
             </div>
           </fieldset>
@@ -282,6 +297,7 @@ export default function SignUp() {
           </p>
         </form>
       </section>
-    </main>
+    </section>
+  </main>
   )
 }
