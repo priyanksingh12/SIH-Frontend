@@ -13,7 +13,35 @@ import {
   HeartPulse,
   RefreshCcw,
   Info,
+  Activity,
 } from "lucide-react"
+
+const BODY_AREAS = [
+  {
+    id: "heart",
+    label: "Heart",
+    icon: "🫀",
+    symptomText: "Severe chest pain, heavy pressure, radiating arm pain or sudden cardiac distress (Heart emergency)",
+  },
+  {
+    id: "lungs",
+    label: "Lungs",
+    icon: "🫁",
+    symptomText: "Acute shortness of breath, severe breathing difficulty, wheezing or respiratory failure (Lungs emergency)",
+  },
+  {
+    id: "liver",
+    label: "Liver",
+    icon: "🩺",
+    symptomText: "Severe acute upper right abdominal pain, sudden jaundice or hepatic distress (Liver emergency)",
+  },
+  {
+    id: "shoulder",
+    label: "Shoulder",
+    icon: "🦴",
+    symptomText: "Acute shoulder dislocation, severe fracture, joint trauma or intense shoulder pain (Shoulder emergency)",
+  },
+]
 
 const BACKEND_URL = import.meta.env.VITE_API_BASE_URL || "https://sih-otuc.onrender.com"
 
@@ -125,18 +153,28 @@ export default function EmergencyPage() {
   const user = getStoredUser()
   const userName = user?.name || "Patient"
   const [symptoms, setSymptoms] = useState("")
+  const [selectedArea, setSelectedArea] = useState(null)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
 
-  const handleSearch = () => {
-    if (!symptoms.trim()) { setError("Please describe your symptoms before searching."); return }
-    if (!navigator.geolocation) { setError("Geolocation is not supported by your browser."); return }
-    setLoading(true); setError(null); setResult(null)
+  const triggerSearch = (queryText) => {
+    const textToSearch = (queryText !== undefined ? queryText : symptoms).trim()
+    if (!textToSearch) {
+      setError("Please describe your symptoms or select an affected area before searching.")
+      return
+    }
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser.")
+      return
+    }
+    setLoading(true)
+    setError(null)
+    setResult(null)
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
-          const data = await fetchNearbyMedicalHelp(symptoms, pos.coords.latitude, pos.coords.longitude)
+          const data = await fetchNearbyMedicalHelp(textToSearch, pos.coords.latitude, pos.coords.longitude)
           setResult(data)
         } catch (err) {
           setError(err.message || "Something went wrong. Please try again.")
@@ -152,7 +190,22 @@ export default function EmergencyPage() {
     )
   }
 
-  const handleReset = () => { setSymptoms(""); setResult(null); setError(null) }
+  const handleSelectArea = (area) => {
+    setSelectedArea(area.id)
+    setSymptoms(area.symptomText)
+    triggerSearch(area.symptomText)
+  }
+
+  const handleSearch = () => {
+    triggerSearch()
+  }
+
+  const handleReset = () => {
+    setSymptoms("")
+    setSelectedArea(null)
+    setResult(null)
+    setError(null)
+  }
 
   return (
     <div className="min-h-screen bg-transparent text-[#171d1b]">
@@ -195,17 +248,61 @@ export default function EmergencyPage() {
           {/* Input Card */}
           {!result && (
             <div className="p-7 rounded-2xl bg-white border border-[#e2eae5] shadow-md mb-6">
-              <label className="block text-xs font-extrabold text-[#29574b] tracking-widest uppercase mb-2.5">
-                Describe Your Symptoms
-              </label>
-              <textarea
-                value={symptoms}
-                onChange={(e) => setSymptoms(e.target.value)}
-                placeholder="e.g. Severe chest pain radiating to my left arm, difficulty breathing and dizziness since 20 minutes..."
-                rows={4}
-                className="w-full px-4 py-4 rounded-xl border-2 border-[#d0e4db] text-base text-[#171d1b] bg-[#f8fbf9] resize-y outline-none leading-relaxed focus:border-[#29574b] disabled:opacity-60 box-border"
-                disabled={loading}
-              />
+              {/* Quick Select by Affected Organ / Body Area */}
+              <div className="mb-6">
+                <label className="block text-xs font-extrabold text-[#ba1a1a] tracking-widest uppercase mb-1.5 flex items-center gap-1.5">
+                  <Activity size={16} /> Quick Select Affected Organ / Body Area
+                </label>
+                <p className="text-xs text-[#59756e] font-semibold mb-3">
+                  Click any organ below to immediately triage and find the nearest emergency medical facility:
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {BODY_AREAS.map((area) => {
+                    const isSelected = selectedArea === area.id
+                    return (
+                      <label
+                        key={area.id}
+                        className={`flex items-center gap-2.5 p-3.5 rounded-xl border-2 cursor-pointer transition-all select-none ${
+                          isSelected
+                            ? "border-[#ba1a1a] bg-[#fff5f5] text-[#ba1a1a] shadow-sm ring-2 ring-[#ba1a1a]/20"
+                            : "border-[#d0e4db] bg-[#f8fbf9] text-[#171d1b] hover:border-[#29574b]/60 hover:bg-white"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="emergency-body-area"
+                          value={area.id}
+                          checked={isSelected}
+                          onChange={() => handleSelectArea(area)}
+                          disabled={loading}
+                          className="accent-[#ba1a1a] w-4 h-4 cursor-pointer shrink-0"
+                        />
+                        <span className="font-bold text-sm flex items-center gap-2">
+                          <span className="text-lg">{area.icon}</span>
+                          <span>{area.label}</span>
+                        </span>
+                      </label>
+                    )
+                  })}
+                </div>
+              </div>
+
+              <div className="border-t border-[#e2eae5] pt-5">
+                <label className="block text-xs font-extrabold text-[#29574b] tracking-widest uppercase mb-2.5">
+                  Describe Your Symptoms
+                </label>
+                <textarea
+                  value={symptoms}
+                  onChange={(e) => {
+                    setSymptoms(e.target.value)
+                    if (selectedArea) setSelectedArea(null)
+                  }}
+                  placeholder="e.g. Severe chest pain radiating to my left arm, difficulty breathing and dizziness since 20 minutes..."
+                  rows={4}
+                  className="w-full px-4 py-4 rounded-xl border-2 border-[#d0e4db] text-base text-[#171d1b] bg-[#f8fbf9] resize-y outline-none leading-relaxed focus:border-[#29574b] disabled:opacity-60 box-border"
+                  disabled={loading}
+                />
+              </div>
 
               {error && (
                 <div className="flex items-start gap-2 mt-3.5 px-4 py-3 rounded-xl bg-[rgba(186,26,26,0.07)] border border-[#f9b8b8] text-[#ba1a1a] text-sm font-semibold">
