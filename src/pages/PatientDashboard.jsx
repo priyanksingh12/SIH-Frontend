@@ -44,6 +44,7 @@ import { getAppointments } from '../api/appointmentApi.js'
 import ChatModal from '../components/ChatModal.jsx'
 import VideoCallModal from '../components/VideoCallModal.jsx'
 import IncomingCallModal from '../components/IncomingCallModal.jsx'
+import MedicalShaderBg from '../components/MedicalShaderBg'
 import { useCallListener } from '../hooks/useDoctorCallListener.js'
 
 const navItems = [
@@ -203,24 +204,26 @@ export function TopBar({ userName }) {
   const navigate = useNavigate()
   const initials = userName.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'PT'
   return (
-    <header className="h-[88px] flex items-center justify-between px-4 md:px-16 py-6 bg-[#f5fbf7] border-b border-[rgba(41,87,75,0.12)]">
-      <a className="text-[#29574b] font-bold text-3xl font-serif flex items-center gap-2 no-underline" href="#dashboard" onClick={(e) => { e.preventDefault(); navigate('/patient-dashboard') }}>
-        <span className="grid place-items-center w-7 h-7 rounded-lg bg-[#00ff88] text-[#171d1b] font-extrabold text-xl leading-none">✚</span>
-        <span>SwasthyaSahay</span>
-      </a>
-      <div className="flex items-center gap-4">
-        <motion.button onClick={() => navigate('/health-assistant')} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-2 px-5 py-2.5 rounded-full text-white bg-[#29574b] font-semibold text-base">
-          <img src={aiAssistantRobotIcon} alt="" className="w-5 h-5" /> AI Assistant
-        </motion.button>
-        <button className="relative grid place-items-center w-8 h-10 p-2 rounded-full bg-transparent" aria-label="Notifications">
-          <Bell size={16} />
-          <span />
-        </button>
-        <div className="flex items-center gap-3 pl-2 border-l border-[rgba(41,87,75,0.2)] text-[#171d1b] text-sm font-semibold cursor-pointer" onClick={() => navigate('/patient-profile')}>
-          <div className="w-9 h-9 rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-base">
-            {initials}
+    <header className="relative overflow-hidden h-[88px] flex items-center justify-between px-4 md:px-16 py-6 bg-[#f5fbf7] border-b border-[rgba(41,87,75,0.12)]">
+      <MedicalShaderBg isNavbar />
+      <div className="relative z-10 w-full flex items-center justify-between">
+        <a className="font-serif text-2xl font-bold md:text-[32px] text-[#29574b] no-underline tracking-tight shrink-0" href="#dashboard" onClick={(e) => { e.preventDefault(); navigate('/patient-dashboard') }}>
+          SwasthyaSahay
+        </a>
+        <div className="flex items-center gap-4">
+          <motion.button onClick={() => navigate('/health-assistant')} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-2 px-5 py-2.5 rounded-full text-white bg-[#29574b] font-semibold text-base shadow-sm">
+            <img src={aiAssistantRobotIcon} alt="" className="w-5 h-5" /> AI Assistant
+          </motion.button>
+          <button className="relative grid place-items-center w-8 h-10 p-2 rounded-full bg-transparent" aria-label="Notifications">
+            <Bell size={16} />
+            <span />
+          </button>
+          <div className="flex items-center gap-3 pl-2 border-l border-[rgba(41,87,75,0.2)] text-[#171d1b] text-sm font-semibold cursor-pointer" onClick={() => navigate('/patient-profile')}>
+            <div className="w-9 h-9 rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-base">
+              {initials}
+            </div>
+            <span className="font-bold text-base text-[#171d1b]">{userName}</span>
           </div>
-          <span className="font-bold text-base text-[#171d1b]">{userName}</span>
         </div>
       </div>
     </header>

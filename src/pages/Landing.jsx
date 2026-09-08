@@ -42,9 +42,10 @@ function SecondaryButton({ children, href = '#features', className = '' }) {
 function Navbar() {
 	const navigate = useNavigate()
 	return (
-		<nav className="fixed inset-x-0 top-0 z-50 border-b border-[#29574b]/10 bg-[#f5fbf7] shadow-xs px-5 py-4 sm:px-8 lg:px-16">
-			<div className="mx-auto flex max-w-[1152px] items-center justify-between">
-				<a href="#top" className="font-serif text-2xl font-bold sm:text-[28px] text-[#29574b] no-underline tracking-tight shrink-0">
+		<nav className="fixed inset-x-0 top-0 z-50 border-b border-[#29574b]/15 bg-[#f5fbf7] overflow-hidden shadow-xs px-5 py-4 sm:px-8 lg:px-16">
+			<MedicalShaderBg isNavbar />
+			<div className="relative z-10 mx-auto flex max-w-[1152px] items-center justify-between">
+				<a href="#top" className="font-serif text-2xl font-bold sm:text-[32px] text-[#29574b] no-underline tracking-tight shrink-0">
 					SwasthyaSahay
 				</a>
 				<div className="hidden lg:flex items-center gap-8 text-sm font-semibold text-[#404845]">

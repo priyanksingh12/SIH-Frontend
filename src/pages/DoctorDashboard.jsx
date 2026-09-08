@@ -6,6 +6,7 @@ import { getAppointments, approveAppointment, rejectAppointment, completeAppoint
 import ChatModal from '../components/ChatModal.jsx'
 import VideoCallModal from '../components/VideoCallModal.jsx'
 import IncomingCallModal from '../components/IncomingCallModal.jsx'
+import MedicalShaderBg from '../components/MedicalShaderBg'
 import { useDoctorCallListener } from '../hooks/useDoctorCallListener.js'
 
 // Helpers
@@ -44,9 +45,9 @@ function DoctorSidebar({ doctorName, specialization, facilityName, activeTab, se
   const navigate = useNavigate()
   return (
     <aside className="w-[260px] shrink-0 hidden md:flex flex-col p-6 bg-transparent border-r border-[rgba(41,87,75,0.12)] min-h-screen">
-      <div className="flex items-center gap-3 pb-6">
-        <span className="text-[1.2rem]">✚</span>
-        <div><strong>SwasthyaSahay</strong><small className="block">CLINICAL SUITE</small></div>
+      <div className="pb-6">
+        <div className="font-serif text-2xl font-bold text-[#29574b] tracking-tight">SwasthyaSahay</div>
+        <small className="block text-[10px] font-sans text-[#59756e] font-bold tracking-widest uppercase">CLINICAL SUITE</small>
       </div>
       <div className="flex items-center gap-2 p-3 border border-[#e2eae5] rounded-2xl bg-white/50 backdrop-blur-sm">
         <div className="w-[46px] h-[46px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[1.05rem] shrink-0">
@@ -465,15 +466,18 @@ export default function DoctorDashboard() {
     <div className="min-h-screen flex bg-transparent text-[#171d1b]">
       <DoctorSidebar doctorName={displayName} specialization={specialization} facilityName={facilityName} activeTab={activeTab} setActiveTab={setActiveTab} />
       <main className="flex-1 min-w-0 w-full">
-        <header className="h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[rgba(41,87,75,0.12)] bg-[#f5fbf7]">
-          <div className="flex flex-col">
-            <span className="text-sm font-bold text-[#171d1b]">▣ &nbsp; Secure Session</span>
-            <small className="text-xs text-[#59756e]">{doctorLoading ? 'Loading profile…' : doctor?.verified ? 'Verified · State Medical Registry' : 'Pending Verification'}</small>
-          </div>
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/doctor-patients')} className="border-0 bg-[#eaf3ee] text-[#29574b] px-4 py-2 rounded-full font-bold text-[0.92rem] cursor-pointer">♧ Patients</button>
-            <div className="w-[38px] h-[38px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[0.95rem] shrink-0 hidden md:grid">{getInitials(displayName)}</div>
-            <b className="hidden md:flex flex-col text-sm">{displayName}<small className="text-xs font-normal">Attending Physician</small></b>
+        <header className="relative overflow-hidden h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[rgba(41,87,75,0.12)] bg-[#f5fbf7]">
+          <MedicalShaderBg isNavbar />
+          <div className="relative z-10 w-full flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-sm font-bold text-[#171d1b]">▣ &nbsp; Secure Session</span>
+              <small className="text-xs text-[#59756e]">{doctorLoading ? 'Loading profile…' : doctor?.verified ? 'Verified · State Medical Registry' : 'Pending Verification'}</small>
+            </div>
+            <div className="flex items-center gap-3">
+              <button onClick={() => navigate('/doctor-patients')} className="border-0 bg-[#eaf3ee] text-[#29574b] px-4 py-2 rounded-full font-bold text-[0.92rem] cursor-pointer">♧ Patients</button>
+              <div className="w-[38px] h-[38px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[0.95rem] shrink-0 hidden md:grid">{getInitials(displayName)}</div>
+              <b className="hidden md:flex flex-col text-sm">{displayName}<small className="text-xs font-normal">Attending Physician</small></b>
+            </div>
           </div>
         </header>
         <div className="w-full max-w-[1060px] px-4 md:px-12 py-6 md:py-9 pb-16 mx-auto">

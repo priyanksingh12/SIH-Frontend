@@ -1,4 +1,4 @@
-﻿import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { getStoredUser } from '../api/apiClient.js'
 
 const confirmationImage = 'https://www.figma.com/api/mcp/asset/b4f97d49-77dd-45a3-9dfa-6d13057bc63e.png'
@@ -27,12 +27,9 @@ export default function AccountCreated() {
       <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${confirmationImage})` }} />
       <div className="absolute inset-0 bg-[rgba(41,87,75,0.85)]" />
       <header className="absolute top-8 left-8 right-8 flex justify-between items-center z-10">
-        <div className="flex items-center gap-3">
-          <span className="grid place-items-center w-8 h-8 rounded-full bg-[#1b342e] text-white text-sm font-bold">＋</span>
-          <section className="flex flex-col">
-            <strong className="text-lg leading-tight">SwasthyaSahay</strong>
-            <small className="text-[9px] tracking-widest opacity-80 uppercase">WELCOME TO THE NETWORK</small>
-          </section>
+        <div>
+          <div className="font-serif text-2xl font-bold tracking-tight text-white">SwasthyaSahay</div>
+          <small className="text-[9px] tracking-widest opacity-80 uppercase block">WELCOME TO THE NETWORK</small>
         </div>
         <button type="button" onClick={() => navigate('/')} className="bg-transparent border-none text-white font-semibold text-sm cursor-pointer hover:underline hidden md:block">← &nbsp;Back to website</button>
       </header>

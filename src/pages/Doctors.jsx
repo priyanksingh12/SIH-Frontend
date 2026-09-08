@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { getDoctors } from '../api/doctorApi.js'
 import { bookAppointment } from '../api/appointmentApi.js'
+import MedicalShaderBg from '../components/MedicalShaderBg'
 
 const toneMap = ['sage', 'blue', 'sand', 'rose', 'mint', 'lilac']
 
@@ -95,21 +96,24 @@ export default function Doctors() {
 
   return (
     <div className="min-h-screen bg-transparent text-[#171d1b]">
-      <header className="flex items-center justify-between px-4 md:px-12 py-4 border-b border-[rgba(41,87,75,0.12)] bg-[#f5fbf7] gap-4 flex-wrap">
-        <button
-          onClick={leavePage}
-          className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#c4dcd3] bg-[#eaf3ee] text-[#29574b] font-bold text-sm cursor-pointer"
-        >
-          ← <span className="hidden sm:inline">Back to dashboard</span>
-        </button>
-        <Link
-          className="text-[#29574b] font-bold text-2xl md:text-3xl font-serif no-underline"
-          to="/patient-dashboard"
-          onClick={() => window.sessionStorage.removeItem('SwasthyaSahay-doctors-entry')}
-        >
-          SwasthyaSahay
-        </Link>
-        <span className="text-xs font-bold text-[#717975] tracking-widest uppercase hidden sm:block">PATIENT CARE NETWORK</span>
+      <header className="relative overflow-hidden flex items-center justify-between px-4 md:px-12 py-4 border-b border-[rgba(41,87,75,0.12)] bg-[#f5fbf7] gap-4">
+        <MedicalShaderBg isNavbar />
+        <div className="relative z-10 w-full flex items-center justify-between gap-4">
+          <button
+            onClick={leavePage}
+            className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#c4dcd3] bg-[#eaf3ee] text-[#29574b] font-bold text-sm cursor-pointer"
+          >
+            ← <span className="hidden sm:inline">Back to dashboard</span>
+          </button>
+          <Link
+            className="font-serif text-2xl font-bold md:text-[32px] text-[#29574b] no-underline tracking-tight shrink-0"
+            to="/patient-dashboard"
+            onClick={() => window.sessionStorage.removeItem('SwasthyaSahay-doctors-entry')}
+          >
+            SwasthyaSahay
+          </Link>
+          <span className="text-xs font-bold text-[#717975] tracking-widest uppercase hidden sm:block">PATIENT CARE NETWORK</span>
+        </div>
       </header>
 
       <main className="w-full max-w-6xl mx-auto px-4 md:px-10 lg:px-16 py-8 pb-16">

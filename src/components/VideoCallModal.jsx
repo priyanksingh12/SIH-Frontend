@@ -46,6 +46,10 @@ export default function VideoCallModal({
   const socketRef = useRef(null)
   const iceCandidatesQueueRef = useRef([])
   const timerRef = useRef(null)
+  const roomJoinedRef = useRef(false)
+  const pendingOutgoingAnswerRef = useRef(null)
+  const pendingOutgoingOfferRef = useRef(null)
+  const pendingOutgoingCandidatesRef = useRef([])
 
   const appointmentId = appointment?.id
   const isDoctor = currentUser?.role === 'doctor'
@@ -77,8 +81,62 @@ export default function VideoCallModal({
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
   }
 
+  const flushSignaling = () => {
+    const socket = socketRef.current
+    if (!roomJoinedRef.current || !socket || !socket.connected) return
+
+    if (pendingOutgoingOfferRef.current) {
+      console.log('[Video] Emitting queued outgoing offer')
+      socket.emit('offer', pendingOutgoingOfferRef.current)
+      pendingOutgoingOfferRef.current = null
+    }
+
+    if (pendingOutgoingAnswerRef.current) {
+      console.log('[Video] Emitting queued outgoing answer')
+      socket.emit('answer', pendingOutgoingAnswerRef.current)
+      pendingOutgoingAnswerRef.current = null
+    }
+
+    while (pendingOutgoingCandidatesRef.current.length > 0) {
+      const cand = pendingOutgoingCandidatesRef.current.shift()
+      console.log('[Video] Emitting queued outgoing candidate')
+      socket.emit('ice-candidate', cand)
+    }
+  }
+
+  const emitAnswer = (answerSdp) => {
+    const payload = {
+      appointment_id: appointmentId,
+      sdp: answerSdp,
+    }
+    if (roomJoinedRef.current && socketRef.current?.connected) {
+      console.log('[Video] Emitting SDP answer directly')
+      socketRef.current.emit('answer', payload)
+    } else {
+      console.log('[Video] Room not joined yet, queueing SDP answer')
+      pendingOutgoingAnswerRef.current = payload
+    }
+  }
+
+  const emitIceCandidate = (candidate) => {
+    const payload = {
+      appointment_id: appointmentId,
+      candidate,
+    }
+    if (roomJoinedRef.current && socketRef.current?.connected) {
+      socketRef.current.emit('ice-candidate', payload)
+    } else {
+      console.log('[Video] Room not joined yet, queueing outgoing ICE candidate')
+      pendingOutgoingCandidatesRef.current.push(payload)
+    }
+  }
+
   // Cleanup helper
   const cleanUpCall = () => {
+    roomJoinedRef.current = false
+    pendingOutgoingAnswerRef.current = null
+    pendingOutgoingOfferRef.current = null
+    pendingOutgoingCandidatesRef.current = []
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => track.stop())
       localStreamRef.current = null
@@ -126,8 +184,16 @@ export default function VideoCallModal({
 
         // Handle remote stream tracks
         pc.ontrack = (event) => {
-          if (remoteVideoRef.current && event.streams && event.streams[0]) {
-            remoteVideoRef.current.srcObject = event.streams[0]
+          console.log('[Video] ontrack track received:', event.track.kind)
+          if (remoteVideoRef.current) {
+            if (event.streams && event.streams[0]) {
+              remoteVideoRef.current.srcObject = event.streams[0]
+            } else {
+              if (!remoteVideoRef.current.srcObject) {
+                remoteVideoRef.current.srcObject = new MediaStream()
+              }
+              remoteVideoRef.current.srcObject.addTrack(event.track)
+            }
             setCallStatus('connected')
           }
         }
@@ -135,16 +201,14 @@ export default function VideoCallModal({
         // Handle ICE candidates — emit to server
         pc.onicecandidate = (event) => {
           if (event.candidate && socketRef.current) {
-            socketRef.current.emit('ice-candidate', {
-              appointment_id: appointmentId,
-              candidate: event.candidate,
-            })
+            emitIceCandidate(event.candidate)
           }
         }
 
         // Helper: join the room
         const joinRoom = () => {
           if (!isCancelled && socket.connected) {
+            console.log('[Video] Emitting join room:', appointmentId)
             socket.emit('join', { appointment_id: appointmentId })
           }
         }
@@ -153,14 +217,34 @@ export default function VideoCallModal({
         const sendOffer = async () => {
           if (!isInitiator || isCancelled || pc.signalingState === 'closed') return
           try {
+            if (pc.signalingState === 'have-local-offer' && pc.localDescription) {
+              const payload = {
+                appointment_id: appointmentId,
+                sdp: pc.localDescription,
+              }
+              if (roomJoinedRef.current && socket.connected) {
+                socket.emit('offer', payload)
+                console.log('[Video] Re-sent existing local SDP offer to peer')
+              } else {
+                pendingOutgoingOfferRef.current = payload
+              }
+              return
+            }
+
             const offer = await pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: true })
             if (pc.signalingState === 'closed' || isCancelled) return
             await pc.setLocalDescription(offer)
-            socket.emit('offer', {
+            const payload = {
               appointment_id: appointmentId,
               sdp: offer,
-            })
-            console.log('[Video] Sent SDP offer to peer')
+            }
+            if (roomJoinedRef.current && socket.connected) {
+              socket.emit('offer', payload)
+              console.log('[Video] Sent SDP offer to peer')
+            } else {
+              console.log('[Video] Room not joined yet, queueing outgoing offer')
+              pendingOutgoingOfferRef.current = payload
+            }
           } catch (offerErr) {
             console.warn('[Video] Offer creation error:', offerErr)
           }
@@ -170,14 +254,17 @@ export default function VideoCallModal({
         socket.on('connect', () => {
           console.log('[Video] Socket connected, joining room:', appointmentId)
           joinRoom()
-          // If media already acquired before socket connected, send offer now
-          if (isInitiator && mediaStreamReady) {
-            sendOffer()
-          }
+        })
+
+        socket.on('disconnect', () => {
+          console.log('[Video] Socket disconnected')
+          roomJoinedRef.current = false
         })
 
         socket.on('joined', (data) => {
           console.log('[Video] Joined video room:', data)
+          roomJoinedRef.current = true
+          flushSignaling()
           if (isInitiator && mediaStreamReady) {
             sendOffer()
           }
@@ -283,10 +370,15 @@ export default function VideoCallModal({
                 if (!isCancelled && pc.signalingState === 'have-local-offer' && socket.connected) {
                   console.log('[Video] Re-transmitting offer to ensure delivery')
                   if (pc.localDescription) {
-                    socket.emit('offer', {
+                    const payload = {
                       appointment_id: appointmentId,
                       sdp: pc.localDescription,
-                    })
+                    }
+                    if (roomJoinedRef.current && socket.connected) {
+                      socket.emit('offer', payload)
+                    } else {
+                      pendingOutgoingOfferRef.current = payload
+                    }
                   }
                 }
               }, 1200)
@@ -298,14 +390,8 @@ export default function VideoCallModal({
                 await pc.setRemoteDescription(new RTCSessionDescription(initialOffer))
                 const answer = await pc.createAnswer()
                 await pc.setLocalDescription(answer)
-                if (socket.connected) {
-                  joinRoom()
-                }
-                socket.emit('answer', {
-                  appointment_id: appointmentId,
-                  sdp: answer,
-                })
-                console.log('[Video] Sent SDP answer (autoAccept)')
+                emitAnswer(answer)
+                console.log('[Video] Prepared SDP answer (autoAccept)')
                 while (iceCandidatesQueueRef.current.length > 0) {
                   const candidate = iceCandidatesQueueRef.current.shift()
                   try { await pc.addIceCandidate(new RTCIceCandidate(candidate)) } catch (e) {}
@@ -380,10 +466,7 @@ export default function VideoCallModal({
       await pc.setRemoteDescription(new RTCSessionDescription(offerSdp))
       const answer = await pc.createAnswer()
       await pc.setLocalDescription(answer)
-      socket.emit('answer', {
-        appointment_id: appointmentId,
-        sdp: answer,
-      })
+      emitAnswer(answer)
       setCallStatus('connected')
 
       // Drain any queued ICE candidates

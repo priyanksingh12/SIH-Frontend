@@ -86,10 +86,9 @@ export default function SignUp() {
         <section className="relative md:flex-1 flex flex-col justify-between p-8 md:p-14 overflow-hidden text-white min-h-[300px] order-1 md:order-none">
           <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${clinicImage})` }} />
           <div className="absolute inset-0 bg-[rgba(41,87,75,0.85)]" />
-          <header className="relative z-10 flex items-center gap-4">
-            <div className="grid place-items-center w-10 h-10 rounded-full bg-[#1b342e] text-white text-lg font-bold">⊙</div>
+          <header className="relative z-10 flex items-center justify-between gap-4">
             <div>
-              <strong className="block text-xl leading-tight">SwasthyaSahay</strong>
+              <div className="font-serif text-2xl font-bold tracking-tight text-white">SwasthyaSahay</div>
               <small className="block text-[10px] tracking-widest opacity-80 uppercase">CONNECTED HEALTHCARE ECOSYSTEM</small>
             </div>
             <button type="button" onClick={backToLanding} className="ml-auto bg-transparent border-none text-white text-sm font-semibold cursor-pointer hover:underline flex items-center gap-2">

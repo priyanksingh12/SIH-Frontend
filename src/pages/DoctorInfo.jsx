@@ -1,20 +1,18 @@
-﻿import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { getFacilities } from '../api/facilityApi.js'
 import { registerDoctor } from '../api/doctorApi.js'
 import { getStoredUser } from '../api/apiClient.js'
+import MedicalShaderBg from '../components/MedicalShaderBg'
 
 function DoctorSidebar() {
   const links = ['Dashboard', 'Patients', 'Appointments', 'Vitals & History', 'My Profile']
   const icons = ['⌂', '♧', '▣', '≋', '◎']
   return (
     <aside className="w-[280px] shrink-0 bg-[#171d1b] text-white flex flex-col p-6 hidden md:flex border-r border-[#2a3632]">
-      <div className="flex items-center gap-3 mb-10 text-[#00ff88]">
-        <span className="text-2xl">＋</span>
-        <div>
-          <strong className="block text-xl tracking-tight text-white">SwasthyaSahay</strong>
-          <small className="text-[0.65rem] uppercase tracking-[2px] font-bold opacity-80">CLINICAL SUITE</small>
-        </div>
+      <div className="mb-10">
+        <div className="font-serif text-2xl font-bold tracking-tight text-white">SwasthyaSahay</div>
+        <small className="text-[0.65rem] uppercase tracking-[2px] font-bold opacity-80 text-[#00ff88]">CLINICAL SUITE</small>
       </div>
       <div className="flex items-center gap-3 p-4 rounded-2xl bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.08)] mb-6 relative">
         <span className="w-10 h-10 rounded-full bg-[#00ff88] text-[#171d1b] flex items-center justify-center font-bold text-sm shrink-0">DR</span>
@@ -123,15 +121,18 @@ export default function DoctorInfo() {
     <div className="min-h-screen flex bg-[#f5f7f6] font-sans">
       <DoctorSidebar />
       <main className="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto" id="doctor-workspace">
-        <header className="h-[72px] shrink-0 bg-white border-b border-[#e2eae5] px-6 md:px-10 flex items-center justify-between sticky top-0 z-[10]">
-          <div className="flex items-center gap-6">
-            <button className="border-0 bg-transparent text-[#59756e] font-bold text-sm cursor-pointer hidden md:block">← &nbsp; Back to Patients</button>
-            <span className="text-[#29574b] font-bold text-sm bg-[#eaf3ee] px-3 py-1.5 rounded-full">♧ &nbsp; Secure Clinical Session</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="hidden md:block px-4 py-2 bg-gradient-to-r from-[#29574b] to-[#1e4037] text-[#00ff88] border-0 rounded-full font-bold text-xs cursor-pointer shadow-md shadow-[#29574b]/20">✦ &nbsp; AI Clinical Assistant</button>
-            <button className="w-10 h-10 rounded-full border border-[#e2eae5] bg-[#fafdfb] text-[#29574b] text-lg cursor-pointer relative flex items-center justify-center">♧<i className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-[#e74c3c]" /></button>
-            <strong className="hidden md:flex flex-col text-[#171d1b] text-sm">Dr. {getStoredUser()?.name || 'Doctor'} <small className="text-[#59756e] font-normal text-xs">Attending</small></strong>
+        <header className="relative overflow-hidden h-[72px] shrink-0 bg-[#f5fbf7] border-b border-[#e2eae5] px-6 md:px-10 flex items-center justify-between sticky top-0 z-[10]">
+          <MedicalShaderBg isNavbar />
+          <div className="relative z-10 w-full flex items-center justify-between">
+            <div className="flex items-center gap-6">
+              <button className="border-0 bg-transparent text-[#59756e] font-bold text-sm cursor-pointer hidden md:block">← &nbsp; Back to Patients</button>
+              <span className="text-[#29574b] font-bold text-sm bg-[#eaf3ee] px-3 py-1.5 rounded-full">♧ &nbsp; Secure Clinical Session</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <button className="hidden md:block px-4 py-2 bg-gradient-to-r from-[#29574b] to-[#1e4037] text-[#00ff88] border-0 rounded-full font-bold text-xs cursor-pointer shadow-md shadow-[#29574b]/20">✦ &nbsp; AI Clinical Assistant</button>
+              <button className="w-10 h-10 rounded-full border border-[#e2eae5] bg-[#fafdfb] text-[#29574b] text-lg cursor-pointer relative flex items-center justify-center">♧<i className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-[#e74c3c]" /></button>
+              <strong className="hidden md:flex flex-col text-[#171d1b] text-sm">Dr. {getStoredUser()?.name || 'Doctor'} <small className="text-[#59756e] font-normal text-xs">Attending</small></strong>
+            </div>
           </div>
         </header>
         <form className="max-w-[800px] w-full mx-auto px-6 md:px-10 py-10" onSubmit={finish}>

@@ -5,6 +5,7 @@ import { getAppointments, approveAppointment, rejectAppointment, completeAppoint
 import ChatModal from '../components/ChatModal.jsx'
 import VideoCallModal from '../components/VideoCallModal.jsx'
 import IncomingCallModal from '../components/IncomingCallModal.jsx'
+import MedicalShaderBg from '../components/MedicalShaderBg'
 import { useDoctorCallListener } from '../hooks/useDoctorCallListener.js'
 
 const toneMap = ['sage', 'rose', 'blue', 'sand', 'mint', 'lilac']
@@ -41,9 +42,9 @@ function DoctorSidebar({ doctorName, facilityName }) {
   const navigate = useNavigate()
   return (
     <aside className="w-[260px] shrink-0 hidden md:flex flex-col p-6 bg-transparent border-r border-[rgba(41,87,75,0.12)] min-h-screen">
-      <div className="flex items-center gap-3 pb-6">
-        <span className="text-[1.2rem]">✚</span>
-        <div><strong className="block">SwasthyaSahay</strong><small className="text-xs">CLINICAL SUITE</small></div>
+      <div className="pb-6">
+        <div className="font-serif text-2xl font-bold text-[#29574b] tracking-tight">SwasthyaSahay</div>
+        <small className="block text-[10px] font-sans text-[#59756e] font-bold tracking-widest uppercase">CLINICAL SUITE</small>
       </div>
       <div className="flex items-center gap-2 p-3 border border-[#e2eae5] rounded-2xl bg-white/50 backdrop-blur-sm">
         <div className="w-[46px] h-[46px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[1.05rem] shrink-0">
@@ -148,22 +149,25 @@ export default function DoctorPatients() {
     <div className="min-h-screen flex bg-transparent text-[#171d1b]">
       <DoctorSidebar doctorName={doctorName} facilityName={facilityName} />
       <main className="flex-1 min-w-0 w-full">
-        <header className="h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[rgba(41,87,75,0.12)] bg-[#f5fbf7]">
-          <div className="flex flex-col">
-            <span className="text-sm font-bold">▣ &nbsp; Secure Clinical Session</span>
-            <small className="text-xs text-[#59756e]">Verified · State Medical Registry</small>
-          </div>
-          <div className="flex items-center gap-2 md:gap-3">
-            <Link to="/doctor-dashboard" className="hidden md:flex items-center gap-2 border-0 bg-[#eaf3ee] text-[#29574b] px-4 py-2 rounded-full font-bold text-[0.92rem] no-underline">
-              👤 My Profile
-            </Link>
-            <div className="w-[38px] h-[38px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[0.95rem] shrink-0">
-              {getInitials(doctorName)}
+        <header className="relative overflow-hidden h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[rgba(41,87,75,0.12)] bg-[#f5fbf7]">
+          <MedicalShaderBg isNavbar />
+          <div className="relative z-10 w-full flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-sm font-bold">▣ &nbsp; Secure Clinical Session</span>
+              <small className="text-xs text-[#59756e]">Verified · State Medical Registry</small>
             </div>
-            <b className="hidden md:flex flex-col text-sm">{doctorName}<small className="font-normal text-xs text-[#59756e]">Attending Physician</small></b>
-            <button onClick={logout} className="bg-[#c0392b] text-white border-0 py-1.5 px-3 md:py-[0.45rem] md:px-4 rounded-lg cursor-pointer font-bold text-xs md:text-[0.88rem] ml-1 md:ml-2">
-              Logout
-            </button>
+            <div className="flex items-center gap-2 md:gap-3">
+              <Link to="/doctor-dashboard" className="hidden md:flex items-center gap-2 border-0 bg-[#eaf3ee] text-[#29574b] px-4 py-2 rounded-full font-bold text-[0.92rem] no-underline">
+                👤 My Profile
+              </Link>
+              <div className="w-[38px] h-[38px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[0.95rem] shrink-0">
+                {getInitials(doctorName)}
+              </div>
+              <b className="hidden md:flex flex-col text-sm">{doctorName}<small className="font-normal text-xs text-[#59756e]">Attending Physician</small></b>
+              <button onClick={logout} className="bg-[#c0392b] text-white border-0 py-1.5 px-3 md:py-[0.45rem] md:px-4 rounded-lg cursor-pointer font-bold text-xs md:text-[0.88rem] ml-1 md:ml-2">
+                Logout
+              </button>
+            </div>
           </div>
         </header>
 

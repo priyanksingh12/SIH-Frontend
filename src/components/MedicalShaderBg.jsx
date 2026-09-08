@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
  * WebGL Shader Background — Medical Palette
  * Procedural layered flow noise blending #f5fbf7, soft sage, deeper teal, and subtle ink.
  */
-export default function MedicalShaderBg() {
+export default function MedicalShaderBg({ isNavbar = false, className = '', style = {} }) {
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -30,8 +30,11 @@ export default function MedicalShaderBg() {
     function resize() {
       if (!canvas || !gl) return
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      const w = Math.floor(window.innerWidth * dpr)
-      const h = Math.floor(window.innerHeight * dpr)
+      const rect = isNavbar && canvas.parentElement
+        ? canvas.parentElement.getBoundingClientRect()
+        : null
+      const w = Math.floor((rect ? rect.width : window.innerWidth) * dpr)
+      const h = Math.floor((rect ? rect.height : window.innerHeight) * dpr)
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w
         canvas.height = h
@@ -40,6 +43,11 @@ export default function MedicalShaderBg() {
     }
 
     window.addEventListener('resize', resize)
+    let ro = null
+    if (isNavbar && canvas.parentElement && window.ResizeObserver) {
+      ro = new ResizeObserver(resize)
+      ro.observe(canvas.parentElement)
+    }
     resize()
 
     const vertSrc = `
@@ -178,6 +186,7 @@ export default function MedicalShaderBg() {
     return () => {
       isCleanedUp = true
       window.removeEventListener('resize', resize)
+      if (ro) ro.disconnect()
       if (animationFrameId) cancelAnimationFrame(animationFrameId)
       try {
         if (gl) {
@@ -190,24 +199,41 @@ export default function MedicalShaderBg() {
         // ignore cleanup errors
       }
     }
-  }, [])
+  }, [isNavbar])
 
   return (
     <canvas
       ref={canvasRef}
-      id="bg"
-      className="medical-shader-bg"
+      id={isNavbar ? undefined : 'bg'}
+      className={`medical-shader-bg ${className}`}
       aria-hidden="true"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        zIndex: -1,
-        display: 'block',
-        pointerEvents: 'none',
-      }}
+      style={
+        isNavbar
+          ? {
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              zIndex: 0,
+              display: 'block',
+              pointerEvents: 'none',
+              objectFit: 'cover',
+              ...style,
+            }
+          : {
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              zIndex: -1,
+              display: 'block',
+              pointerEvents: 'none',
+              ...style,
+            }
+      }
     />
   )
 }
+

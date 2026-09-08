@@ -1,7 +1,8 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getStoredUser, logout } from '../api/apiClient.js'
 import { getPatientProfile, getVitals, getMedicalHistory, getReports } from '../api/patientApi.js'
+import MedicalShaderBg from '../components/MedicalShaderBg'
 
 function getInitials(name) {
   return (name || '').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'PT'
@@ -10,13 +11,15 @@ function getInitials(name) {
 function DoctorTopbar({ doctorName }) {
   const navigate = useNavigate()
   return (
-    <header className="h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[#e2eae5] bg-white sticky top-0 z-[10]">
-      <div className="flex items-center gap-4">
-        <span onClick={() => navigate('/doctor-patients')} className="cursor-pointer text-[#29574b] font-bold text-sm hidden md:inline">
-          ← Back to Patients List
-        </span>
-        <b className="text-[#171d1b] font-bold text-sm">▣ Doctor Clinical OPD Workspace</b>
-      </div>
+    <header className="relative overflow-hidden h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[#e2eae5] bg-[#f5fbf7] sticky top-0 z-[10]">
+      <MedicalShaderBg isNavbar />
+      <div className="relative z-10 w-full flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <span onClick={() => navigate('/doctor-patients')} className="cursor-pointer text-[#29574b] font-bold text-sm hidden md:inline">
+            ← Back to Patients List
+          </span>
+          <b className="text-[#171d1b] font-bold text-sm">▣ Doctor Clinical OPD Workspace</b>
+        </div>
       <div className="flex items-center gap-2 md:gap-3">
         <div className="w-[38px] h-[38px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-[0.95rem] shrink-0">
           {getInitials(doctorName)}
@@ -29,7 +32,9 @@ function DoctorTopbar({ doctorName }) {
           Logout
         </button>
       </div>
+      </div>
     </header>
+
   )
 }
 
