@@ -46,7 +46,7 @@ function DoctorSidebar({ doctorName, specialization, facilityName, activeTab, se
     <aside className="w-[260px] shrink-0 hidden md:flex flex-col p-6 bg-transparent border-r border-[rgba(41,87,75,0.12)] min-h-screen">
       <div className="flex items-center gap-3 pb-6">
         <span className="text-[1.2rem]">✚</span>
-        <div><strong>MediMate</strong><small className="block">CLINICAL SUITE</small></div>
+        <div><strong>SwasthyaSahay</strong><small className="block">CLINICAL SUITE</small></div>
       </div>
       <div className="flex items-center gap-2 p-3 border border-[#e2eae5] rounded-2xl bg-white/50 backdrop-blur-sm">
         <div className="w-[46px] h-[46px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[1.05rem] shrink-0">
@@ -226,12 +226,12 @@ function AppointmentsPanel({ appointments, loadingAppts, apptError, onRefresh, o
 function ProfileTab({ doctor, user, appointments, onToggleAvailability, availabilityLoading }) {
   const name = user?.name || 'Doctor'
   const displayName = name.startsWith('Dr.') ? name : `Dr. ${name}`
-  const facilityName = doctor?.facility?.name || window.localStorage.getItem('medimate-doctor-facility') || 'Your Facility'
-  const licenseNumber = doctor?.license_number || window.localStorage.getItem('medimate-doctor-medical-id') || '—'
+  const facilityName = doctor?.facility?.name || window.localStorage.getItem('SwasthyaSahay-doctor-facility') || 'Your Facility'
+  const licenseNumber = doctor?.license_number || window.localStorage.getItem('SwasthyaSahay-doctor-medical-id') || '—'
   const specialization = doctor?.specialization || 'General Medicine'
   const qualification = doctor?.qualification || '—'
   const experienceYears = doctor?.experience_years
-  const bio = doctor?.bio || 'Dedicated medical professional providing quality healthcare through the MediMate Rural Health Network.'
+  const bio = doctor?.bio || 'Dedicated medical professional providing quality healthcare through the SwasthyaSahay Rural Health Network.'
   const isAvailable = doctor?.is_available ?? false
   const verified = doctor?.verified ?? false
   const pendingCount = appointments.filter((a) => a.status === 'pending').length
@@ -259,7 +259,7 @@ function ProfileTab({ doctor, user, appointments, onToggleAvailability, availabi
         <div>
           <h2 className="text-2xl font-bold font-['Playfair_Display',serif] text-[#171d1b] m-0">{displayName}</h2>
           <span className="text-[#59756e] font-semibold text-sm">Attending Physician · {specialization}</span>
-          <p className="text-[#404845] mt-1 text-sm">Medical Professional · MediMate Rural Health Network</p>
+          <p className="text-[#404845] mt-1 text-sm">Medical Professional · SwasthyaSahay Rural Health Network</p>
           <small className="text-[#59756e] text-xs block mt-1">⌖ {facilityName} &nbsp; ◉ Registry: {licenseNumber}</small>
         </div>
         <div className="mt-4 md:mt-0 md:ml-auto flex flex-col items-end gap-1 text-sm">
@@ -282,7 +282,7 @@ function ProfileTab({ doctor, user, appointments, onToggleAvailability, availabi
         <div>
           <small className="text-xs text-[#59756e] font-bold uppercase tracking-wide">PRIMARY AFFILIATION &nbsp;•&nbsp; Public Health Network</small>
           <h2 className="text-xl font-bold font-['Playfair_Display',serif] text-[#171d1b] m-0 mt-1">{facilityName}</h2>
-          <p className="text-sm text-[#404845] mt-1">{specialization} Department · MediMate Network</p>
+          <p className="text-sm text-[#404845] mt-1">{specialization} Department · SwasthyaSahay Network</p>
         </div>
       </section>
 
@@ -385,7 +385,7 @@ function ProfileTab({ doctor, user, appointments, onToggleAvailability, availabi
 
       <blockquote className="mt-8 mb-4 border-l-4 border-[#29574b] pl-4 italic text-[#404845] text-lg font-['Playfair_Display',serif]">
         "Precision diagnostics paired<br />with rural accessibility defines<br />modern medicine."
-        <small className="block mt-2 text-xs font-sans text-[#59756e] not-italic font-bold tracking-wide">MEDIMATE CLINICIAN NETWORK • 2026</small>
+        <small className="block mt-2 text-xs font-sans text-[#59756e] not-italic font-bold tracking-wide">SwasthyaSahay CLINICIAN NETWORK • 2026</small>
       </blockquote>
     </>
   )
@@ -422,9 +422,9 @@ export default function DoctorDashboard() {
     }
   }
 
-  const rawName = user?.name || window.localStorage.getItem('medimate-account-name') || 'Doctor'
+  const rawName = user?.name || window.localStorage.getItem('SwasthyaSahay-account-name') || 'Doctor'
   const displayName = rawName.startsWith('Dr.') ? rawName : `Dr. ${rawName}`
-  const facilityName = doctor?.facility?.name || window.localStorage.getItem('medimate-doctor-facility') || 'Your Facility'
+  const facilityName = doctor?.facility?.name || window.localStorage.getItem('SwasthyaSahay-doctor-facility') || 'Your Facility'
   const specialization = doctor?.specialization || 'General Medicine'
 
   const fetchProfile = async () => {
@@ -465,7 +465,7 @@ export default function DoctorDashboard() {
     <div className="min-h-screen flex bg-transparent text-[#171d1b]">
       <DoctorSidebar doctorName={displayName} specialization={specialization} facilityName={facilityName} activeTab={activeTab} setActiveTab={setActiveTab} />
       <main className="flex-1 min-w-0 w-full">
-        <header className="h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[rgba(41,87,75,0.12)] bg-transparent">
+        <header className="h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[rgba(41,87,75,0.12)] bg-[#f5fbf7]">
           <div className="flex flex-col">
             <span className="text-sm font-bold text-[#171d1b]">▣ &nbsp; Secure Session</span>
             <small className="text-xs text-[#59756e]">{doctorLoading ? 'Loading profile…' : doctor?.verified ? 'Verified · State Medical Registry' : 'Pending Verification'}</small>

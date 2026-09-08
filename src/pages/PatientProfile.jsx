@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { getStoredUser } from '../api/apiClient.js'
 import { getPatientProfile, updatePatientProfile, getVitals, getReports, getMedicalHistory } from '../api/patientApi.js'
 import { getAppointments } from '../api/appointmentApi.js'
@@ -14,7 +14,7 @@ function getInitials(name) {
 }
 
 function getMergedVitalsList(backendList) {
-  const localList = JSON.parse(window.localStorage.getItem('medimate-vitals-history') || '[]')
+  const localList = JSON.parse(window.localStorage.getItem('SwasthyaSahay-vitals-history') || '[]')
   const combined = [...localList, ...(backendList || [])]
   const seen = new Set()
   const unique = []
@@ -39,7 +39,7 @@ function getMergedVitalsList(backendList) {
 }
 
 function getMergedMedicalHistory(backendData) {
-  const localList = JSON.parse(window.localStorage.getItem('medimate-medical-history') || '[]')
+  const localList = JSON.parse(window.localStorage.getItem('SwasthyaSahay-medical-history') || '[]')
   const backendList = Array.isArray(backendData) ? backendData : (backendData ? [backendData] : [])
   const combined = [...localList, ...backendList]
 
@@ -279,7 +279,7 @@ function ClinicalReportsCard({ reports, loading, onViewPdf }) {
 
 export default function PatientProfile() {
   const user = getStoredUser()
-  const userName = user?.name || window.localStorage.getItem('medimate-account-name') || 'Patient'
+  const userName = user?.name || window.localStorage.getItem('SwasthyaSahay-account-name') || 'Patient'
   const patientId = user?.id
 
   const [profile, setProfile] = useState(user || {})
@@ -335,7 +335,7 @@ export default function PatientProfile() {
   }, [])
 
   useEffect(() => {
-    const localReports = JSON.parse(window.localStorage.getItem('medimate-clinical-reports') || '[]')
+    const localReports = JSON.parse(window.localStorage.getItem('SwasthyaSahay-clinical-reports') || '[]')
     if (patientId) {
       getPatientProfile(patientId)
         .then((p) => {
@@ -457,8 +457,8 @@ export default function PatientProfile() {
 
       const updatedUser = { ...(user || {}), ...(profile || {}), ...editFormData }
       setProfile(updatedUser)
-      window.localStorage.setItem('medimate-user', JSON.stringify(updatedUser))
-      window.localStorage.setItem('medimate-account-name', editFormData.name)
+      window.localStorage.setItem('SwasthyaSahay-user', JSON.stringify(updatedUser))
+      window.localStorage.setItem('SwasthyaSahay-account-name', editFormData.name)
 
       setSaveSuccessMsg('Profile updated successfully!')
       setTimeout(() => setSaveSuccessMsg(''), 4000)

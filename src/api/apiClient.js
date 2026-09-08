@@ -1,5 +1,5 @@
-/**
- * Central API client for MediMate backend.
+﻿/**
+ * Central API client for SwasthyaSahay backend.
  * Handles base URL, auth headers, and silent token refresh on 401.
  */
 
@@ -8,27 +8,27 @@ export const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sih-otuc.o
 // ─── Token helpers ───────────────────────────────────────────────────────────
 
 export function getAccessToken() {
-  return localStorage.getItem('medimate-access-token')
+  return localStorage.getItem('SwasthyaSahay-access-token')
 }
 
 export function getRefreshToken() {
-  return localStorage.getItem('medimate-refresh-token')
+  return localStorage.getItem('SwasthyaSahay-refresh-token')
 }
 
 export function setTokens(accessToken, refreshToken) {
-  localStorage.setItem('medimate-access-token', accessToken)
-  if (refreshToken) localStorage.setItem('medimate-refresh-token', refreshToken)
+  localStorage.setItem('SwasthyaSahay-access-token', accessToken)
+  if (refreshToken) localStorage.setItem('SwasthyaSahay-refresh-token', refreshToken)
 }
 
 export function clearTokens() {
-  localStorage.removeItem('medimate-access-token')
-  localStorage.removeItem('medimate-refresh-token')
-  localStorage.removeItem('medimate-user')
-  localStorage.removeItem('medimate-signup-complete')
-  localStorage.removeItem('medimate-vitals-complete')
-  localStorage.removeItem('medimate-doctor-info-complete')
-  localStorage.removeItem('medimate-account-created')
-  localStorage.removeItem('medimate-auth-mode')
+  localStorage.removeItem('SwasthyaSahay-access-token')
+  localStorage.removeItem('SwasthyaSahay-refresh-token')
+  localStorage.removeItem('SwasthyaSahay-user')
+  localStorage.removeItem('SwasthyaSahay-signup-complete')
+  localStorage.removeItem('SwasthyaSahay-vitals-complete')
+  localStorage.removeItem('SwasthyaSahay-doctor-info-complete')
+  localStorage.removeItem('SwasthyaSahay-account-created')
+  localStorage.removeItem('SwasthyaSahay-auth-mode')
 }
 
 /** Full logout: clears all app state and redirects to landing page. */
@@ -41,14 +41,14 @@ export function logout() {
 
 export function getStoredUser() {
   try {
-    return JSON.parse(localStorage.getItem('medimate-user') || 'null')
+    return JSON.parse(localStorage.getItem('SwasthyaSahay-user') || 'null')
   } catch {
     return null
   }
 }
 
 export function storeUser(user) {
-  localStorage.setItem('medimate-user', JSON.stringify(user))
+  localStorage.setItem('SwasthyaSahay-user', JSON.stringify(user))
 }
 
 // ─── Silent refresh ───────────────────────────────────────────────────────────

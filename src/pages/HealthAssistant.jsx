@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+﻿import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Paperclip, Send, X, Globe, FileText, Plus, Trash2, Pencil, Check, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getStoredUser } from '../api/apiClient.js'
@@ -42,7 +42,7 @@ const suggestions = [
 const initialGreeting = {
   id: 'welcome',
   sender: 'system',
-  reply: 'Hello. I am MediMate, your health assistant. Please describe how you are feeling today, including any specific symptoms or discomforts.',
+  reply: 'Hello. I am SwasthyaSahay, your health assistant. Please describe how you are feeling today, including any specific symptoms or discomforts.',
 }
 
 // ─── Helper sub-components ────────────────────────────────────────────────────
@@ -363,7 +363,7 @@ function ChatHistorySidebar({ sessions, activeSessionId, onNew, onSelect, onRena
 function HealthAssistant() {
   const navigate = useNavigate()
   const user = getStoredUser()
-  const userName = user?.name || window.localStorage.getItem('medimate-account-name') || 'there'
+  const userName = user?.name || window.localStorage.getItem('SwasthyaSahay-account-name') || 'there'
 
   const defaultLang = (() => {
     const pref = user?.preferred_language || 'en'
@@ -653,9 +653,9 @@ function HealthAssistant() {
         res?.data || res?.content || (typeof res === 'string' ? res : null)
       const pdfData = resolveUrl(rawPdfData)
       if (pdfData) {
-        const filename = `MediMate_Clinical_Report_${new Date().toISOString().slice(0, 10)}.pdf`
+        const filename = `SwasthyaSahay_Clinical_Report_${new Date().toISOString().slice(0, 10)}.pdf`
         downloadPdfFile(pdfData, filename)
-        const existingReports = JSON.parse(window.localStorage.getItem('medimate-clinical-reports') || '[]')
+        const existingReports = JSON.parse(window.localStorage.getItem('SwasthyaSahay-clinical-reports') || '[]')
         const newReport = {
           id: res?.report_id || `rep_${Date.now()}`,
           pdf_url: pdfData, session_id: sessionId,
@@ -663,7 +663,7 @@ function HealthAssistant() {
           title: 'AI Triage Clinical PDF Summary',
         }
         const updatedReports = [newReport, ...existingReports.filter((r) => r.id !== newReport.id)]
-        window.localStorage.setItem('medimate-clinical-reports', JSON.stringify(updatedReports))
+        window.localStorage.setItem('SwasthyaSahay-clinical-reports', JSON.stringify(updatedReports))
         // Update sidebar to show healthReport badge
         setSessions((prev) => prev.map((s) => s.id === sessionId ? {
           ...s, healthReports: [{ id: newReport.id, pdf_url: pdfData, generated_at: newReport.generated_at }, ...s.healthReports],
@@ -765,7 +765,7 @@ function HealthAssistant() {
                           <div className="flex items-center gap-4 flex-wrap mt-4">
                             <button
                               type="button"
-                              onClick={() => { window.sessionStorage.setItem('medimate-doctors-entry', 'true'); navigate('/doctors') }}
+                              onClick={() => { window.sessionStorage.setItem('SwasthyaSahay-doctors-entry', 'true'); navigate('/doctors') }}
                               className="flex items-center gap-2 m-0 bg-transparent border-0 text-[#29574b] font-bold cursor-pointer underline hover:no-underline"
                             >
                               Find nearby care <img src={arrowIcon} alt="" />
@@ -861,7 +861,7 @@ function HealthAssistant() {
             </form>
 
             {error && <p className="text-[#9a4638] font-semibold mt-1.5 mb-0">{error}</p>}
-            <p className="mt-2 text-xs text-gray-500 text-center">MediMate AI can make mistakes. Always consult a doctor for serious concerns.</p>
+            <p className="mt-2 text-xs text-gray-500 text-center">SwasthyaSahay AI can make mistakes. Always consult a doctor for serious concerns.</p>
           </div>
         </div>
       </main>

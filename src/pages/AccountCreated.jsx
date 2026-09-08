@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import { getStoredUser } from '../api/apiClient.js'
 
 const confirmationImage = 'https://www.figma.com/api/mcp/asset/b4f97d49-77dd-45a3-9dfa-6d13057bc63e.png'
@@ -6,15 +6,15 @@ const confirmationImage = 'https://www.figma.com/api/mcp/asset/b4f97d49-77dd-45a
 export default function AccountCreated() {
   const navigate = useNavigate()
   const user = getStoredUser()
-  const role = user?.role || window.localStorage.getItem('medimate-account-role') || 'patient'
-  const name = user?.name || window.localStorage.getItem('medimate-account-name') || (role === 'doctor' ? 'Doctor' : 'Patient')
+  const role = user?.role || window.localStorage.getItem('SwasthyaSahay-account-role') || 'patient'
+  const name = user?.name || window.localStorage.getItem('SwasthyaSahay-account-name') || (role === 'doctor' ? 'Doctor' : 'Patient')
   const isDoctor = role === 'doctor'
   const initials = name.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || (isDoctor ? 'DR' : 'PT')
 
   const continueToSetup = () => {
-    window.localStorage.removeItem('medimate-account-created')
+    window.localStorage.removeItem('SwasthyaSahay-account-created')
     if (isDoctor) {
-      const doctorInfoDone = window.localStorage.getItem('medimate-doctor-info-complete') === 'true'
+      const doctorInfoDone = window.localStorage.getItem('SwasthyaSahay-doctor-info-complete') === 'true'
       navigate(doctorInfoDone ? '/doctor-dashboard' : '/doctor-info')
     } else {
       // First-time signup patient -> go to vitals page first
@@ -30,7 +30,7 @@ export default function AccountCreated() {
         <div className="flex items-center gap-3">
           <span className="grid place-items-center w-8 h-8 rounded-full bg-[#1b342e] text-white text-sm font-bold">＋</span>
           <section className="flex flex-col">
-            <strong className="text-lg leading-tight">MediMate</strong>
+            <strong className="text-lg leading-tight">SwasthyaSahay</strong>
             <small className="text-[9px] tracking-widest opacity-80 uppercase">WELCOME TO THE NETWORK</small>
           </section>
         </div>
@@ -47,7 +47,7 @@ export default function AccountCreated() {
     <section className="max-w-[640px] mx-auto p-8 md:p-16 text-center flex flex-col items-center">
       <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#e3f2ec] text-[#29574b] text-3xl md:text-4xl flex items-center justify-center mb-6 shadow-sm">✓</div>
       <h1 className="text-3xl md:text-5xl font-serif text-[#1b342e] mb-4">Account created successfully</h1>
-      <p className="text-[#59756e] text-sm md:text-base leading-relaxed mb-10 max-w-[480px]">Your MediMate health profile and verified clinical identity have been established. You can now access appointments, digital vitals, and intelligent referrals.</p>
+      <p className="text-[#59756e] text-sm md:text-base leading-relaxed mb-10 max-w-[480px]">Your SwasthyaSahay health profile and verified clinical identity have been established. You can now access appointments, digital vitals, and intelligent referrals.</p>
       <article className="w-full text-left bg-white border border-[#d5dbd8] rounded-2xl p-6 shadow-[0_8px_24px_rgba(41,87,75,0.04)] mb-8">
         <div className="flex items-center gap-5 pb-5 border-b border-[#f0f4f2]">
           <div className="relative w-14 h-14 rounded-full bg-[#1b342e] text-white text-lg font-bold flex items-center justify-center shrink-0">
@@ -67,8 +67,8 @@ export default function AccountCreated() {
           <b className="text-[#1b342e] flex items-center gap-1.5"><span className="text-[#00ff88] text-[8px]">●</span> #{user?.id?.slice(0, 8).toUpperCase() || 'MED-XXXXX'} · Synced</b>
         </div>
       </article>
-      <button className="w-full md:w-auto px-8 h-14 rounded-full bg-[#29574b] hover:bg-[#1b342e] text-white font-bold text-base cursor-pointer transition-all flex items-center justify-center gap-3 shadow-md" onClick={continueToSetup}>{isDoctor ? 'Continue to doctor setup' : 'Continue to MediMate'} <span>→</span></button>
-      <p className="mt-8 text-sm text-[#59756e]">Need help setting up your {isDoctor ? 'facility or clinical records' : 'health profile'}? <a className="font-semibold text-[#29574b] underline hover:text-[#1b342e]" href="mailto:support@medimate.org">Contact MediMate Support</a></p>
+      <button className="w-full md:w-auto px-8 h-14 rounded-full bg-[#29574b] hover:bg-[#1b342e] text-white font-bold text-base cursor-pointer transition-all flex items-center justify-center gap-3 shadow-md" onClick={continueToSetup}>{isDoctor ? 'Continue to doctor setup' : 'Continue to SwasthyaSahay'} <span>→</span></button>
+      <p className="mt-8 text-sm text-[#59756e]">Need help setting up your {isDoctor ? 'facility or clinical records' : 'health profile'}? <a className="font-semibold text-[#29574b] underline hover:text-[#1b342e]" href="mailto:support@SwasthyaSahay.org">Contact SwasthyaSahay Support</a></p>
       <div className="mt-12 text-[11px] font-bold tracking-widest uppercase text-[#59756e] opacity-60">♧ &nbsp; End-to-end encrypted clinical compliance &amp; ISO 27001 standard</div>
     </section>
   </main>

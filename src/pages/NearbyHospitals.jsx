@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { TopBar, Sidebar } from './PatientDashboard'
 import { getStoredUser } from '../api/apiClient.js'
 import {
@@ -203,7 +203,7 @@ function buildMapUrl(results, userLat, userLng) {
 // ---------------------------------------------------------------------------
 export default function NearbyHospitals() {
   const user     = getStoredUser()
-  const userName = user?.name || window.localStorage.getItem('medimate-account-name') || 'Patient'
+  const userName = user?.name || window.localStorage.getItem('SwasthyaSahay-account-name') || 'Patient'
 
   const geo = useGeolocation()
   const [coords, setCoords]           = useState(null)

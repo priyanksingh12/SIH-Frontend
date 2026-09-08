@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { login } from '../api/authApi.js'
 
@@ -35,11 +35,11 @@ export default function Login() {
     try {
       const data = await login({ phone: form.phone, password: form.password })
       const user = data.user
-      window.localStorage.setItem('medimate-signup-complete', 'true')
-      window.localStorage.setItem('medimate-account-role', user.role || 'patient')
-      window.localStorage.setItem('medimate-account-name', user.name || '')
-      window.localStorage.removeItem('medimate-account-created')
-      window.localStorage.removeItem('medimate-auth-mode')
+      window.localStorage.setItem('SwasthyaSahay-signup-complete', 'true')
+      window.localStorage.setItem('SwasthyaSahay-account-role', user.role || 'patient')
+      window.localStorage.setItem('SwasthyaSahay-account-name', user.name || '')
+      window.localStorage.removeItem('SwasthyaSahay-account-created')
+      window.localStorage.removeItem('SwasthyaSahay-auth-mode')
       if (user.role === 'doctor') {
         // Check via API if the doctor has already completed onboarding.
         // This works across devices/browsers unlike the localStorage flag.
@@ -48,9 +48,9 @@ export default function Login() {
           const profileRes = await getDoctorProfile()
           if (profileRes?.doctor?.license_number) {
             // Doctor profile already registered — go straight to dashboard
-            window.localStorage.setItem('medimate-doctor-info-complete', 'true')
+            window.localStorage.setItem('SwasthyaSahay-doctor-info-complete', 'true')
             if (profileRes.doctor.facility?.name) {
-              window.localStorage.setItem('medimate-doctor-facility', profileRes.doctor.facility.name)
+              window.localStorage.setItem('SwasthyaSahay-doctor-facility', profileRes.doctor.facility.name)
             }
             navigate('/doctor-dashboard')
           } else {
@@ -58,12 +58,12 @@ export default function Login() {
           }
         } catch {
           // API call failed — fall back to localStorage flag
-          const doctorInfoDone = window.localStorage.getItem('medimate-doctor-info-complete') === 'true'
+          const doctorInfoDone = window.localStorage.getItem('SwasthyaSahay-doctor-info-complete') === 'true'
           navigate(doctorInfoDone ? '/doctor-dashboard' : '/doctor-info')
         }
       } else {
         // Returning patient logging in -> directly navigate to patient dashboard
-        window.localStorage.setItem('medimate-vitals-complete', 'true')
+        window.localStorage.setItem('SwasthyaSahay-vitals-complete', 'true')
         navigate('/patient-dashboard')
       }
     } catch (err) {
@@ -83,7 +83,7 @@ export default function Login() {
           <header className="relative z-10 flex items-center gap-4">
             <div className="grid place-items-center w-10 h-10 rounded-full bg-[#1b342e] text-white text-lg font-bold">⊙</div>
             <div>
-              <strong className="block text-xl leading-tight">MediMate</strong>
+              <strong className="block text-xl leading-tight">SwasthyaSahay</strong>
               <small className="block text-[10px] tracking-widest opacity-80">CLINICAL HEALTH NETWORK</small>
             </div>
             <button type="button" onClick={backToLanding} className="ml-auto bg-transparent border-none text-white text-sm font-semibold cursor-pointer hover:underline flex items-center gap-2">
@@ -96,7 +96,7 @@ export default function Login() {
               specialty hubs."
             </blockquote>
             <p className="mt-8 text-[11px] font-bold tracking-widest flex items-center gap-3">
-              <i className="w-2 h-2 rounded-full bg-[#00ff88]" /> MEDIMATE CLINICAL PLATFORM • AYUSHMAN BHARAT / ABHA CONNECTED
+              <i className="w-2 h-2 rounded-full bg-[#00ff88]" /> SwasthyaSahay CLINICAL PLATFORM • AYUSHMAN BHARAT / ABHA CONNECTED
             </p>
             <div className="flex gap-2 mt-6">
               <b className="w-8 h-1 bg-white rounded-full opacity-100" />

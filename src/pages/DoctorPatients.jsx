@@ -43,7 +43,7 @@ function DoctorSidebar({ doctorName, facilityName }) {
     <aside className="w-[260px] shrink-0 hidden md:flex flex-col p-6 bg-transparent border-r border-[rgba(41,87,75,0.12)] min-h-screen">
       <div className="flex items-center gap-3 pb-6">
         <span className="text-[1.2rem]">✚</span>
-        <div><strong className="block">MediMate</strong><small className="text-xs">CLINICAL SUITE</small></div>
+        <div><strong className="block">SwasthyaSahay</strong><small className="text-xs">CLINICAL SUITE</small></div>
       </div>
       <div className="flex items-center gap-2 p-3 border border-[#e2eae5] rounded-2xl bg-white/50 backdrop-blur-sm">
         <div className="w-[46px] h-[46px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[1.05rem] shrink-0">
@@ -77,7 +77,7 @@ export default function DoctorPatients() {
   const user = getStoredUser()
   const rawName = user?.name || 'Doctor'
   const doctorName = rawName.startsWith('Dr.') ? rawName : `Dr. ${rawName}`
-  const facilityName = window.localStorage.getItem('medimate-doctor-facility') || 'Your Practice Facility'
+  const facilityName = window.localStorage.getItem('SwasthyaSahay-doctor-facility') || 'Your Practice Facility'
 
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
@@ -140,7 +140,7 @@ export default function DoctorPatients() {
   }
 
   const openPatient = (patientId, patientName) => {
-    window.sessionStorage.setItem('medimate-doctor-patient', patientName || patientId)
+    window.sessionStorage.setItem('SwasthyaSahay-doctor-patient', patientName || patientId)
     navigate('/doctor-patient-profile')
   }
 
@@ -148,7 +148,7 @@ export default function DoctorPatients() {
     <div className="min-h-screen flex bg-transparent text-[#171d1b]">
       <DoctorSidebar doctorName={doctorName} facilityName={facilityName} />
       <main className="flex-1 min-w-0 w-full">
-        <header className="h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[rgba(41,87,75,0.12)] bg-transparent">
+        <header className="h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[rgba(41,87,75,0.12)] bg-[#f5fbf7]">
           <div className="flex flex-col">
             <span className="text-sm font-bold">▣ &nbsp; Secure Clinical Session</span>
             <small className="text-xs text-[#59756e]">Verified · State Medical Registry</small>

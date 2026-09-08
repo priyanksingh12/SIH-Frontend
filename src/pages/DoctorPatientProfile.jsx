@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getStoredUser, logout } from '../api/apiClient.js'
 import { getPatientProfile, getVitals, getMedicalHistory, getReports } from '../api/patientApi.js'
@@ -46,7 +46,7 @@ function PatientProfileSummary({ profile, patientName }) {
           <p className="m-0 mt-1 text-sm text-[#404845]">Patient ID: #{profile?.id?.slice(0, 8).toUpperCase() || '99824A12'}</p>
           <div className="flex flex-wrap gap-2 mt-3">
             <b className="px-2.5 py-1 rounded-md bg-[#f5fbf7] text-[#29574b] text-xs font-bold border border-[#dcece5]">📱 {profile?.phone ? `+91 ${profile.phone}` : '+91 98765 43210'}</b>
-            <b className="px-2.5 py-1 rounded-md bg-[#f5fbf7] text-[#29574b] text-xs font-bold border border-[#dcece5]">📧 {profile?.email || 'patient@medimate.org'}</b>
+            <b className="px-2.5 py-1 rounded-md bg-[#f5fbf7] text-[#29574b] text-xs font-bold border border-[#dcece5]">📧 {profile?.email || 'patient@SwasthyaSahay.org'}</b>
             {profile?.preferred_language && <b className="px-2.5 py-1 rounded-md bg-[#f5fbf7] text-[#29574b] text-xs font-bold border border-[#dcece5]">🗣 Language: {profile.preferred_language.toUpperCase()}</b>}
             {profile?.gender && <b className="px-2.5 py-1 rounded-md bg-[#f5fbf7] text-[#29574b] text-xs font-bold border border-[#dcece5]">👤 Gender: {profile.gender}</b>}
             {profile?.blood_group && <b className="px-2.5 py-1 rounded-md bg-[#fef3c7] text-[#92400e] text-xs font-bold border border-[#fde68a]">🩸 Blood Group: {profile.blood_group}</b>}
@@ -247,7 +247,7 @@ export default function DoctorPatientProfile() {
   const navigate = useNavigate()
   const doctorUser = getStoredUser()
   const doctorName = doctorUser?.name || 'Dr. Practitioner'
-  const selectedPatient = window.sessionStorage.getItem('medimate-doctor-patient') || 'Patient'
+  const selectedPatient = window.sessionStorage.getItem('SwasthyaSahay-doctor-patient') || 'Patient'
 
   const [profile, setProfile] = useState(null)
   const [vitals, setVitals] = useState([])

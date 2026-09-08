@@ -1,4 +1,6 @@
 import { useNavigate } from 'react-router-dom'
+import MedicalShaderBg from '../components/MedicalShaderBg'
+
 
 const medicalTexture = 'https://www.figma.com/api/mcp/asset/5a5ce48b-c78a-4fe0-9803-35e297f3b7fc.png'
 const iconClock = 'https://www.figma.com/api/mcp/asset/6c094ddb-a80d-498c-acf6-c6a62b1532fe.svg'
@@ -39,24 +41,36 @@ function SecondaryButton({ children, href = '#features', className = '' }) {
 
 function Navbar() {
 	const navigate = useNavigate()
-	return <nav className="fixed inset-x-0 top-0 z-50 border-b border-[#29574b]/10 bg-white/80 backdrop-blur-md px-5 py-3 sm:px-8 lg:px-16">
-		<div className="mx-auto flex max-w-[1152px] items-center justify-between flex-wrap gap-4">
-			<a href="#top" className="font-serif text-2xl font-semibold sm:text-[32px] text-[#29574b] no-underline">MediMate</a>
-			<div className="hidden items-center gap-8 text-sm font-semibold text-[#404845] lg:flex">
-				<a className="border-b-2 border-[#29574b] pb-1 text-[#29574b] no-underline" href="#features">Features</a><a className="no-underline hover:text-[#29574b]" href="#journey">How it works</a><a className="no-underline hover:text-[#29574b]" href="#patients">For Patients</a><a className="no-underline hover:text-[#29574b]" href="#facilities">For Facilities</a><a className="no-underline hover:text-[#29574b]" href="#faq">FAQ</a>
+	return (
+		<nav className="fixed inset-x-0 top-0 z-50 border-b border-[#29574b]/15 bg-transparent backdrop-blur-[1px] px-5 py-4 sm:px-8 lg:px-16">
+			<div className="mx-auto flex max-w-[1152px] items-center justify-between">
+				<a href="#top" className="font-serif text-2xl font-bold sm:text-[28px] text-[#29574b] no-underline tracking-tight shrink-0">
+					SwasthyaSahay
+				</a>
+				<div className="hidden lg:flex items-center gap-8 text-sm font-semibold text-[#404845]">
+					<a className="border-b-2 border-[#29574b] pb-0.5 text-[#29574b] no-underline font-bold" href="#features">Features</a>
+					<a className="no-underline hover:text-[#29574b] transition-colors" href="#journey">How it works</a>
+					<a className="no-underline hover:text-[#29574b] transition-colors" href="#patients">For Patients</a>
+					<a className="no-underline hover:text-[#29574b] transition-colors" href="#facilities">For Facilities</a>
+					<a className="no-underline hover:text-[#29574b] transition-colors" href="#faq">FAQ</a>
+				</div>
+				<div className="flex items-center gap-4 text-sm font-semibold shrink-0">
+					<button onClick={() => navigate('/login')} className="hidden sm:block text-[#29574b] hover:underline bg-transparent border-none cursor-pointer font-bold px-2 py-1">
+						Login
+					</button>
+					<CtaButton onClick={() => navigate('/signup')} className="px-6 py-2.5 text-sm">
+						Sign up
+					</CtaButton>
+				</div>
 			</div>
-			<div className="flex items-center gap-4 text-sm font-semibold ml-auto">
-				<button onClick={() => navigate('/login')} className="hidden sm:block text-[#29574b] hover:underline bg-transparent border-none cursor-pointer">Login</button>
-				<CtaButton onClick={() => navigate('/signup')} className="px-5 py-2.5">Sign up</CtaButton>
-			</div>
-		</div>
-	</nav>
+		</nav>
+	)
 }
 
 function Hero() {
 	return <section id="top" className="relative overflow-hidden px-5 pb-20 pt-32 sm:px-8 lg:px-16 lg:pt-40">
 		<div className="relative mx-auto grid max-w-[1152px] items-center gap-12 lg:grid-cols-[5fr_7fr]">
-			<div className="order-2 lg:order-1"><h1 className="max-w-xl font-serif text-4xl sm:text-5xl lg:text-7xl font-bold leading-[1.1] tracking-[-.02em] text-[#29574b]">Better care,<br />closer to home.</h1><p className="mt-6 max-w-md text-lg leading-relaxed text-[#404845]">Navigate your health journey with clarity. MediMate connects you to the right care, at the right time, with quiet confidence.</p><div className="mt-8 flex flex-wrap gap-4"><CtaButton>Start your journey</CtaButton><SecondaryButton href="#journey">See how it works</SecondaryButton></div></div>
+			<div className="order-2 lg:order-1"><h1 className="max-w-xl font-serif text-4xl sm:text-5xl lg:text-7xl font-bold leading-[1.1] tracking-[-.02em] text-[#29574b]">Better care,<br />closer to home.</h1><p className="mt-6 max-w-md text-lg leading-relaxed text-[#404845]">Navigate your health journey with clarity. SwasthyaSahay connects you to the right care, at the right time, with quiet confidence.</p><div className="mt-8 flex flex-wrap gap-4"><CtaButton>Start your journey</CtaButton><SecondaryButton href="#journey">See how it works</SecondaryButton></div></div>
 			<div className="relative order-1 h-[420px] sm:h-[520px] lg:order-2 lg:h-[600px]"><div className="absolute inset-0 overflow-hidden rounded-[40px] border border-[#c0c8c4]/20 bg-[#c3e9f0]/20 shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)]"><img src={medicalTexture} alt="Abstract medical data visualization" className="h-full w-full object-cover opacity-80 mix-blend-multiply" /></div><MiniReferral /><RiskCard /></div>
 		</div>
 	</section>
@@ -82,6 +96,6 @@ function Connected() { return <section className="px-5 py-20 sm:px-8 lg:px-16"><
 
 function Accessibility() { const cards = [['Language', 'Native support for Hindi, Marathi, and regional languages to ensure everyone is understood.', iconLanguage], ['Voice', 'Integrated Speech-to-Text allows natural conversation without needing to type complex medical terms.', iconVoice], ['Connectivity', 'Built as a Progressive Web App (PWA) optimized for low-connectivity environments.', iconConnect]]; return <section id="patients" className="bg-[#eff5f1]/50 px-5 py-20 sm:px-8 lg:px-16"><div className="mx-auto max-w-[1152px]"><SectionTitle>Designed for the real world.</SectionTitle><div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">{cards.map(([title, text, icon]) => <article key={title} className="rounded-2xl border border-[#c0c8c4]/30 bg-[#f5fbf7] p-8 text-center shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)]"><img src={icon} alt="" className="mx-auto h-8 max-w-9" /><h3 className="mt-5 font-serif text-3xl font-semibold">{title}</h3><p className="mt-4 leading-relaxed text-[#404845]">{text}</p></article>)}</div></div></section> }
 
-function Footer() { return <><section id="start" className="bg-[#ece1d6] px-5 py-20 text-center sm:px-8"><h2 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-[#201b14]">Better care starts with the<br className="hidden md:block" /> next step.</h2><CtaButton className="mt-8 px-10 py-5 text-lg">Join MediMate Today</CtaButton></section><footer id="faq" className="bg-[#1e342e] px-5 py-16 text-[#ece1d6] sm:px-8 lg:px-16"><div className="mx-auto max-w-[1152px]"><div className="grid gap-12 border-b border-[#ece1d6]/20 pb-12 md:grid-cols-[2.5fr_1fr_1fr_1fr_1fr]"><div><h2 className="font-serif text-4xl font-bold">MediMate</h2><p className="mt-3 text-lg opacity-80">Connected care, closer to home.</p></div>{[['PLATFORM', 'Features', 'How it works', 'Pricing'], ['FOR PATIENTS', 'Find Care', 'Symptom Checker', 'Patient Portal'], ['FOR FACILITIES', 'Partner with us', 'Dashboard Login', 'Integration'], ['COMPANY', 'About', 'Contact']].map(([heading, ...links]) => <div key={heading}><h3 className="text-xs font-bold tracking-[.08em]">{heading}</h3><div className="mt-4 space-y-3 text-sm opacity-80">{links.map((link) => <a className="block text-[#ece1d6] no-underline hover:underline" href="#top" key={link}>{link}</a>)}</div></div>)}</div><div className="flex flex-col gap-5 pt-8 text-sm opacity-60 sm:flex-row sm:items-center sm:justify-between"><p>© 2024 MediMate. All rights reserved.</p><p className="max-w-2xl sm:text-right">MediMate provides AI-assisted health information and does not replace professional medical advice. Always consult a healthcare provider for diagnosis and treatment.</p></div></div></footer></> }
+function Footer() { return <><section id="start" className="bg-[#ece1d6] px-5 py-20 text-center sm:px-8"><h2 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold leading-tight text-[#201b14]">Better care starts with the<br className="hidden md:block" /> next step.</h2><CtaButton className="mt-8 px-10 py-5 text-lg">Join SwasthyaSahay Today</CtaButton></section><footer id="faq" className="bg-[#1e342e] px-5 py-16 text-[#ece1d6] sm:px-8 lg:px-16"><div className="mx-auto max-w-[1152px]"><div className="grid gap-12 border-b border-[#ece1d6]/20 pb-12 md:grid-cols-[2.5fr_1fr_1fr_1fr_1fr]"><div><h2 className="font-serif text-4xl font-bold">SwasthyaSahay</h2><p className="mt-3 text-lg opacity-80">Connected care, closer to home.</p></div>{[['PLATFORM', 'Features', 'How it works', 'Pricing'], ['FOR PATIENTS', 'Find Care', 'Symptom Checker', 'Patient Portal'], ['FOR FACILITIES', 'Partner with us', 'Dashboard Login', 'Integration'], ['COMPANY', 'About', 'Contact']].map(([heading, ...links]) => <div key={heading}><h3 className="text-xs font-bold tracking-[.08em]">{heading}</h3><div className="mt-4 space-y-3 text-sm opacity-80">{links.map((link) => <a className="block text-[#ece1d6] no-underline hover:underline" href="#top" key={link}>{link}</a>)}</div></div>)}</div><div className="flex flex-col gap-5 pt-8 text-sm opacity-60 sm:flex-row sm:items-center sm:justify-between"><p>© 2024 SwasthyaSahay. All rights reserved.</p><p className="max-w-2xl sm:text-right">SwasthyaSahay provides AI-assisted health information and does not replace professional medical advice. Always consult a healthcare provider for diagnosis and treatment.</p></div></div></footer></> }
 
-export default function Landing() { return <main className="bg-[#fcfdfc] font-sans text-[#171d1b]"><Navbar /><Hero /><Problem /><Assistant /><Referral /><Journey /><Dashboard /><Connected /><Accessibility /><Footer /></main> }
+export default function Landing() { return <main className="bg-transparent font-sans text-[#171d1b]"><MedicalShaderBg /><Navbar /><Hero /><Problem /><Assistant /><Referral /><Journey /><Dashboard /><Connected /><Accessibility /><Footer /></main> }

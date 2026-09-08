@@ -89,13 +89,13 @@ export default function Doctors() {
   }
 
   const leavePage = () => {
-    window.sessionStorage.removeItem('medimate-doctors-entry')
+    window.sessionStorage.removeItem('SwasthyaSahay-doctors-entry')
     navigate('/patient-dashboard')
   }
 
   return (
     <div className="min-h-screen bg-transparent text-[#171d1b]">
-      <header className="flex items-center justify-between px-4 md:px-12 py-4 border-b border-[rgba(41,87,75,0.12)] bg-transparent gap-4 flex-wrap">
+      <header className="flex items-center justify-between px-4 md:px-12 py-4 border-b border-[rgba(41,87,75,0.12)] bg-[#f5fbf7] gap-4 flex-wrap">
         <button
           onClick={leavePage}
           className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#c4dcd3] bg-[#eaf3ee] text-[#29574b] font-bold text-sm cursor-pointer"
@@ -105,9 +105,9 @@ export default function Doctors() {
         <Link
           className="text-[#29574b] font-bold text-2xl md:text-3xl font-serif no-underline"
           to="/patient-dashboard"
-          onClick={() => window.sessionStorage.removeItem('medimate-doctors-entry')}
+          onClick={() => window.sessionStorage.removeItem('SwasthyaSahay-doctors-entry')}
         >
-          MediMate
+          SwasthyaSahay
         </Link>
         <span className="text-xs font-bold text-[#717975] tracking-widest uppercase hidden sm:block">PATIENT CARE NETWORK</span>
       </header>

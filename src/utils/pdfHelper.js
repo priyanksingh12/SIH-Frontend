@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Helper utility to convert Base64 PDF strings to Blobs / Blob URLs
  * and handle seamless local viewing & downloading.
  */
@@ -72,7 +72,7 @@ export function convertBase64ToPdfBlobUrl(pdfSource) {
   return null
 }
 
-export function downloadPdfFile(pdfSource, filename = 'MediMate_Clinical_Report.pdf') {
+export function downloadPdfFile(pdfSource, filename = 'SwasthyaSahay_Clinical_Report.pdf') {
   if (!pdfSource) return
 
   const cleanFilename = filename.endsWith('.pdf') ? filename : `${filename}.pdf`

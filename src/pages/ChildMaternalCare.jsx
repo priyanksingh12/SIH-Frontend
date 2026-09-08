@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import {
   Syringe,
   Baby,
@@ -298,7 +298,7 @@ function CategoryCards() {
 
 export default function ChildMaternalCare() {
   const user = getStoredUser()
-  const userName = user?.name || window.localStorage.getItem('medimate-account-name') || 'there'
+  const userName = user?.name || window.localStorage.getItem('SwasthyaSahay-account-name') || 'there'
   const [activeSection, setActiveSection] = useState('child')
 
   return (

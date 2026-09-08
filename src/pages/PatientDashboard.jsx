@@ -22,7 +22,6 @@ import {
   TrendingUp,
   Building2,
   ShoppingBag,
-  Calendar,
   PlusCircle,
   Sparkles,
   Clock,
@@ -53,7 +52,6 @@ const navItems = [
   [Stethoscope,           'Doctors'],
   [Building2,             'Hospitals'],
   [ShoppingBag,           'Stores'],
-  [Calendar,              'Records'],
   [Siren,                 'Emergency'],
   [Baby,                  'Child & Maternal Health'],
   [User,                  'My Profile'],
@@ -106,7 +104,7 @@ function formatSlot(slot) {
 }
 
 function getMergedVitalsList(backendList) {
-  const localList = JSON.parse(window.localStorage.getItem('medimate-vitals-history') || '[]')
+  const localList = JSON.parse(window.localStorage.getItem('SwasthyaSahay-vitals-history') || '[]')
   const combined = [...localList, ...(backendList || [])]
 
   const seen = new Set()
@@ -205,10 +203,10 @@ export function TopBar({ userName }) {
   const navigate = useNavigate()
   const initials = userName.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'PT'
   return (
-    <header className="h-[88px] flex items-center justify-between px-4 md:px-16 py-6 bg-transparent border-b border-[rgba(41,87,75,0.12)]">
+    <header className="h-[88px] flex items-center justify-between px-4 md:px-16 py-6 bg-[#f5fbf7] border-b border-[rgba(41,87,75,0.12)]">
       <a className="text-[#29574b] font-bold text-3xl font-serif flex items-center gap-2 no-underline" href="#dashboard" onClick={(e) => { e.preventDefault(); navigate('/patient-dashboard') }}>
         <span className="grid place-items-center w-7 h-7 rounded-lg bg-[#00ff88] text-[#171d1b] font-extrabold text-xl leading-none">✚</span>
-        <span>MediMate</span>
+        <span>SwasthyaSahay</span>
       </a>
       <div className="flex items-center gap-4">
         <motion.button onClick={() => navigate('/health-assistant')} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-2 px-5 py-2.5 rounded-full text-white bg-[#29574b] font-semibold text-base">
@@ -268,10 +266,10 @@ export function Sidebar({ userName, activeLabel = 'Dashboard' }) {
               onClick={(event) => {
                 event.preventDefault()
                 if (label === 'Dashboard') {
-                  window.localStorage.setItem('medimate-vitals-complete', 'true')
+                  window.localStorage.setItem('SwasthyaSahay-vitals-complete', 'true')
                   navigate('/patient-dashboard')
                 } else if (label === 'Doctors') {
-                  window.sessionStorage.setItem('medimate-doctors-entry', 'true')
+                  window.sessionStorage.setItem('SwasthyaSahay-doctors-entry', 'true')
                   navigate('/doctors')
                 } else if (label === 'My Profile') {
                   navigate('/patient-profile')
@@ -300,7 +298,7 @@ export function Sidebar({ userName, activeLabel = 'Dashboard' }) {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => {
-            window.localStorage.removeItem('medimate-vitals-complete')
+            window.localStorage.removeItem('SwasthyaSahay-vitals-complete')
             navigate('/vitals')
           }}
           className="w-full px-5 py-3.5 rounded-full bg-[#00ff88] text-[#171d1b] font-extrabold text-base border-0 cursor-pointer flex items-center justify-center gap-2"
@@ -577,7 +575,7 @@ function calculateHealthIndex(vitalsList) {
 export default function PatientDashboard() {
   const navigate = useNavigate()
   const user = getStoredUser()
-  const userName = user?.name || window.localStorage.getItem('medimate-account-name') || 'there'
+  const userName = user?.name || window.localStorage.getItem('SwasthyaSahay-account-name') || 'there'
   const firstName = userName.split(' ')[0]
   const patientId = user?.id
 
@@ -759,7 +757,7 @@ export default function PatientDashboard() {
                 whileTap={{ scale: 0.97 }}
                 className="button button-secondary"
                 onClick={() => {
-                  window.sessionStorage.setItem('medimate-doctors-entry', 'true')
+                  window.sessionStorage.setItem('SwasthyaSahay-doctors-entry', 'true')
                   navigate('/doctors')
                 }}
                 style={{ fontSize: '1.05rem', fontWeight: 700 }}
@@ -782,7 +780,7 @@ export default function PatientDashboard() {
               </div>
               <button
                 onClick={() => {
-                  window.sessionStorage.setItem('medimate-doctors-entry', 'true')
+                  window.sessionStorage.setItem('SwasthyaSahay-doctors-entry', 'true')
                   navigate('/doctors')
                 }}
                 style={{
@@ -814,7 +812,7 @@ export default function PatientDashboard() {
                 </p>
                 <button
                   onClick={() => {
-                    window.sessionStorage.setItem('medimate-doctors-entry', 'true')
+                    window.sessionStorage.setItem('SwasthyaSahay-doctors-entry', 'true')
                     navigate('/doctors')
                   }}
                   style={{ padding: '12px 26px', borderRadius: '999px', background: '#29574b', color: '#00ff88', fontWeight: 800, fontSize: '1rem', border: 0, cursor: 'pointer' }}
@@ -1319,7 +1317,7 @@ export default function PatientDashboard() {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => {
-                window.sessionStorage.setItem('medimate-doctors-entry', 'true')
+                window.sessionStorage.setItem('SwasthyaSahay-doctors-entry', 'true')
                 navigate('/doctors')
               }}
               style={{ padding: '14px 28px', borderRadius: '999px', background: '#29574b', color: '#ffffff', fontWeight: 800, fontSize: '1.05rem', border: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}

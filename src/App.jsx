@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+﻿import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import MedicalShaderBg from './components/MedicalShaderBg'
 import PatientDashboard from './pages/PatientDashboard'
@@ -27,10 +27,10 @@ import './App.css'
  * completed onboarding — so the check works across all devices/browsers.
  */
 function HomeRoute() {
-  const hasToken = !!window.localStorage.getItem('medimate-access-token')
-  const role = window.localStorage.getItem('medimate-account-role') || 'patient'
-  const vitalsDone = window.localStorage.getItem('medimate-vitals-complete') === 'true'
-  const doctorInfoDoneLocal = window.localStorage.getItem('medimate-doctor-info-complete') === 'true'
+  const hasToken = !!window.localStorage.getItem('SwasthyaSahay-access-token')
+  const role = window.localStorage.getItem('SwasthyaSahay-account-role') || 'patient'
+  const vitalsDone = window.localStorage.getItem('SwasthyaSahay-vitals-complete') === 'true'
+  const doctorInfoDoneLocal = window.localStorage.getItem('SwasthyaSahay-doctor-info-complete') === 'true'
 
   const [doctorChecked, setDoctorChecked] = useState(doctorInfoDoneLocal)
   const [doctorProfileExists, setDoctorProfileExists] = useState(doctorInfoDoneLocal)
@@ -45,9 +45,9 @@ function HomeRoute() {
         .then((res) => {
           const exists = !!(res?.doctor?.license_number)
           if (exists) {
-            window.localStorage.setItem('medimate-doctor-info-complete', 'true')
+            window.localStorage.setItem('SwasthyaSahay-doctor-info-complete', 'true')
             if (res.doctor.facility?.name) {
-              window.localStorage.setItem('medimate-doctor-facility', res.doctor.facility.name)
+              window.localStorage.setItem('SwasthyaSahay-doctor-facility', res.doctor.facility.name)
             }
           }
           setDoctorProfileExists(exists)
@@ -81,7 +81,7 @@ function HomeRoute() {
 }
 
 function ProtectedRoute({ children }) {
-  const hasToken = !!window.localStorage.getItem('medimate-access-token')
+  const hasToken = !!window.localStorage.getItem('SwasthyaSahay-access-token')
   if (!hasToken) {
     return <Navigate to="/" replace />
   }

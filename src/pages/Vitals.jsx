@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getStoredUser } from '../api/apiClient.js'
 import { saveVitals, addMedicalHistory } from '../api/patientApi.js'
@@ -31,7 +31,7 @@ export default function Vitals() {
   const navigate = useNavigate()
   const user = getStoredUser()
   const patientId = user?.id
-  const isDoctor = user?.role === 'doctor' || window.localStorage.getItem('medimate-account-role') === 'doctor'
+  const isDoctor = user?.role === 'doctor' || window.localStorage.getItem('SwasthyaSahay-account-role') === 'doctor'
   const dashPath = isDoctor ? '/doctor-dashboard' : '/patient-dashboard'
 
   const [form, setForm] = useState(
@@ -79,9 +79,9 @@ export default function Vitals() {
       created_at: recordTime,
     }
 
-    const history = JSON.parse(window.localStorage.getItem('medimate-vitals-history') || '[]')
+    const history = JSON.parse(window.localStorage.getItem('SwasthyaSahay-vitals-history') || '[]')
     history.unshift(newRecord)
-    window.localStorage.setItem('medimate-vitals-history', JSON.stringify(history))
+    window.localStorage.setItem('SwasthyaSahay-vitals-history', JSON.stringify(history))
 
     // Always save medical history to localStorage FIRST (works in guest mode too,
     // and ensures the Profile page can read the latest data even if the API fails).
@@ -94,13 +94,13 @@ export default function Vitals() {
       had_malaria: hadMalaria,
       doctor_notes: doctorNotes,
     }
-    const medHistoryLocal = JSON.parse(window.localStorage.getItem('medimate-medical-history') || '[]')
+    const medHistoryLocal = JSON.parse(window.localStorage.getItem('SwasthyaSahay-medical-history') || '[]')
     medHistoryLocal.unshift({ ...medHistoryPayload, created_at: new Date().toISOString() })
-    window.localStorage.setItem('medimate-medical-history', JSON.stringify(medHistoryLocal))
+    window.localStorage.setItem('SwasthyaSahay-medical-history', JSON.stringify(medHistoryLocal))
 
     if (!patientId) {
       // Guest mode: local save already done above.
-      window.localStorage.setItem('medimate-vitals-complete', 'true')
+      window.localStorage.setItem('SwasthyaSahay-vitals-complete', 'true')
       setSaved(true)
       return
     }
@@ -124,7 +124,7 @@ export default function Vitals() {
 
       await addMedicalHistory(patientId, { conditions, surgeries, had_typhoid: hadTyphoid, had_malaria: hadMalaria, doctor_notes: doctorNotes })
 
-      window.localStorage.setItem('medimate-vitals-complete', 'true')
+      window.localStorage.setItem('SwasthyaSahay-vitals-complete', 'true')
       setSaved(true)
     } catch (err) {
       setError(err.message || 'Failed to save vitals and medical history. Please try again.')
@@ -448,7 +448,7 @@ export default function Vitals() {
               <button
                 type="button"
                 onClick={() => {
-                  window.localStorage.setItem('medimate-vitals-complete', 'true')
+                  window.localStorage.setItem('SwasthyaSahay-vitals-complete', 'true')
                   navigate('/patient-dashboard')
                 }}
               >

@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react'
+﻿import { useMemo, useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { getFacilities } from '../api/facilityApi.js'
 import { registerDoctor } from '../api/doctorApi.js'
@@ -12,7 +12,7 @@ function DoctorSidebar() {
       <div className="flex items-center gap-3 mb-10 text-[#00ff88]">
         <span className="text-2xl">＋</span>
         <div>
-          <strong className="block text-xl tracking-tight text-white">MediMate</strong>
+          <strong className="block text-xl tracking-tight text-white">SwasthyaSahay</strong>
           <small className="text-[0.65rem] uppercase tracking-[2px] font-bold opacity-80">CLINICAL SUITE</small>
         </div>
       </div>
@@ -108,9 +108,9 @@ export default function DoctorInfo() {
         },
       }
 
-      window.localStorage.setItem('medimate-doctor-info-complete', 'true')
-      window.localStorage.setItem('medimate-doctor-medical-id', medicalId)
-      window.localStorage.setItem('medimate-doctor-facility', activeFacility.name)
+      window.localStorage.setItem('SwasthyaSahay-doctor-info-complete', 'true')
+      window.localStorage.setItem('SwasthyaSahay-doctor-medical-id', medicalId)
+      window.localStorage.setItem('SwasthyaSahay-doctor-facility', activeFacility.name)
       navigate('/doctor-dashboard')
     } catch (err) {
       setError(err.message || 'Failed to complete profile. Please try again.')

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { signup } from '../api/authApi.js'
 
@@ -65,11 +65,11 @@ export default function SignUp() {
         preferred_language: form.preferred_language,
       })
       const user = data.user
-      window.localStorage.setItem('medimate-signup-complete', 'true')
-      window.localStorage.setItem('medimate-account-role', user.role || role)
-      window.localStorage.setItem('medimate-account-name', user.name || form.name)
-      window.localStorage.setItem('medimate-account-email', form.email || '')
-      window.localStorage.removeItem('medimate-auth-mode')
+      window.localStorage.setItem('SwasthyaSahay-signup-complete', 'true')
+      window.localStorage.setItem('SwasthyaSahay-account-role', user.role || role)
+      window.localStorage.setItem('SwasthyaSahay-account-name', user.name || form.name)
+      window.localStorage.setItem('SwasthyaSahay-account-email', form.email || '')
+      window.localStorage.removeItem('SwasthyaSahay-auth-mode')
       // Navigate without reload — let React Router handle it
       navigate('/account-created')
     } catch (err) {
@@ -88,7 +88,7 @@ export default function SignUp() {
         <header className="relative z-10 flex items-center gap-4">
           <div className="grid place-items-center w-10 h-10 rounded-full bg-[#1b342e] text-white text-lg font-bold">⊙</div>
           <div>
-            <strong className="block text-xl leading-tight">MediMate</strong>
+            <strong className="block text-xl leading-tight">SwasthyaSahay</strong>
             <small className="block text-[10px] tracking-widest opacity-80 uppercase">CONNECTED HEALTHCARE ECOSYSTEM</small>
           </div>
           <button type="button" onClick={backToLanding} className="ml-auto bg-transparent border-none text-white text-sm font-semibold cursor-pointer hover:underline flex items-center gap-2">
@@ -248,7 +248,7 @@ export default function SignUp() {
               className="mt-0.5 w-5 h-5 rounded accent-[#29574b] cursor-pointer shrink-0"
             />
             <span className="opacity-80">
-              I agree to the MediMate <u className="font-semibold cursor-pointer text-[#1b342e]">Terms of Service</u>, <u className="font-semibold cursor-pointer text-[#1b342e]">Privacy Policy</u>, and ABHA Data Consent.
+              I agree to the SwasthyaSahay <u className="font-semibold cursor-pointer text-[#1b342e]">Terms of Service</u>, <u className="font-semibold cursor-pointer text-[#1b342e]">Privacy Policy</u>, and ABHA Data Consent.
             </span>
           </label>
 
