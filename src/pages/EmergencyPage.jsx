@@ -1,4 +1,4 @@
-﻿import { useState } from "react"
+import { useState } from "react"
 import { TopBar, Sidebar } from "./PatientDashboard"
 import { getStoredUser } from "../api/apiClient.js"
 import {
@@ -48,7 +48,7 @@ function UrgencyBanner({ urgency, specialty, needs }) {
           <div
             className={`text-xs font-extrabold tracking-widest uppercase mb-1 ${isHigh ? 'text-[#ba1a1a]' : 'text-[#7a5f00]'}`}
           >
-            {isHigh ? "ðŸ”´ High Urgency â€” Seek Immediate Help" : "ðŸŸ¡ Normal Urgency â€” Clinic Visit Advised"}
+            {isHigh ? "🔴 High Urgency — Seek Immediate Help" : "🟡 Normal Urgency — Clinic Visit Advised"}
           </div>
           <div className="text-base font-bold text-[#171d1b]">
             Recommended Department:{" "}
@@ -59,7 +59,7 @@ function UrgencyBanner({ urgency, specialty, needs }) {
       <span
         className={`px-4 py-1.5 rounded-full text-white text-sm font-bold tracking-wide shrink-0 ${isHigh ? 'bg-[#ba1a1a]' : 'bg-[#8a6d00]'}`}
       >
-        {needs === "hospital" ? "ðŸ¥ Hospital Required" : "ðŸ©º Doctor / Clinic"}
+        {needs === "hospital" ? "🏥 Hospital Required" : "🩺 Doctor / Clinic"}
       </span>
     </div>
   )
@@ -82,7 +82,7 @@ function FacilityCard({ facility, index }) {
         <div className="flex justify-between items-start gap-3 flex-wrap">
           <div>
             <div className="text-xs font-bold text-[#59756e] uppercase tracking-widest mb-1">
-              #{index + 1} Â· {type}
+              #{index + 1} · {type}
             </div>
             <h3 className="m-0 text-lg font-bold text-[#171d1b] leading-snug">{name}</h3>
           </div>
@@ -172,7 +172,7 @@ export default function EmergencyPage() {
                 Emergency Medical Finder
               </h1>
               <p className="mt-2 text-[#59756e] text-base font-medium">
-                Describe your symptoms â€” our AI will triage your case and find the nearest appropriate healthcare facility.
+                Describe your symptoms — our AI will triage your case and find the nearest appropriate healthcare facility.
               </p>
             </div>
             {result && (
@@ -189,7 +189,7 @@ export default function EmergencyPage() {
           {/* Disclaimer */}
           <div className="flex items-start gap-2.5 px-4 py-3.5 rounded-xl bg-[#fffbea] border border-[#f5e19a] mb-7 text-sm text-[#7a5f00] font-medium">
             <Info size={17} className="shrink-0 mt-0.5" />
-            <span><b>For life-threatening emergencies, call 112 immediately.</b> This tool supplements emergency planning â€” AI triage + live map data may take 15â€“25 seconds to respond.</span>
+            <span><b>For life-threatening emergencies, call 112 immediately.</b> This tool supplements emergency planning — AI triage + live map data may take 15–25 seconds to respond.</span>
           </div>
 
           {/* Input Card */}
@@ -224,7 +224,7 @@ export default function EmergencyPage() {
                 {loading ? (
                   <>
                     <Loader2 size={20} className="animate-spin" />
-                    Analyzing Symptoms &amp; Finding Facilitiesâ€¦
+                    Analyzing Symptoms &amp; Finding Facilities...
                   </>
                 ) : (
                   <>
@@ -236,7 +236,7 @@ export default function EmergencyPage() {
 
               {loading && (
                 <p className="text-center mt-3 text-[#59756e] text-sm font-medium">
-                  Our AI is triaging your symptoms and querying live map data â€” this typically takes 15â€“25 seconds.
+                  Our AI is triaging your symptoms and querying live map data — this typically takes 15–25 seconds.
                 </p>
               )}
             </div>
