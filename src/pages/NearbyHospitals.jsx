@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { TopBar, Sidebar } from './PatientDashboard'
 import { getStoredUser } from '../api/apiClient.js'
 import {
@@ -15,66 +15,11 @@ import {
   ZoomIn,
 } from 'lucide-react'
 
-// ---------------------------------------------------------------------------
-// Overpass / geo helpers
-// ---------------------------------------------------------------------------
-const OVERPASS_ENDPOINTS = [
-  '/api/overpass/interpreter',
-  'https://overpass-api.de/api/interpreter',
-  'https://lz4.overpass-api.de/api/interpreter',
-  'https://z.overpass-api.de/api/interpreter',
-]
-const REQUEST_TIMEOUT_MS = 12000
+import { fetchNearbyHospitals } from '../services/osmService.js'
 
-function getFallbackHospitals(lat, lng) {
-  return [
-    {
-      id: 'fallback-1',
-      name: 'Community Health Centre (CHC)',
-      category: 'hospital',
-      lat: lat + 0.008,
-      lng: lng + 0.006,
-      distanceKm: 0.9,
-      address: 'Main Road, Health Sub-centre Complex',
-      phone: '+91 1800-180-1104',
-      emergency: true,
-    },
-    {
-      id: 'fallback-2',
-      name: 'Primary Health Centre (PHC)',
-      category: 'clinic',
-      lat: lat - 0.012,
-      lng: lng + 0.009,
-      distanceKm: 1.4,
-      address: 'Taluka Road, Near Panchayat Bhawan',
-      phone: '+91 0253-221100',
-      emergency: true,
-    },
-    {
-      id: 'fallback-3',
-      name: 'Sub-District Hospital & Emergency Unit',
-      category: 'hospital',
-      lat: lat + 0.025,
-      lng: lng - 0.015,
-      distanceKm: 3.2,
-      address: 'Civil Lines, Station Road',
-      phone: '+91 0253-257000',
-      emergency: true,
-    },
-    {
-      id: 'fallback-4',
-      name: 'Rural Healthcare Clinic',
-      category: 'doctors',
-      lat: lat - 0.018,
-      lng: lng - 0.012,
-      distanceKm: 2.1,
-      address: 'Market Yard, Opposite Bus Stand',
-      phone: '+91 98220-11223',
-      emergency: false,
-    },
-  ]
-}
-
+// ---------------------------------------------------------------------------
+// Hospital Categories & Metadata
+// ---------------------------------------------------------------------------
 const CATEGORIES = [
   { key: 'all',      label: 'All',       Icon: ShieldPlus },
   { key: 'hospital', label: 'Hospitals', Icon: Building2  },
@@ -87,83 +32,6 @@ const CATEGORY_META = {
   clinic:   { label: 'Clinic',    badgeBg: '#e6f4ea', badgeColor: '#29574b', dotColor: '#29574b' },
   doctors:  { label: 'Doctor',    badgeBg: '#f3e8fd', badgeColor: '#6a1b9a', dotColor: '#6a1b9a' },
   other:    { label: 'Facility',  badgeBg: '#eff5f1', badgeColor: '#404845', dotColor: '#404845' },
-}
-
-function haversineKm(lat1, lng1, lat2, lng2) {
-  const R = 6371
-  const dLat = ((lat2 - lat1) * Math.PI) / 180
-  const dLng = ((lng2 - lng1) * Math.PI) / 180
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) ** 2
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-}
-
-function classifyTag(tags) {
-  if (!tags) return 'other'
-  if (tags.amenity === 'hospital') return 'hospital'
-  if (tags.amenity === 'clinic')   return 'clinic'
-  if (tags.amenity === 'doctors')  return 'doctors'
-  return 'other'
-}
-
-function buildQuery(lat, lng, r) {
-  return `[out:json][timeout:15];
-(
-  node["amenity"~"hospital|clinic|doctors"](around:${r},${lat},${lng});
-  way["amenity"~"hospital|clinic|doctors"](around:${r},${lat},${lng});
-);
-out center;`
-}
-
-async function fetchNearby(lat, lng, radius) {
-  const query = buildQuery(lat, lng, radius)
-
-  for (const url of OVERPASS_ENDPOINTS) {
-    const ctrl = new AbortController()
-    const tid = setTimeout(() => ctrl.abort(), REQUEST_TIMEOUT_MS)
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-        body: `data=${encodeURIComponent(query)}`,
-        signal: ctrl.signal,
-      })
-      clearTimeout(tid)
-      if (!res.ok) continue
-      const data = await res.json()
-      const list = (data.elements || [])
-        .map((el) => {
-          const elLat = el.lat ?? el.center?.lat
-          const elLng = el.lon ?? el.center?.lon
-          const name = el.tags?.name
-          if (!elLat || !elLng || !name) return null
-          return {
-            id: `${el.type}/${el.id}`,
-            name,
-            category: classifyTag(el.tags),
-            lat: elLat,
-            lng: elLng,
-            distanceKm: haversineKm(lat, lng, elLat, elLng),
-            address: el.tags?.['addr:full'] || el.tags?.['addr:street'] || null,
-            phone: el.tags?.phone || el.tags?.['contact:phone'] || null,
-            emergency: el.tags?.emergency === 'yes',
-          }
-        })
-        .filter(Boolean)
-        .sort((a, b) => a.distanceKm - b.distanceKm)
-
-      if (list.length > 0) return list
-    } catch (e) {
-      clearTimeout(tid)
-      console.warn(`[Overpass] Failed on ${url}:`, e.message)
-    }
-  }
-
-  // Fallback to local facility registry if all external OSM mirrors are unavailable
-  return getFallbackHospitals(lat, lng)
 }
 
 function useGeolocation() {
@@ -227,7 +95,7 @@ export default function NearbyHospitals() {
     let cancelled = false
     setLoadState('loading')
     setResults([])
-    fetchNearby(coords.lat, coords.lng, radius)
+    fetchNearbyHospitals(coords.lat, coords.lng, radius)
       .then((r) => { if (!cancelled) { setResults(r); setLoadState('success') } })
       .catch(()  => { if (!cancelled) setLoadState('error') })
     return () => { cancelled = true }
@@ -454,6 +322,11 @@ export default function NearbyHospitals() {
                           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <span style={{ fontWeight: 800, fontSize: '1.05rem', color: '#171d1b', display: 'block' }}>{place.name}</span>
+                              {place.operator && (
+                                <span style={{ fontSize: '0.8rem', color: '#59756e', fontWeight: 600, display: 'block', marginTop: '2px' }}>
+                                  Managed by {place.operator}
+                                </span>
+                              )}
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px', flexWrap: 'wrap' }}>
                                 <span style={{ padding: '2px 10px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: 700, background: meta.badgeBg, color: meta.badgeColor }}>
                                   {meta.label}
