@@ -36,10 +36,16 @@ const BODY_AREAS = [
     symptomText: "Severe acute upper right abdominal pain, sudden jaundice or hepatic distress (Liver emergency)",
   },
   {
-    id: "shoulder",
-    label: "Shoulder",
+    id: "muscle_bones",
+    label: "Muscle and Bones",
     icon: "🦴",
-    symptomText: "Acute shoulder dislocation, severe fracture, joint trauma or intense shoulder pain (Shoulder emergency)",
+    symptomText: "Severe acute bone fracture, joint dislocation, deep muscle trauma, tendon injury or intense musculoskeletal distress (Muscle and Bones emergency)",
+  },
+  {
+    id: "neuro",
+    label: "Neuro",
+    icon: "🧠",
+    symptomText: "Sudden facial drooping, speech difficulty, acute seizure, loss of consciousness, stroke symptoms or severe neurological distress (Neuro emergency)",
   },
 ]
 
@@ -93,9 +99,8 @@ function UrgencyBanner({ urgency, specialty, needs }) {
   )
 }
 
-function FacilityCard({ facility, index }) {
-  const { name, type, distance_km, address, phone, lat, lng } = facility
-  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+function FacilityCard({ facility, index, onOpenDirections }) {
+  const { name, type, distance_km, address, phone } = facility
   const isHospital = type === "hospital"
   return (
     <div className="p-5 rounded-2xl bg-white border border-[#e2eae5] shadow-sm flex gap-4 items-start">
@@ -134,15 +139,14 @@ function FacilityCard({ facility, index }) {
               {phone}
             </a>
           )}
-          <a
-            href={mapsUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#eaf3ee] text-[#29574b] text-sm font-bold no-underline border border-[#c4dcd3]"
+          <button
+            type="button"
+            onClick={() => onOpenDirections?.(facility)}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#eaf3ee] text-[#29574b] text-sm font-bold no-underline border border-[#c4dcd3] cursor-pointer hover:bg-[#29574b] hover:text-[#00ff88] transition-colors"
           >
             <Navigation2 size={14} />
             Get Directions
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -157,6 +161,14 @@ export default function EmergencyPage() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
+  const [iframeModal, setIframeModal] = useState(null)
+
+  const handleOpenDirections = (facility) => {
+    setIframeModal({
+      url: `https://maps.google.com/maps?q=${facility.lat},${facility.lng}&z=16&output=embed`,
+      title: `${facility.name} — Live Directions & Location`,
+    })
+  }
 
   const triggerSearch = (queryText) => {
     const textToSearch = (queryText !== undefined ? queryText : symptoms).trim()
@@ -205,6 +217,7 @@ export default function EmergencyPage() {
     setSelectedArea(null)
     setResult(null)
     setError(null)
+    setIframeModal(null)
   }
 
   return (
@@ -256,7 +269,7 @@ export default function EmergencyPage() {
                 <p className="text-xs text-[#59756e] font-semibold mb-3">
                   Click any organ below to immediately triage and find the nearest emergency medical facility:
                 </p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
                   {BODY_AREAS.map((area) => {
                     const isSelected = selectedArea === area.id
                     return (
@@ -354,7 +367,12 @@ export default function EmergencyPage() {
               {result.results && result.results.length > 0 ? (
                 <div className="flex flex-col gap-3.5">
                   {result.results.map((facility, idx) => (
-                    <FacilityCard key={facility.name + idx} facility={facility} index={idx} />
+                    <FacilityCard
+                      key={facility.name + idx}
+                      facility={facility}
+                      index={idx}
+                      onOpenDirections={handleOpenDirections}
+                    />
                   ))}
                 </div>
               ) : (
@@ -370,6 +388,36 @@ export default function EmergencyPage() {
           )}
         </main>
       </div>
+
+      {/* Embedded Directions iFrame Modal */}
+      {iframeModal && (
+        <div className="fixed inset-0 z-[99999] bg-[#0f1d19]/85 backdrop-blur-md flex flex-col p-4 md:p-8">
+          <div className="flex items-center justify-between px-6 py-4 bg-[#1b342e] text-white rounded-t-2xl">
+            <div className="flex items-center gap-2.5">
+              <MapPin size={22} className="text-[#00ff88]" />
+              <strong className="text-lg font-bold">{iframeModal.title}</strong>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIframeModal(null)}
+              className="bg-white/15 hover:bg-white/25 border-0 text-white w-9 h-9 rounded-full text-2xl cursor-pointer grid place-items-center transition-colors"
+            >
+              ×
+            </button>
+          </div>
+          <div className="flex-1 bg-white rounded-b-2xl overflow-hidden shadow-2xl">
+            <iframe
+              src={iframeModal.url}
+              title={iframeModal.title}
+              width="100%"
+              height="100%"
+              className="w-full h-full border-0 block"
+              allowFullScreen
+              loading="lazy"
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

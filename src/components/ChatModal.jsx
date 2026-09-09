@@ -175,105 +175,37 @@ export default function ChatModal({ appointment, currentUser, onClose }) {
 
   return (
     <AnimatePresence>
-      <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 9999,
-          background: 'rgba(15, 29, 25, 0.75)',
-          backdropFilter: 'blur(6px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '16px',
-        }}
-      >
+      <div className="fixed inset-0 z-[9999] bg-[#0f1d19]/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          style={{
-            width: '100%',
-            maxWidth: '540px',
-            height: '620px',
-            maxHeight: '90vh',
-            background: '#ffffff',
-            borderRadius: '24px',
-            boxShadow: '0 25px 60px -15px rgba(23, 45, 38, 0.35)',
-            border: '1px solid #dcece5',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-          }}
+          className="w-full sm:max-w-lg md:max-w-[540px] h-[85vh] sm:h-[620px] max-h-[92vh] bg-white rounded-t-[28px] sm:rounded-3xl shadow-2xl border border-[#dcece5] flex flex-col overflow-hidden"
         >
           {/* Header */}
-          <div
-            style={{
-              padding: '18px 24px',
-              background: '#29574b',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <div
-                style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '14px',
-                  background: '#00ff88',
-                  color: '#171d1b',
-                  display: 'grid',
-                  placeItems: 'center',
-                  fontWeight: 800,
-                  fontSize: '1.2rem',
-                }}
-              >
+          <div className="px-5 sm:px-6 py-4 bg-[#29574b] text-white flex items-center justify-between shadow-sm shrink-0">
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-10 sm:w-11 h-10 sm:h-11 rounded-xl bg-[#00ff88] text-[#171d1b] grid place-items-center font-extrabold text-lg shrink-0">
                 <MessageSquare size={22} />
               </div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#ffffff' }}>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="m-0 text-base sm:text-lg font-bold text-white truncate max-w-[180px] sm:max-w-xs">
                     {otherName}
                   </h3>
-                  <span
-                    style={{
-                      background: 'rgba(0, 255, 136, 0.2)',
-                      color: '#00ff88',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      padding: '2px 8px',
-                      borderRadius: '999px',
-                      border: '1px solid rgba(0, 255, 136, 0.4)',
-                    }}
-                  >
+                  <span className="bg-[#00ff88]/20 text-[#00ff88] text-xs font-bold px-2 py-0.5 rounded-full border border-[#00ff88]/40 shrink-0">
                     {otherRole}
                   </span>
                 </div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontSize: '0.8rem',
-                    color: '#d1fae5',
-                    marginTop: '3px',
-                  }}
-                >
+                <div className="flex items-center gap-1.5 text-xs text-[#d1fae5] mt-0.5 flex-wrap">
                   <span
-                    style={{
-                      width: '7px',
-                      height: '7px',
-                      borderRadius: '50%',
-                      background: isConnected ? '#00ff88' : '#fbbf24',
-                    }}
+                    className={`w-2 h-2 rounded-full shrink-0 ${
+                      isConnected ? 'bg-[#00ff88]' : 'bg-[#fbbf24]'
+                    }`}
                   />
                   <span>{isConnected ? 'Real-time Connected' : 'Connecting…'}</span>
                   <span>•</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                  <span className="flex items-center gap-1">
                     <ShieldCheck size={13} /> Encrypted Session
                   </span>
                 </div>
@@ -282,18 +214,7 @@ export default function ChatModal({ appointment, currentUser, onClose }) {
 
             <button
               onClick={onClose}
-              style={{
-                background: 'rgba(255,255,255,0.12)',
-                border: 'none',
-                color: '#ffffff',
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                display: 'grid',
-                placeItems: 'center',
-                cursor: 'pointer',
-                transition: 'background 0.2s',
-              }}
+              className="w-9 h-9 rounded-full bg-white/12 hover:bg-white/20 border-0 text-white grid place-items-center cursor-pointer transition-colors shrink-0"
               title="Close chat"
             >
               <X size={18} />
@@ -301,70 +222,31 @@ export default function ChatModal({ appointment, currentUser, onClose }) {
           </div>
 
           {/* Body / Messages */}
-          <div
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: '20px',
-              background: '#f8faf9',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-            }}
-          >
+          <div className="flex-1 overflow-y-auto p-4 sm:p-5 bg-[#f8faf9] flex flex-col gap-3">
             {!isApproved ? (
-              <div
-                style={{
-                  padding: '24px',
-                  textAlign: 'center',
-                  background: '#fef3c7',
-                  borderRadius: '16px',
-                  border: '1px solid #fde68a',
-                  color: '#92400e',
-                  margin: 'auto 0',
-                }}
-              >
-                <Clock size={32} style={{ margin: '0 auto 8px', display: 'block' }} />
-                <strong style={{ display: 'block', fontSize: '1.05rem', marginBottom: '6px' }}>
+              <div className="p-6 text-center bg-[#fef3c7] rounded-2xl border border-[#fde68a] text-[#92400e] my-auto">
+                <Clock size={32} className="mx-auto mb-2 block" />
+                <strong className="block text-base font-bold mb-1.5">
                   Awaiting Doctor Approval
                 </strong>
-                <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.4 }}>
+                <p className="m-0 text-sm leading-relaxed">
                   Consultation chat will be automatically unlocked as soon as the doctor confirms and
                   approves this appointment.
                 </p>
               </div>
             ) : loadingHistory ? (
-              <div style={{ margin: 'auto', textAlign: 'center', color: '#59756e', fontSize: '0.95rem' }}>
+              <div className="my-auto text-center text-[#59756e] text-sm sm:text-base font-medium">
                 Loading conversation…
               </div>
             ) : messages.length === 0 ? (
-              <div
-                style={{
-                  margin: 'auto',
-                  textAlign: 'center',
-                  color: '#717975',
-                  padding: '30px 20px',
-                  maxWidth: '340px',
-                }}
-              >
-                <div
-                  style={{
-                    width: '56px',
-                    height: '56px',
-                    borderRadius: '50%',
-                    background: '#eaf3ee',
-                    color: '#29574b',
-                    display: 'grid',
-                    placeItems: 'center',
-                    margin: '0 auto 12px',
-                  }}
-                >
+              <div className="my-auto text-center text-[#717975] py-8 px-4 max-w-xs mx-auto">
+                <div className="w-14 h-14 rounded-full bg-[#eaf3ee] text-[#29574b] grid place-items-center mx-auto mb-3">
                   <UserCheck size={26} />
                 </div>
-                <strong style={{ display: 'block', fontSize: '1rem', color: '#171d1b', marginBottom: '4px' }}>
+                <strong className="block text-base font-bold text-[#171d1b] mb-1">
                   Consultation Room Ready
                 </strong>
-                <p style={{ fontSize: '0.88rem', margin: 0 }}>
+                <p className="text-sm m-0 leading-normal">
                   Send a message below to start your direct consultation with {otherName}.
                 </p>
               </div>
@@ -383,39 +265,17 @@ export default function ChatModal({ appointment, currentUser, onClose }) {
                 return (
                   <div
                     key={msg.id || idx}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: isMine ? 'flex-end' : 'flex-start',
-                      width: '100%',
-                    }}
+                    className={`flex flex-col ${isMine ? 'items-end' : 'items-start'} w-full`}
                   >
-                    <span
-                      style={{
-                        fontSize: '0.75rem',
-                        color: '#717975',
-                        fontWeight: 600,
-                        marginBottom: '3px',
-                        padding: '0 4px',
-                      }}
-                    >
+                    <span className="text-xs text-[#717975] font-semibold mb-1 px-1">
                       {senderLabel} {formattedTime ? `• ${formattedTime}` : ''}
                     </span>
                     <div
-                      style={{
-                        maxWidth: '80%',
-                        padding: '12px 16px',
-                        borderRadius: isMine ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-                        background: isMine ? '#29574b' : '#ffffff',
-                        color: isMine ? '#ffffff' : '#171d1b',
-                        boxShadow: isMine
-                          ? '0 4px 12px rgba(41, 87, 75, 0.2)'
-                          : '0 2px 8px rgba(0,0,0,0.06)',
-                        border: isMine ? 'none' : '1px solid #e2eae5',
-                        fontSize: '0.95rem',
-                        lineHeight: 1.45,
-                        wordBreak: 'break-word',
-                      }}
+                      className={`max-w-[85%] sm:max-w-[80%] px-4 py-3 text-sm sm:text-base leading-relaxed break-words ${
+                        isMine
+                          ? 'rounded-[18px_18px_4px_18px] bg-[#29574b] text-white shadow-sm'
+                          : 'rounded-[18px_18px_18px_4px] bg-white text-[#171d1b] shadow-sm border border-[#e2eae5]'
+                      }`}
                     >
                       {msg.text || msg.message || msg.content}
                     </div>
@@ -430,50 +290,23 @@ export default function ChatModal({ appointment, currentUser, onClose }) {
           {isApproved && (
             <form
               onSubmit={handleSendMessage}
-              style={{
-                padding: '16px 20px',
-                background: '#ffffff',
-                borderTop: '1px solid #e5ebe8',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-              }}
+              className="px-4 sm:px-5 py-3.5 sm:py-4 bg-white border-t border-[#e5ebe8] flex items-center gap-2.5 sm:gap-3 shrink-0"
             >
               <input
                 type="text"
                 placeholder={`Message ${otherName}…`}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                style={{
-                  flex: 1,
-                  padding: '12px 18px',
-                  borderRadius: '999px',
-                  border: '1.5px solid #d5ded9',
-                  outline: 'none',
-                  fontSize: '0.95rem',
-                  fontFamily: 'inherit',
-                  background: '#f9fbfa',
-                  transition: 'border-color 0.2s',
-                }}
-                onFocus={(e) => (e.target.style.borderColor = '#29574b')}
-                onBlur={(e) => (e.target.style.borderColor = '#d5ded9')}
+                className="flex-1 px-4 py-2.5 sm:py-3 rounded-full border border-[#d5ded9] focus:border-[#29574b] focus:ring-2 focus:ring-[#29574b]/10 bg-[#f9fbfa] text-sm sm:text-base text-[#171d1b] outline-none transition-all"
               />
               <button
                 type="submit"
                 disabled={!inputText.trim()}
-                style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '50%',
-                  background: inputText.trim() ? '#29574b' : '#e2eae5',
-                  color: inputText.trim() ? '#00ff88' : '#a0aea8',
-                  border: 'none',
-                  display: 'grid',
-                  placeItems: 'center',
-                  cursor: inputText.trim() ? 'pointer' : 'not-allowed',
-                  transition: 'all 0.2s',
-                  flexShrink: 0,
-                }}
+                className={`w-10 sm:w-11 h-10 sm:h-11 rounded-full grid place-items-center border-0 transition-all shrink-0 ${
+                  inputText.trim()
+                    ? 'bg-[#29574b] text-[#00ff88] cursor-pointer shadow-md'
+                    : 'bg-[#e2eae5] text-[#a0aea8] cursor-not-allowed'
+                }`}
               >
                 <Send size={18} />
               </button>

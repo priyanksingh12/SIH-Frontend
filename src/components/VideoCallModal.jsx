@@ -442,93 +442,38 @@ export default function VideoCallModal({
   }
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 99999,
-        background: 'rgba(9, 18, 15, 0.94)',
-        backdropFilter: 'blur(12px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-      }}
-    >
+    <div className="fixed inset-0 z-[99999] bg-[#09120f]/95 backdrop-blur-xl flex items-center justify-center p-0 sm:p-4 md:p-6">
       <motion.div
         initial={{ opacity: 0, scale: 0.92 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.92 }}
-        style={{
-          width: '100%',
-          maxWidth: '1040px',
-          height: '740px',
-          maxHeight: '92vh',
-          background: '#152520',
-          borderRadius: '28px',
-          boxShadow: '0 30px 90px rgba(0,0,0,0.6)',
-          border: '1px solid rgba(255,255,255,0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
+        className="w-full sm:max-w-4xl lg:max-w-[1040px] h-full sm:h-[88vh] md:h-[740px] max-h-screen sm:max-h-[94vh] bg-[#152520] sm:rounded-[28px] shadow-2xl border-0 sm:border border-white/10 flex flex-col relative overflow-hidden"
       >
         {/* Top Floating Bar */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 20,
-            left: 24,
-            right: 24,
-            zIndex: 10,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            background: 'rgba(21, 37, 32, 0.65)',
-            backdropFilter: 'blur(10px)',
-            padding: '12px 20px',
-            borderRadius: '999px',
-            border: '1px solid rgba(255,255,255,0.12)',
-            color: '#fff',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="absolute top-3 sm:top-5 left-3 sm:left-6 right-3 sm:right-6 z-10 flex items-center justify-between bg-[#152520]/80 backdrop-blur-md px-3.5 sm:px-5 py-2 sm:py-3 rounded-full border border-white/12 text-white shadow-lg">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <span
-              style={{
-                width: '10px',
-                height: '10px',
-                borderRadius: '50%',
-                background: callStatus === 'connected' ? '#00ff88' : '#fbbf24',
-                boxShadow:
-                  callStatus === 'connected'
-                    ? '0 0 12px #00ff88'
-                    : '0 0 12px #fbbf24',
-              }}
+              className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                callStatus === 'connected'
+                  ? 'bg-[#00ff88] shadow-[0_0_12px_#00ff88]'
+                  : 'bg-[#fbbf24] shadow-[0_0_12px_#fbbf24]'
+              }`}
             />
-            <strong style={{ fontSize: '1.05rem', color: '#fff' }}>{otherName}</strong>
-            <span style={{ fontSize: '0.82rem', color: '#a7f3d0', opacity: 0.85 }}>
+            <strong className="text-sm sm:text-base font-bold text-white truncate max-w-[130px] sm:max-w-xs">
+              {otherName}
+            </strong>
+            <span className="text-xs text-[#a7f3d0]/85 hidden sm:inline">
               • {isDoctor ? 'Patient' : 'Attending Clinician'}
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div className="flex items-center gap-2 sm:gap-3.5 shrink-0">
             {callStatus === 'connected' ? (
-              <span
-                style={{
-                  fontFamily: 'monospace',
-                  fontSize: '0.95rem',
-                  fontWeight: 700,
-                  color: '#00ff88',
-                  background: 'rgba(0,255,136,0.15)',
-                  padding: '4px 12px',
-                  borderRadius: '999px',
-                }}
-              >
+              <span className="font-mono text-xs sm:text-sm font-bold text-[#00ff88] bg-[#00ff88]/15 px-2.5 sm:px-3 py-1 rounded-full">
                 {formatDuration(callDuration)}
               </span>
             ) : (
-              <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>
+              <span className="text-xs text-slate-300 hidden sm:inline">
                 {callStatus === 'ringing'
                   ? 'Calling… Waiting for partner to accept'
                   : callStatus === 'waiting'
@@ -540,17 +485,7 @@ export default function VideoCallModal({
             )}
             <button
               onClick={handleEndCall}
-              style={{
-                background: 'rgba(255,255,255,0.15)',
-                border: 'none',
-                color: '#fff',
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                display: 'grid',
-                placeItems: 'center',
-                cursor: 'pointer',
-              }}
+              className="w-7 sm:w-8 h-7 sm:h-8 rounded-full bg-white/15 hover:bg-white/25 border-0 text-white grid place-items-center cursor-pointer transition-colors"
             >
               <X size={16} />
             </button>
@@ -558,51 +493,23 @@ export default function VideoCallModal({
         </div>
 
         {/* Video Stage / Remote Feed */}
-        <div
-          style={{
-            flex: 1,
-            position: 'relative',
-            background: '#0d1815',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-          }}
-        >
+        <div className="flex-1 relative bg-[#0d1815] flex items-center justify-center overflow-hidden">
           {/* Remote video element */}
           <video
             ref={remoteVideoRef}
             autoPlay
             playsInline
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              display: callStatus === 'connected' ? 'block' : 'none',
-            }}
+            className={`w-full h-full object-cover ${callStatus === 'connected' ? 'block' : 'hidden'}`}
           />
 
           {/* Placeholder when not connected or remote video not yet broadcasting */}
           {callStatus !== 'connected' && (
-            <div style={{ textAlign: 'center', color: '#fff', padding: '24px' }}>
-              <div
-                style={{
-                  width: '96px',
-                  height: '96px',
-                  borderRadius: '50%',
-                  background: 'rgba(0, 255, 136, 0.12)',
-                  border: '2px solid #00ff88',
-                  color: '#00ff88',
-                  display: 'grid',
-                  placeItems: 'center',
-                  margin: '0 auto 20px',
-                  fontSize: '2.5rem',
-                }}
-              >
-                <User size={48} />
+            <div className="text-center text-white p-6">
+              <div className="w-20 sm:w-24 h-20 sm:h-24 rounded-full bg-[#00ff88]/12 border-2 border-[#00ff88] text-[#00ff88] grid place-items-center mx-auto mb-4 sm:mb-5">
+                <User size={40} className="sm:w-12 sm:h-12" />
               </div>
-              <h2 style={{ fontSize: '1.6rem', margin: '0 0 8px', color: '#fff' }}>{otherName}</h2>
-              <p style={{ color: '#94a3b8', fontSize: '1rem', margin: 0 }}>
+              <h2 className="text-xl sm:text-2xl font-bold m-0 mb-2 text-white">{otherName}</h2>
+              <p className="text-slate-400 text-sm sm:text-base m-0 max-w-sm mx-auto leading-relaxed">
                 {callStatus === 'ringing'
                   ? 'Calling clinician… Please wait for them to accept.'
                   : callStatus === 'waiting'
@@ -617,133 +524,46 @@ export default function VideoCallModal({
           )}
 
           {/* Floating Local Picture-in-Picture Video */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 100,
-              right: 24,
-              width: '200px',
-              height: '140px',
-              borderRadius: '16px',
-              overflow: 'hidden',
-              background: '#000',
-              border: '2px solid rgba(255,255,255,0.2)',
-              boxShadow: '0 12px 30px rgba(0,0,0,0.5)',
-              zIndex: 20,
-            }}
-          >
+          <div className="absolute bottom-20 sm:bottom-24 right-3 sm:right-6 w-28 sm:w-44 md:w-52 h-20 sm:h-32 md:h-36 rounded-xl sm:rounded-2xl overflow-hidden bg-black border-2 border-white/20 shadow-2xl z-20">
             <video
               ref={localVideoRef}
               autoPlay
               playsInline
               muted
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                transform: 'scaleX(-1)', // mirror selfie
-                display: isVideoMuted ? 'none' : 'block',
-              }}
+              className={`w-full h-full object-cover -scale-x-100 ${isVideoMuted ? 'hidden' : 'block'}`}
             />
             {isVideoMuted && (
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  background: '#1b342e',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#a7f3d0',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                }}
-              >
+              <div className="w-full h-full bg-[#1b342e] flex items-center justify-center text-[#a7f3d0] text-xs sm:text-sm font-semibold">
                 Camera Off
               </div>
             )}
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 6,
-                left: 8,
-                background: 'rgba(0,0,0,0.6)',
-                color: '#fff',
-                fontSize: '0.7rem',
-                padding: '2px 6px',
-                borderRadius: '4px',
-              }}
-            >
+            <div className="absolute bottom-1.5 left-2 bg-black/60 text-white text-[10px] sm:text-xs px-1.5 py-0.5 rounded">
               You
             </div>
           </div>
 
           {/* Incoming Call Prompt Modal (Doctor side) */}
           {isIncomingCall && !hasAccepted && (
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'rgba(15, 29, 25, 0.92)',
-                zIndex: 30,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '24px',
-                textAlign: 'center',
-              }}
-            >
-              <div
-                style={{
-                  width: '80px',
-                  height: '80px',
-                  borderRadius: '50%',
-                  background: '#29574b',
-                  color: '#00ff88',
-                  display: 'grid',
-                  placeItems: 'center',
-                  marginBottom: '20px',
-                  boxShadow: '0 0 30px rgba(0,255,136,0.3)',
-                }}
-              >
-                <PhoneCall size={38} />
+            <div className="absolute inset-0 bg-[#0f1d19]/95 z-30 flex flex-col items-center justify-center p-6 text-center">
+              <div className="w-16 sm:w-20 h-16 sm:h-20 rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center mb-4 sm:mb-5 shadow-[0_0_30px_rgba(0,255,136,0.3)]">
+                <PhoneCall size={36} />
               </div>
-              <h3 style={{ fontSize: '1.7rem', margin: '0 0 8px', color: '#fff' }}>
+              <h3 className="text-2xl sm:text-3xl font-extrabold m-0 mb-2 text-white">
                 Incoming Video Consultation
               </h3>
-              <p style={{ color: '#cbd5e1', fontSize: '1.1rem', margin: '0 0 28px' }}>
+              <p className="text-slate-300 text-sm sm:text-lg m-0 mb-6 sm:mb-7 max-w-md leading-relaxed">
                 <strong>{otherName}</strong> is requesting to start the video consultation session.
               </p>
-              <div style={{ display: 'flex', gap: '16px' }}>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full max-w-xs sm:max-w-md">
                 <button
                   onClick={handleDeclineCall}
-                  style={{
-                    padding: '14px 28px',
-                    borderRadius: '999px',
-                    background: 'rgba(239, 68, 68, 0.2)',
-                    color: '#f87171',
-                    border: '1px solid #ef4444',
-                    fontSize: '1rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                  }}
+                  className="w-full sm:flex-1 py-3 sm:py-3.5 px-6 rounded-full bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500 text-sm sm:text-base font-bold cursor-pointer transition-colors"
                 >
                   Decline
                 </button>
                 <button
                   onClick={handleAcceptCall}
-                  style={{
-                    padding: '14px 34px',
-                    borderRadius: '999px',
-                    background: '#00ff88',
-                    color: '#171d1b',
-                    border: 'none',
-                    fontSize: '1.05rem',
-                    fontWeight: 800,
-                    cursor: 'pointer',
-                    boxShadow: '0 8px 24px rgba(0,255,136,0.35)',
-                  }}
+                  className="w-full sm:flex-[1.4] py-3 sm:py-3.5 px-6 rounded-full bg-[#00ff88] hover:bg-[#00e67a] text-[#171d1b] border-0 text-sm sm:text-base font-extrabold cursor-pointer shadow-lg shadow-[#00ff88]/35 transition-all"
                 >
                   ✓ Accept Video Call
                 </button>
@@ -753,34 +573,16 @@ export default function VideoCallModal({
         </div>
 
         {/* Bottom Floating Control Bar */}
-        <div
-          style={{
-            padding: '20px',
-            background: '#13211c',
-            borderTop: '1px solid rgba(255,255,255,0.08)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '20px',
-            zIndex: 10,
-          }}
-        >
+        <div className="p-3.5 sm:p-5 bg-[#13211c] border-t border-white/10 flex items-center justify-center gap-4 sm:gap-6 z-10 shrink-0">
           {/* Mute Mic */}
           <button
             onClick={toggleAudio}
             title={isAudioMuted ? 'Unmute' : 'Mute'}
-            style={{
-              width: '52px',
-              height: '52px',
-              borderRadius: '50%',
-              background: isAudioMuted ? '#ef4444' : 'rgba(255,255,255,0.12)',
-              color: '#fff',
-              border: 'none',
-              display: 'grid',
-              placeItems: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
+            className={`w-12 sm:w-14 h-12 sm:h-14 rounded-full grid place-items-center border-0 cursor-pointer transition-all ${
+              isAudioMuted
+                ? 'bg-red-500 text-white shadow-md shadow-red-500/30'
+                : 'bg-white/12 hover:bg-white/20 text-white'
+            }`}
           >
             {isAudioMuted ? <MicOff size={22} /> : <Mic size={22} />}
           </button>
@@ -789,18 +591,11 @@ export default function VideoCallModal({
           <button
             onClick={toggleVideo}
             title={isVideoMuted ? 'Start Camera' : 'Stop Camera'}
-            style={{
-              width: '52px',
-              height: '52px',
-              borderRadius: '50%',
-              background: isVideoMuted ? '#ef4444' : 'rgba(255,255,255,0.12)',
-              color: '#fff',
-              border: 'none',
-              display: 'grid',
-              placeItems: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
+            className={`w-12 sm:w-14 h-12 sm:h-14 rounded-full grid place-items-center border-0 cursor-pointer transition-all ${
+              isVideoMuted
+                ? 'bg-red-500 text-white shadow-md shadow-red-500/30'
+                : 'bg-white/12 hover:bg-white/20 text-white'
+            }`}
           >
             {isVideoMuted ? <VideoOff size={22} /> : <VideoIcon size={22} />}
           </button>
@@ -809,19 +604,7 @@ export default function VideoCallModal({
           <button
             onClick={handleEndCall}
             title="End Consultation"
-            style={{
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              background: '#ef4444',
-              color: '#fff',
-              border: 'none',
-              display: 'grid',
-              placeItems: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 8px 24px rgba(239, 68, 68, 0.4)',
-              transition: 'all 0.2s',
-            }}
+            className="w-13 sm:w-16 h-13 sm:h-16 rounded-full bg-red-500 hover:bg-red-600 text-white border-0 grid place-items-center cursor-pointer shadow-lg shadow-red-500/40 transition-all"
           >
             <PhoneOff size={24} />
           </button>
