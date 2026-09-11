@@ -1,18 +1,26 @@
 import { useNavigate } from 'react-router-dom'
 import MedicalShaderBg from '../components/MedicalShaderBg'
-
+import isThisSeriousImage from '../assets/Isthisserious.png'
+import whereShouldImage from '../assets/Where should.png'
+import whatsNextImage from '../assets/Whats next.png'
+import facilityInfoImage from '../assets/chcmaneswar.png'
+import patientImage from '../assets/Patient.png'
+import facilityImage from '../assets/Facility.png'
+import languageImage from '../assets/Language.png'
+import voiceImage from '../assets/Voice.png'
+import connectivityImage from '../assets/Connectivity.png'
 
 const medicalTexture = 'https://www.figma.com/api/mcp/asset/5a5ce48b-c78a-4fe0-9803-35e297f3b7fc.png'
-const iconClock = 'https://www.figma.com/api/mcp/asset/6c094ddb-a80d-498c-acf6-c6a62b1532fe.svg'
-const iconRoute = 'https://www.figma.com/api/mcp/asset/6f8d8823-f545-42a7-9415-9d5665f242d2.svg'
-const iconFollow = 'https://www.figma.com/api/mcp/asset/1a630e9b-a205-4914-bf2b-158b807e04ff.svg'
-const iconMargin = 'https://www.figma.com/api/mcp/asset/7093081a-31bc-461c-8670-7ffaf72ed467.svg'
-const flowLines = 'https://www.figma.com/api/mcp/asset/9d636ab5-87dc-43b7-95a8-1f13b14bc471.svg'
-const iconPatient = 'https://www.figma.com/api/mcp/asset/07094935-0e8e-4a21-bdd6-c2b6fc236116.svg'
-const iconFacility = 'https://www.figma.com/api/mcp/asset/1869893f-8bf2-41b5-8f86-b2bb652da3bb.svg'
-const iconLanguage = 'https://www.figma.com/api/mcp/asset/193fde63-9d95-41d7-9aac-d17ae012e5da.svg'
-const iconVoice = 'https://www.figma.com/api/mcp/asset/fffcf86a-dfcb-479a-9b8f-d680981cdfe1.svg'
-const iconConnect = 'https://www.figma.com/api/mcp/asset/2029062e-af26-44cd-9124-75a560e91d00.svg'
+const iconClock = isThisSeriousImage
+const iconRoute = whereShouldImage
+const iconFollow = whatsNextImage
+const iconMargin = isThisSeriousImage
+const flowLines = connectivityImage
+const iconPatient = patientImage
+const iconFacility = facilityImage
+const iconLanguage = languageImage
+const iconVoice = voiceImage
+const iconConnect = connectivityImage
 
 // Primary CTA button — green bg, white text
 function CtaButton({ children, className = '', onClick }) {
@@ -77,7 +85,7 @@ function Hero() {
 	</section>
 }
 
-function MiniReferral() { return <div className="absolute right-5 top-5 w-56 rounded-[28px] border border-[#c0c8c4]/30 bg-[#f5fbf7] p-5 shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)] sm:right-10 sm:w-72"><div className="flex items-center gap-3"><div className="grid size-10 place-items-center rounded-full bg-[#426f63]/20"><img src={iconRoute} alt="" className="size-5" /></div><div><strong className="block text-sm">CHC Manesar</strong><span className="text-xs font-bold text-[#404845]">Recommended Match</span></div></div><div className="mt-4 flex justify-between rounded-2xl bg-[#eff5f1] px-3 py-3 text-xs font-bold text-[#404845]"><span>Wait Time</span><b className="text-[#29574b]">~15 mins</b></div></div> }
+function MiniReferral() { return <div className="absolute right-5 top-5 w-56 rounded-[28px] border border-[#c0c8c4]/30 bg-[#f5fbf7] p-5 shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)] sm:right-10 sm:w-72"><div className="flex items-center gap-3"><div className="grid size-10 place-items-center rounded-full bg-[#426f63]/20"><img src={facilityInfoImage} alt="" className="size-5" /></div><div><strong className="block text-sm">CHC Manesar</strong><span className="text-xs font-bold text-[#404845]">Recommended Match</span></div></div><div className="mt-4 flex justify-between rounded-2xl bg-[#eff5f1] px-3 py-3 text-xs font-bold text-[#404845]"><span>Wait Time</span><b className="text-[#29574b]">~15 mins</b></div></div> }
 function RiskCard() { return <div className="absolute bottom-10 left-5 w-52 rounded-[28px] border border-[#c0c8c4]/30 bg-[#f5fbf7] p-6 shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)] sm:left-10 sm:w-64"><p className="text-[10px] font-bold tracking-[.12em] text-[#404845]">HEALTH ASSESSMENT</p><div className="mt-2 flex items-end gap-2"><strong className="font-serif text-5xl text-[#29574b]">85</strong><span className="mb-2 text-sm text-[#404845]">/100</span></div><div className="mt-3 h-2 rounded-full bg-[#dee4e0]"><div className="h-full w-[85%] rounded-full bg-[#29574b]" /></div></div> }
 
 function Problem() { const items = [['Is this serious?', "Symptoms are confusing. Knowing when to act shouldn't be a guessing game.", iconClock], ['Where should I go?', 'Navigating clinics, wait times, and specialties adds stress to sickness.', iconRoute], ["What's next?", 'The journey rarely ends after one visit. Follow-ups get lost in the noise.', iconFollow]]; return <section className="bg-[#eff5f1]/50 px-5 py-20 sm:px-8 lg:px-16"><div className="mx-auto max-w-[1152px]"><SectionTitle>Finding care is only part of the<br className="hidden sm:block" /> problem.</SectionTitle><div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16">{items.map(([title, text, icon], index) => <article key={title} className={`max-w-xs ${index === 1 ? 'lg:mt-16' : index === 2 ? 'lg:mt-32' : ''}`}><img src={icon} alt="" className="mb-6 size-7 opacity-50" /><h3 className="font-serif text-3xl font-semibold text-[#171d1b]">{title}</h3><p className="mt-2 leading-relaxed text-[#404845]">{text}</p></article>)}</div></div></section> }
@@ -93,7 +101,49 @@ function Journey() { const steps = [['1', 'Screening', 'AI symptom assessment'],
 const stats = [['12', 'DOCTORS'], ['8', 'AVAILABLE'], ['24', 'WAITING'], ['67', 'TREATED'], ['4', 'HIGH RISK']];
 function Dashboard() { return <section id="facilities" className="bg-[#e9efec] px-5 py-20 sm:px-8 lg:px-16"><div className="mx-auto max-w-[1152px]"><SectionTitle>Better visibility for healthcare teams.</SectionTitle><div className="mt-12 overflow-hidden rounded-2xl border border-[#c0c8c4]/30 bg-[#f5fbf7] p-5 shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)] sm:p-8"><div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#c0c8c4]/30 pb-5"><h3 className="font-serif text-2xl sm:text-3xl">Facility Dashboard</h3><span className="rounded-full bg-[#426f63]/20 px-4 py-2 text-sm font-semibold text-[#29574b]">CHC Manesar Command Center</span></div><div className="grid grid-cols-2 gap-3 py-5 sm:grid-cols-5 sm:gap-4">{stats.map(([number, label], index) => <div key={label} className={`rounded-full bg-[#eff5f1] p-4 text-center ${index === 4 ? 'border border-[#ba1a1a]/20 bg-[#ffdad6]/50 col-span-2 sm:col-span-1' : ''}`}><strong className={`block font-serif text-3xl ${index === 4 ? 'text-[#ba1a1a]' : 'text-[#29574b]'}`}>{number}</strong><span className={`text-[10px] font-bold ${index === 4 ? 'text-[#93000a]' : 'text-[#404845]'}`}>{label}</span></div>)}</div><p className="border-b border-[#c0c8c4]/30 pb-3 text-xs font-bold tracking-[.08em] text-[#404845]">HIGH-RISK INCOMING PATIENTS</p><div className="overflow-x-auto"><div className="min-w-[660px] text-sm"><div className="grid grid-cols-[1.3fr_1fr_1fr_3fr] border-b border-[#c0c8c4]/30 py-3 font-bold text-[#404845]"><span>Patient</span><span>ETA</span><span>Risk Level</span><span>Suggested Action</span></div>{[['Ramesh K.', '10 mins', 'High', 'Prepare ECG & Cardiology Consult'], ['Sunita M.', '15 mins', 'High', 'Oxygen Support Ready'], ['Amit P.', '25 mins', 'High', 'Surgical Team Standby']].map((row) => <div key={row[0]} className="grid grid-cols-[1.3fr_1fr_1fr_3fr] border-b border-[#c0c8c4]/10 py-4 items-center"><strong>{row[0]}</strong><span className="text-[#404845]">{row[1]}</span><span className="w-fit rounded-full bg-[#ba1a1a]/10 px-3 py-1 text-xs font-bold text-[#ba1a1a]">{row[2]}</span><span>{row[3]}</span></div>)}</div></div></div></div></section> }
 
-function Connected() { return <section className="px-5 py-20 sm:px-8 lg:px-16"><div className="mx-auto max-w-[1152px]"><SectionTitle>One platform. A connected healthcare journey.</SectionTitle><div className="relative mx-auto mt-12 flex max-w-3xl flex-col md:flex-row items-center justify-between gap-8"><img src={flowLines} alt="" className="absolute inset-x-0 top-1/2 hidden h-40 w-full -translate-y-1/2 md:block" /><div className="relative grid h-40 w-32 place-items-center rounded-[40px] border border-[#c0c8c4]/30 bg-[#f5fbf7] p-4 text-center shadow-sm"><img src={iconPatient} alt="" className="size-5" /><strong className="text-sm">Patient</strong><span className="text-xs font-bold text-[#404845]">Symptoms</span></div><div className="relative flex md:flex-col gap-4 md:gap-28 text-center text-sm font-semibold text-[#29574b]"><span className="rounded-2xl bg-[#eff5f1] px-4 py-2">AI &amp; Risk</span><span className="rounded-2xl bg-[#eff5f1] px-4 py-2">Referral</span></div><div className="relative grid h-40 w-32 place-items-center rounded-[40px] border border-[#c0c8c4]/30 bg-[#f5fbf7] p-4 text-center shadow-sm"><img src={iconFacility} alt="" className="size-6" /><strong className="text-sm">Facility</strong><span className="text-xs font-bold text-[#404845]">Doctor, Treatment</span></div></div></div></section> }
+function Connected() {
+	return (
+		<section className="px-5 py-20 sm:px-8 lg:px-16">
+			<div className="mx-auto max-w-[1152px]">
+				<SectionTitle>One platform. A connected healthcare journey.</SectionTitle>
+				<div className="relative mx-auto mt-12 h-[260px] max-w-[920px]">
+					<svg className="absolute inset-0 h-full w-full" viewBox="0 0 920 260" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+						<path d="M250 130C250 94 276 68 320 68H410C454 68 480 94 480 130C480 166 454 192 410 192H320C276 192 250 166 250 130Z" stroke="#c0c8c4" strokeWidth="1.5" strokeDasharray="4 6" opacity="0.8" />
+						<path d="M670 130C670 94 644 68 600 68H510C466 68 440 94 440 130C440 166 466 192 510 192H600C644 192 670 166 670 130Z" stroke="#c0c8c4" strokeWidth="1.5" strokeDasharray="4 6" opacity="0.8" />
+					</svg>
+
+					<div className="absolute left-0 top-10 grid h-[170px] w-[220px] place-items-center rounded-[30px] border border-[#c0c8c4]/30 bg-[#f5fbf7] shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)]">
+						<div className="mb-3 grid size-12 place-items-center rounded-full bg-[#edf3ef]">
+							<img src={iconPatient} alt="" className="size-6" />
+						</div>
+						<div className="text-center">
+							<strong className="block text-[18px] leading-[1.2] text-[#1d413b]">Patient</strong>
+							<span className="text-xs font-bold text-[#404845]">Symptoms</span>
+						</div>
+					</div>
+
+					<div className="absolute left-1/2 top-5 -translate-x-1/2 rounded-[22px] border border-[#c0c8c4]/30 bg-[#f5fbf7] px-7 py-3 text-center text-[18px] font-semibold text-[#29574b] shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)]">
+						AI &amp; Risk
+					</div>
+
+					<div className="absolute left-1/2 bottom-5 -translate-x-1/2 rounded-[22px] border border-[#c0c8c4]/30 bg-[#f5fbf7] px-7 py-3 text-center text-[18px] font-semibold text-[#29574b] shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)]">
+						Referral
+					</div>
+
+					<div className="absolute right-0 top-10 grid h-[170px] w-[220px] place-items-center rounded-[30px] border border-[#c0c8c4]/30 bg-[#f5fbf7] shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)]">
+						<div className="mb-3 grid size-12 place-items-center rounded-full bg-[#edf3ef]">
+							<img src={iconFacility} alt="" className="size-6" />
+						</div>
+						<div className="text-center">
+							<strong className="block text-[18px] leading-[1.2] text-[#1d413b]">Facility</strong>
+							<span className="text-xs font-bold text-[#404845]">Doctor, Treatment</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	)
+}
 
 function Accessibility() { const cards = [['Language', 'Native support for Hindi, Marathi, and regional languages to ensure everyone is understood.', iconLanguage], ['Voice', 'Integrated Speech-to-Text allows natural conversation without needing to type complex medical terms.', iconVoice], ['Connectivity', 'Built as a Progressive Web App (PWA) optimized for low-connectivity environments.', iconConnect]]; return <section id="patients" className="bg-[#eff5f1]/50 px-5 py-20 sm:px-8 lg:px-16"><div className="mx-auto max-w-[1152px]"><SectionTitle>Designed for the real world.</SectionTitle><div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">{cards.map(([title, text, icon]) => <article key={title} className="rounded-2xl border border-[#c0c8c4]/30 bg-[#f5fbf7] p-8 text-center shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)]"><img src={icon} alt="" className="mx-auto h-8 max-w-9" /><h3 className="mt-5 font-serif text-3xl font-semibold">{title}</h3><p className="mt-4 leading-relaxed text-[#404845]">{text}</p></article>)}</div></div></section> }
 
