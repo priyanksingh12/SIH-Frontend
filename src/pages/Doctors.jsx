@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { getDoctors } from '../api/doctorApi.js'
 import { bookAppointment } from '../api/appointmentApi.js'
 import MedicalShaderBg from '../components/MedicalShaderBg'
+import LanguageSelector from '../components/LanguageSelector.jsx'
 
 const toneMap = ['sage', 'blue', 'sand', 'rose', 'mint', 'lilac']
 
@@ -96,7 +97,7 @@ export default function Doctors() {
 
   return (
     <div className="min-h-screen bg-transparent text-[#171d1b]">
-      <header className="relative overflow-hidden flex items-center justify-between px-4 md:px-12 py-4 border-b border-[rgba(41,87,75,0.12)] bg-[#f5fbf7] gap-4">
+      <header className="relative z-50 overflow-visible flex items-center justify-between px-4 md:px-12 py-4 border-b border-[rgba(41,87,75,0.12)] bg-[#f5fbf7] gap-4" style={{ overflow: 'visible' }}>
         <MedicalShaderBg isNavbar />
         <div className="relative z-10 w-full flex items-center justify-between gap-4">
           <button
@@ -113,7 +114,10 @@ export default function Doctors() {
           >
             SwasthyaSahay
           </Link>
-          <span className="text-xs font-bold text-[#717975] tracking-widest uppercase hidden sm:block">PATIENT CARE NETWORK</span>
+          <div className="flex items-center gap-4">
+            <span className="text-xs font-bold text-[#717975] tracking-widest uppercase hidden sm:block">PATIENT CARE NETWORK</span>
+            <LanguageSelector />
+          </div>
         </div>
       </header>
 

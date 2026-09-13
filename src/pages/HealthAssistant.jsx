@@ -8,6 +8,7 @@ import {
 } from '../api/triageApi.js'
 import { downloadPdfFile } from '../utils/pdfHelper.js'
 import { Sidebar } from './PatientDashboard.jsx'
+import LanguageSelector from '../components/LanguageSelector.jsx'
 import {
   bhashiniSpeechToText, bhashiniTextToSpeech, bhashiniTranslate,
   getBhashiniLanguages, playBase64Audio, startMicRecording,
@@ -130,9 +131,9 @@ function MessageAttachments({ attachments }) {
   )
 }
 
-// ─── Language Selector ────────────────────────────────────────────────────────
+// ─── Chat Reply Language Selector (Inside Composer) ──────────────────────────
 
-function LanguageSelector({ value, onChange }) {
+function ChatReplyLanguageSelector({ value, onChange }) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
   const current = LANGUAGES.find((l) => l.code === value) || LANGUAGES[0]
@@ -219,7 +220,7 @@ function ChatHistorySidebar({ sessions, activeSessionId, onNew, onSelect, onRena
   }
 
   return (
-    <aside className={`hidden md:flex h-screen bg-[#eff5f1] border-r border-[#d8e5de] flex-col transition-all duration-200 overflow-hidden relative shrink-0 box-border ${collapsed ? 'w-16 min-w-[64px] max-w-[64px]' : 'w-[280px] min-w-[280px] max-w-[280px]'}`}>
+    <aside className={`hidden md:flex h-screen sticky top-0 bg-[#eff5f1] border-r border-[#d8e5de] flex-col transition-all duration-200 overflow-hidden shrink-0 box-border z-30 ${collapsed ? 'w-16 min-w-[64px] max-w-[64px]' : 'w-[280px] min-w-[280px] max-w-[280px]'}`}>
       {/* Header */}
       <div className={`flex items-center border-b border-[rgba(41,87,75,0.08)] ${collapsed ? 'justify-center px-2 pt-4 pb-3' : 'justify-between px-3.5 pt-4 pb-3'}`}>
         {!collapsed && (
@@ -891,11 +892,11 @@ function HealthAssistant() {
   const canSend = !loading && (inputMessage.trim().length > 0 || pendingAttachments.length > 0)
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-transparent text-[#171d1b]">
-      <Sidebar userName={userName} activeLabel="Health Assistant" />
-      <main className="flex-1 min-w-0 flex flex-row min-h-screen overflow-hidden">
+    <div className="h-screen max-h-screen overflow-hidden flex flex-col md:flex-row bg-transparent text-[#171d1b]">
+      <Sidebar userName={userName} activeLabel="Health Assistant" className="h-screen sticky top-0 shrink-0 z-30" />
+      <main className="flex-1 min-w-0 flex flex-row h-screen max-h-screen overflow-hidden">
         
-        {/* ── Chat History Sidebar ── */}
+        {/* ── Chat History Sidebar (Fixed on the Left) ── */}
         <ChatHistorySidebar
           sessions={sessions}
           activeSessionId={sessionId}
@@ -909,10 +910,18 @@ function HealthAssistant() {
         />
 
         {/* ── Main Chat Area ── */}
-        <div className="relative min-h-screen overflow-hidden bg-[#f5fbf7] flex-1 flex flex-col">
+        <div className="relative h-screen max-h-screen overflow-hidden bg-[#f5fbf7] flex-1 flex flex-col min-w-0">
+          {/* Top Bar with Language Selector */}
+          <div className="w-full flex items-center justify-between px-6 py-3 border-b border-[#d8e5de] bg-[#f8fbf9]/90 backdrop-blur-sm shrink-0 z-20">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-extrabold text-[#29574b] uppercase tracking-wider">AI Health Assistant</span>
+            </div>
+            <LanguageSelector />
+          </div>
+
           <div className="absolute -top-48 -right-32 w-96 h-96 rounded-full bg-[rgba(66,111,99,0.05)] blur-3xl pointer-events-none" />
-          <div className="w-full max-w-[820px] px-4 md:px-6 py-6 md:py-10 mx-auto flex-1 flex flex-col overflow-y-auto min-h-0 z-10">
-            <header className="pb-8 text-center">
+          <div className="w-full max-w-[820px] px-4 md:px-6 py-6 md:py-8 mx-auto flex-1 flex flex-col overflow-y-auto min-h-0 z-10">
+            <header className="pb-6 text-center">
               <p className="mb-2 text-[#29574b] font-bold text-base tracking-wide uppercase">AI Health Assistant</p>
               <h1 className="text-[#171d1b] text-3xl font-bold font-serif">Tell me what&apos;s bothering you.</h1>
             </header>
@@ -1073,7 +1082,7 @@ function HealthAssistant() {
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
                 className="flex-1 min-w-0 h-[52px] px-2 py-3 border-0 outline-none text-[#171d1b] bg-transparent text-base"
               />
-              <LanguageSelector value={language} onChange={setLanguage} />
+              <ChatReplyLanguageSelector value={language} onChange={setLanguage} />
               {/* ── Mic button (Bhashini ASR) ── */}
               <button
                 type="button"

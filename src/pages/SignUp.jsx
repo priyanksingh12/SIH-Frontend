@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { signup } from '../api/authApi.js'
+import LanguageSelector from '../components/LanguageSelector.jsx'
 
 const clinicImage = 'https://www.figma.com/api/mcp/asset/ea0832b8-8024-4aa8-a597-822e199eea9f.png'
 
@@ -92,9 +93,12 @@ export default function SignUp() {
               <div className="font-serif text-2xl font-bold tracking-tight text-white">SwasthyaSahay</div>
               <small className="block text-[10px] tracking-widest opacity-80 uppercase">CONNECTED HEALTHCARE ECOSYSTEM</small>
             </div>
-            <button type="button" onClick={backToLanding} className="ml-auto bg-transparent border-none text-white text-sm font-semibold cursor-pointer hover:underline flex items-center gap-2">
-              Back to website <span>→</span>
-            </button>
+            <div className="ml-auto flex items-center gap-3">
+              <LanguageSelector />
+              <button type="button" onClick={backToLanding} className="bg-transparent border-none text-white text-sm font-semibold cursor-pointer hover:underline flex items-center gap-2">
+                Back to website <span>→</span>
+              </button>
+            </div>
           </header>
           <div className="relative z-10 mt-12 md:mt-0">
             <blockquote className="text-2xl md:text-4xl font-serif leading-tight font-medium max-w-[500px]">

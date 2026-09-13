@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import MedicalShaderBg from '../components/MedicalShaderBg'
+import LanguageSelector from '../components/LanguageSelector.jsx'
 import isThisSeriousImage from '../assets/Isthisserious.png'
 import whereShouldImage from '../assets/Where should.png'
 import whatsNextImage from '../assets/Whats next.png'
@@ -50,8 +51,7 @@ function SecondaryButton({ children, href = '#features', className = '' }) {
 function Navbar() {
 	const navigate = useNavigate()
 	return (
-		<nav className="fixed inset-x-0 top-0 z-50 border-b border-[#29574b]/15 bg-[#D5E6E0] overflow-hidden shadow-xs px-5 py-4 sm:px-8 lg:px-16">
-			< isNavbar />
+		<nav className="fixed inset-x-0 top-0 z-50 border-b border-[#29574b]/15 bg-[#D5E6E0] shadow-xs px-5 py-4 sm:px-8 lg:px-16" style={{ overflow: 'visible' }}>
 			<div className="relative z-10 mx-auto flex max-w-[1152px] items-center justify-between">
 				<a href="#top" style={{ color: '#29574b' }} className="font-serif text-2xl font-bold sm:text-[32px] text-[#29574b] brand-text no-underline tracking-tight shrink-0">
 					SwasthyaSahay
@@ -64,6 +64,7 @@ function Navbar() {
 					<a className="no-underline hover:text-[#29574b] transition-colors" href="#faq">FAQ</a>
 				</div>
 				<div className="flex items-center gap-4 text-sm font-semibold shrink-0">
+					<LanguageSelector />
 					<button onClick={() => navigate('/login')} className="hidden sm:block text-[#29574b] hover:underline bg-transparent border-none cursor-pointer font-bold px-2 py-1">
 						Login
 					</button>
