@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -37,6 +37,8 @@ import {
   MessageSquare,
   Siren,
   Baby,
+  Globe,
+  Search,
 } from 'lucide-react'
 import { getStoredUser, logout } from '../api/apiClient.js'
 import { getVitals } from '../api/patientApi.js'
@@ -46,6 +48,8 @@ import VideoCallModal from '../components/VideoCallModal.jsx'
 import IncomingCallModal from '../components/IncomingCallModal.jsx'
 import MedicalShaderBg from '../components/MedicalShaderBg'
 import { useCallListener } from '../hooks/useDoctorCallListener.js'
+import { bhashiniTranslateBatch } from '../api/bhashiniApi.js'
+import aiAssistantImage from '../assets/ai assitant.png'
 
 const navItems = [
   [BarChart3,             'Dashboard'],
@@ -200,20 +204,181 @@ function CustomTooltip({ active, payload }) {
   return null
 }
 
+// ─── Dashboard language config (All 24 Indian Languages) ────────────────────
+const DASH_LANGUAGES = [
+  { code: 'en', label: 'EN', name: 'English', native: 'English' },
+  { code: 'hi', label: 'HI', name: 'Hindi', native: 'हिन्दी' },
+  { code: 'mr', label: 'MR', name: 'Marathi', native: 'मराठी' },
+  { code: 'bn', label: 'BN', name: 'Bengali', native: 'বাংলা' },
+  { code: 'gu', label: 'GU', name: 'Gujarati', native: 'ગુજરાતી' },
+  { code: 'ta', label: 'TA', name: 'Tamil', native: 'தமிழ்' },
+  { code: 'te', label: 'TE', name: 'Telugu', native: 'తెలుగు' },
+  { code: 'kn', label: 'KN', name: 'Kannada', native: 'ಕನ್ನಡ' },
+  { code: 'ml', label: 'ML', name: 'Malayalam', native: 'മലയാളം' },
+  { code: 'pa', label: 'PA', name: 'Punjabi', native: 'ਪੰਜਾਬੀ' },
+  { code: 'or', label: 'OR', name: 'Odia', native: 'ଓଡ଼ିଆ' },
+  { code: 'as', label: 'AS', name: 'Assamese', native: 'অসমীয়া' },
+  { code: 'ur', label: 'UR', name: 'Urdu', native: 'اردو' },
+  { code: 'sa', label: 'SA', name: 'Sanskrit', native: 'संस्कृत' },
+  { code: 'ne', label: 'NE', name: 'Nepali', native: 'नेपाली' },
+  { code: 'si', label: 'SI', name: 'Sinhala', native: 'සිංහල' },
+  { code: 'ks', label: 'KS', name: 'Kashmiri', native: 'کٲشُر' },
+  { code: 'doi', label: 'DOI', name: 'Dogri', native: 'डोगरी' },
+  { code: 'mai', label: 'MAI', name: 'Maithili', native: 'मैथिली' },
+  { code: 'kok', label: 'KOK', name: 'Konkani', native: 'कोंकणी' },
+  { code: 'mni', label: 'MNI', name: 'Manipuri', native: 'মেইতেই' },
+  { code: 'sat', label: 'SAT', name: 'Santali', native: 'ᱥᱟᱱᱛᱟᱲᱤ' },
+  { code: 'sd', label: 'SD', name: 'Sindhi', native: 'سنڌي' },
+  { code: 'bo', label: 'BO', name: 'Bodo', native: 'बर' },
+]
+
+const DASH_LANG_STORAGE_KEY = 'SwasthyaSahay-dashboard-lang'
+
+function DashboardLangSelector() {
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
+  const [activeLang, setActiveLang] = useState(
+    () => localStorage.getItem('bhashini_website_lang') || localStorage.getItem(DASH_LANG_STORAGE_KEY) || 'en'
+  )
+  const [translating, setTranslating] = useState(false)
+  const wrapRef = useRef(null)
+
+  const current = DASH_LANGUAGES.find((l) => l.code === activeLang) || DASH_LANGUAGES[0]
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function onOutside(e) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) {
+        setOpen(false)
+        setSearch('')
+      }
+    }
+    document.addEventListener('mousedown', onOutside)
+    return () => document.removeEventListener('mousedown', onOutside)
+  }, [])
+
+  // Sync with global Bhashini language changes
+  useEffect(() => {
+    function onGlobalLangChange(e) {
+      if (e.detail?.language) {
+        setActiveLang(e.detail.language)
+      }
+    }
+    window.addEventListener('bhashini:languageChange', onGlobalLangChange)
+    return () => window.removeEventListener('bhashini:languageChange', onGlobalLangChange)
+  }, [])
+
+  const filtered = search.trim()
+    ? DASH_LANGUAGES.filter(
+        (l) =>
+          l.name.toLowerCase().includes(search.toLowerCase()) ||
+          l.native.toLowerCase().includes(search.toLowerCase()) ||
+          l.label.toLowerCase().includes(search.toLowerCase())
+      )
+    : DASH_LANGUAGES
+
+  const handleLangChange = async (code) => {
+    setOpen(false)
+    setSearch('')
+    if (code === activeLang) return
+    setActiveLang(code)
+    localStorage.setItem(DASH_LANG_STORAGE_KEY, code)
+    localStorage.setItem('bhashini_website_lang', code)
+
+    if (window.BhashiniTranslator) {
+      setTranslating(true)
+      try {
+        await window.BhashiniTranslator.setLanguage(code)
+      } catch (err) {
+        console.error('Translation error:', err)
+      } finally {
+        setTranslating(false)
+      }
+    } else if (code === 'en') {
+      window.location.reload()
+    }
+  }
+
+  return (
+    <div ref={wrapRef} className="relative shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        disabled={translating}
+        title="Change page language"
+        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[#c4dcd3] bg-[#f5fbf7] text-[#29574b] font-bold text-[13px] cursor-pointer whitespace-nowrap shadow-sm hover:bg-[#eaf3ee] transition-colors"
+      >
+        <Globe size={15} className={`shrink-0 text-[#29574b] ${translating ? 'animate-spin' : ''}`} />
+        <span className="font-bold">{translating ? 'Translating…' : current.native}</span>
+        {!translating && <span className="opacity-50 text-[10px] ml-0.5">▾</span>}
+      </button>
+
+      {open && (
+        <div className="absolute top-[calc(100%+8px)] right-0 w-[240px] max-h-[380px] flex flex-col rounded-2xl bg-white border border-[#d5e5dd] shadow-[0_12px_40px_rgba(41,87,75,0.22)] z-[99999] overflow-hidden">
+          {/* Search Header */}
+          <div className="p-2.5 border-b border-[#e2ede7] bg-[#f8fbf9] shrink-0">
+            <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-white border border-[#cddfd6]">
+              <Search size={14} className="text-[#526e67] shrink-0" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search 24 languages…"
+                className="w-full text-xs text-[#171d1b] bg-transparent outline-none border-0 p-0 placeholder:text-[#8ba39a]"
+                autoFocus
+              />
+            </div>
+          </div>
+
+          {/* Scrollable Language List */}
+          <div className="overflow-y-auto flex-1 py-1">
+            {filtered.length === 0 ? (
+              <div className="px-4 py-4 text-center text-xs text-[#717975]">
+                No language found
+              </div>
+            ) : (
+              filtered.map((lang) => (
+                <button
+                  key={lang.code}
+                  type="button"
+                  onClick={() => handleLangChange(lang.code)}
+                  className={`w-full text-left px-3.5 py-2 border-0 cursor-pointer text-[#171d1b] text-[13px] flex items-center gap-2.5 transition-colors ${
+                    lang.code === activeLang
+                      ? 'bg-[#eaf3ee] font-bold text-[#29574b]'
+                      : 'bg-transparent font-medium hover:bg-[#f5fbf7]'
+                  }`}
+                >
+                  <span className="text-[11px] font-bold text-[#59756e] min-w-[28px]">{lang.label}</span>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-[13px] leading-tight text-[#171d1b] font-semibold">{lang.native}</span>
+                    <span className="text-[10.5px] text-[#717975] leading-tight">{lang.name}</span>
+                  </div>
+                  {lang.code === activeLang && <span className="ml-auto text-[#29574b] font-extrabold text-[14px]">✓</span>}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function TopBar({ userName }) {
   const navigate = useNavigate()
   const initials = userName.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'PT'
   return (
-    <header className="relative overflow-hidden h-[88px] flex items-center justify-between px-4 md:px-16 py-6 bg-[#f5fbf7] border-b border-[rgba(41,87,75,0.12)]">
+    <header className="relative z-50 h-[88px] flex items-center justify-between px-4 md:px-16 py-6 bg-[#f5fbf7] border-b border-[rgba(41,87,75,0.12)]" style={{ overflow: 'visible' }}>
       <MedicalShaderBg isNavbar />
       <div className="relative z-10 w-full flex items-center justify-between">
         <a style={{ color: '#29574b' }} className="font-serif text-2xl font-bold md:text-[32px] text-[#29574b] brand-text no-underline tracking-tight shrink-0" href="#dashboard" onClick={(e) => { e.preventDefault(); navigate('/patient-dashboard') }}>
           SwasthyaSahay
         </a>
         <div className="flex items-center gap-4">
-          <motion.button onClick={() => navigate('/health-assistant')} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-2 px-5 py-2.5 rounded-full text-white bg-[#29574b] font-semibold text-base shadow-sm">
-            <img src={aiAssistantRobotIcon} alt="" className="w-5 h-5" /> AI Assistant
+          <motion.button onClick={() => navigate('/health-assistant')} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="flex items-center gap-2 px-5 py-2.5 rounded-full text-white bg-[#29574b] font-semibold text-base shadow-sm cursor-pointer border-0">
+            <img src={aiAssistantImage} alt="AI Assistant" className="w-6 h-6 object-contain" /> AI Assistant
           </motion.button>
+          <DashboardLangSelector />
           <button className="relative grid place-items-center w-8 h-10 p-2 rounded-full bg-transparent" aria-label="Notifications">
             <Bell size={16} />
             <span />
@@ -1287,13 +1452,14 @@ export default function PatientDashboard() {
             )}
           </motion.section>
 
+
           {/* Clinical Insights Banner */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
             style={{
-              marginTop: '32px',
+              marginTop: '20px',
               padding: '24px 28px',
               borderRadius: '20px',
               background: '#eff5f1',
@@ -1306,9 +1472,11 @@ export default function PatientDashboard() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1, minWidth: '280px' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#29574b', color: '#00ff88', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-                <Sparkles size={24} />
-              </div>
+              <img
+                src={aiAssistantImage}
+                alt="AI"
+                style={{ width: '52px', height: '52px', objectFit: 'contain', flexShrink: 0 }}
+              />
               <div>
                 <b style={{ fontSize: '1.2rem', color: '#171d1b', fontWeight: 800, display: 'block' }}>Clinical Summary &amp; Next Steps</b>
                 <p style={{ fontSize: '1.05rem', color: '#404845', margin: '4px 0 0', lineHeight: 1.5 }}>

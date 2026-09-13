@@ -1,6 +1,6 @@
-﻿import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Paperclip, Send, X, Globe, FileText, Plus, Trash2, Pencil, Check, MessageSquare, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Paperclip, Send, X, Globe, FileText, Plus, Trash2, Pencil, Check, MessageSquare, ChevronLeft, ChevronRight, Mic, MicOff, Volume2 } from 'lucide-react'
 import { getStoredUser } from '../api/apiClient.js'
 import {
   triageChat, triageReport, getTriageSessions, getTriageSession,
@@ -8,6 +8,10 @@ import {
 } from '../api/triageApi.js'
 import { downloadPdfFile } from '../utils/pdfHelper.js'
 import { Sidebar } from './PatientDashboard.jsx'
+import {
+  bhashiniSpeechToText, bhashiniTextToSpeech, bhashiniTranslate,
+  getBhashiniLanguages, playBase64Audio, startMicRecording,
+} from '../api/bhashiniApi.js'
 
 const assistantIcon = 'https://www.figma.com/api/mcp/asset/994e13d4-7d88-414f-8eb7-6178685843b7.svg'
 const waterIcon = 'https://www.figma.com/api/mcp/asset/c0f5cab4-dc21-49ec-9890-c2c106e5c1ea.svg'
@@ -18,15 +22,38 @@ const arrowIcon = 'https://www.figma.com/api/mcp/asset/049cb2e8-8852-4a4c-bccd-9
 
 // ─── Language config ───────────────────────────────────────────────────────────
 const LANGUAGES = [
-  { code: 'en', label: 'English',  native: 'English'  },
-  { code: 'hi', label: 'Hindi',    native: 'हिन्दी'     },
-  { code: 'pa', label: 'Punjabi',  native: 'ਪੰਜਾਬੀ'    },
-  { code: 'gu', label: 'Gujarati', native: 'ગુજરાતી'   },
-  { code: 'mr', label: 'Marathi',  native: 'मराठी'     },
+  { code: 'en', label: 'English',    native: 'English'    },
+  { code: 'hi', label: 'Hindi',      native: 'हिन्दी'       },
+  { code: 'mr', label: 'Marathi',    native: 'मराठी'       },
+  { code: 'bn', label: 'Bengali',    native: 'বাংলা'       },
+  { code: 'gu', label: 'Gujarati',   native: 'ગુજરાતી'    },
+  { code: 'ta', label: 'Tamil',      native: 'தமிழ்'       },
+  { code: 'te', label: 'Telugu',     native: 'తెలుగు'      },
+  { code: 'kn', label: 'Kannada',    native: 'ಕನ್ನಡ'       },
+  { code: 'ml', label: 'Malayalam',  native: 'മലയാളം'     },
+  { code: 'pa', label: 'Punjabi',    native: 'ਪੰਜਾਬੀ'     },
+  { code: 'or', label: 'Odia',       native: 'ଓଡ଼ିଆ'        },
+  { code: 'as', label: 'Assamese',   native: 'অসমীয়া'    },
+  { code: 'ur', label: 'Urdu',       native: 'اردو'        },
+  { code: 'sa', label: 'Sanskrit',   native: 'संस्कृत'     },
+  { code: 'ne', label: 'Nepali',     native: 'नेपाली'      },
+  { code: 'si', label: 'Sinhala',    native: 'සිංහල'      },
+  { code: 'ks', label: 'Kashmiri',   native: 'کٲشُر'       },
+  { code: 'doi', label: 'Dogri',     native: 'डोगरी'       },
+  { code: 'mai', label: 'Maithili',  native: 'मैथिली'     },
+  { code: 'kok', label: 'Konkani',   native: 'कोंकणी'     },
+  { code: 'mni', label: 'Manipuri',  native: 'মেইতেই'     },
+  { code: 'sat', label: 'Santali',   native: 'ᱥᱟᱱᱛᱟᱲᱤ'  },
+  { code: 'sd', label: 'Sindhi',     native: 'سنڌي'        },
+  { code: 'bo', label: 'Bodo',       native: 'बर'          },
 ]
 
 const LANG_FULL = {
   en: 'english', hi: 'hindi', pa: 'punjabi', gu: 'gujarati', mr: 'marathi',
+  bn: 'bengali', ta: 'tamil', te: 'telugu', kn: 'kannada', ml: 'malayalam',
+  or: 'odia', as: 'assamese', ur: 'urdu', sa: 'sanskrit', ne: 'nepali',
+  si: 'sinhala', ks: 'kashmiri', doi: 'dogri', mai: 'maithili', kok: 'konkani',
+  mni: 'manipuri', sat: 'santali', sd: 'sindhi', bo: 'bodo',
 }
 
 // Accepted file MIME types / extensions
@@ -132,7 +159,7 @@ function LanguageSelector({ value, onChange }) {
       </button>
 
       {open && (
-        <div className="absolute bottom-[calc(100%+8px)] right-0 min-w-[170px] rounded-2xl bg-white border border-[#d5e5dd] shadow-[0_8px_32px_rgba(41,87,75,0.14)] z-[9999] overflow-hidden py-1">
+        <div className="absolute bottom-[calc(100%+8px)] right-0 min-w-[190px] max-h-[340px] overflow-y-auto rounded-2xl bg-white border border-[#d5e5dd] shadow-[0_8px_32px_rgba(41,87,75,0.18)] z-[9999] py-1">
           {LANGUAGES.map((lang) => (
             <button
               key={lang.code}
@@ -385,6 +412,13 @@ function HealthAssistant() {
   const [sessions, setSessions] = useState([])
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
+  // ─── Bhashini state ────────────────────────────────────────────────────────
+  const [micRecording, setMicRecording] = useState(false)
+  const [micLoading, setMicLoading] = useState(false)   // while uploading to ASR
+  const [ttsLoadingId, setTtsLoadingId] = useState(null) // which message is loading TTS
+  const micStopRef = useRef(null)   // holds the stop() fn from startMicRecording
+  const currentAudioRef = useRef(null) // holds currently playing Audio object
+
   const chatEndRef = useRef(null)
   const fileInputRef = useRef(null)
 
@@ -552,6 +586,155 @@ function HealthAssistant() {
     ).join('\n')
   }
 
+  // ─── Bhashini: Microphone (ASR) ────────────────────────────────────────────
+  const handleMicClick = async () => {
+    if (micRecording) {
+      // Stop recording — for SpeechRecognition this fires the result event automatically
+      if (micStopRef.current) micStopRef.current()
+      setMicRecording(false)
+      return
+    }
+
+    // ── Try browser-native SpeechRecognition first (no backend needed) ────────
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (SpeechRecognition) {
+      try {
+        const recognition = new SpeechRecognition()
+        // Map our language code to BCP-47 for browser SpeechRecognition
+        const bcp47Map = {
+          en:  'en-IN',
+          hi:  'hi-IN',
+          mr:  'mr-IN',
+          bn:  'bn-IN',
+          gu:  'gu-IN',
+          ta:  'ta-IN',
+          te:  'te-IN',
+          kn:  'kn-IN',
+          ml:  'ml-IN',
+          pa:  'pa-IN',
+          or:  'or-IN',
+          as:  'as-IN',
+          ur:  'ur-PK',
+          ne:  'ne-NP',   // Nepali → Nepal, not India
+          si:  'si-LK',
+          sa:  'sa-IN',
+        }
+        recognition.lang = bcp47Map[language] || 'en-IN'
+        recognition.continuous = false
+        recognition.interimResults = false
+
+        recognition.onresult = (e) => {
+          const transcript = Array.from(e.results).map((r) => r[0].transcript).join(' ')
+          if (transcript) setInputMessage((prev) => (prev ? prev + ' ' + transcript : transcript))
+          setMicRecording(false)
+          setMicLoading(false)
+        }
+        recognition.onerror = async (e) => {
+          // If browser recognition fails (e.g. network), fall back to Bhashini ASR
+          if (e.error === 'network' || e.error === 'service-not-allowed') {
+            setMicLoading(true)
+            await useBhashiniASR()
+          } else {
+            setError('Speech recognition error: ' + e.error + '. Please type instead.')
+          }
+          setMicRecording(false)
+          setMicLoading(false)
+        }
+        recognition.onend = () => {
+          setMicRecording(false)
+        }
+
+        micStopRef.current = () => recognition.stop()
+        recognition.start()
+        setMicRecording(true)
+        return
+      } catch {
+        // SpeechRecognition failed to start — fall through to Bhashini
+      }
+    }
+
+    // ── Fallback: Bhashini ASR (requires backend) ─────────────────────────────
+    async function useBhashiniASR() {
+      try {
+        const { stop, promise } = await startMicRecording()
+        micStopRef.current = stop
+        setMicRecording(true)
+        const base64Audio = await promise
+        try {
+          const res = await bhashiniSpeechToText({ audio: base64Audio, language })
+          if (res?.transcript) setInputMessage((prev) => (prev ? prev + ' ' + res.transcript : res.transcript))
+        } catch {
+          setError('Speech recognition failed (server error). Please type your message instead.')
+        } finally {
+          setMicLoading(false)
+          setMicRecording(false)
+        }
+      } catch {
+        setError('Microphone access denied.')
+        setMicRecording(false)
+        setMicLoading(false)
+      }
+    }
+
+    try {
+      await useBhashiniASR()
+    } catch {
+      setError('Microphone access denied. Please allow microphone permission and try again.')
+      setMicRecording(false)
+      setMicLoading(false)
+    }
+  }
+
+  // ─── Bhashini: Text-to-Speech (TTS) ───────────────────────────────────────
+  const handleTTS = async (msgId, text) => {
+    // Stop any currently playing audio / speech
+    if (currentAudioRef.current) {
+      currentAudioRef.current.pause()
+      currentAudioRef.current = null
+    }
+    window.speechSynthesis?.cancel()
+
+    if (ttsLoadingId === msgId) {
+      setTtsLoadingId(null)
+      return
+    }
+    setTtsLoadingId(msgId)
+
+    // Map lang code → BCP-47 for browser speechSynthesis fallback
+    const bcp47Map = {
+      en: 'en-IN', hi: 'hi-IN', mr: 'mr-IN', bn: 'bn-IN', gu: 'gu-IN',
+      ta: 'ta-IN', te: 'te-IN', kn: 'kn-IN', ml: 'ml-IN', pa: 'pa-IN',
+      or: 'or-IN', as: 'as-IN', ur: 'ur-PK', ne: 'ne-NP', si: 'si-LK',
+    }
+
+    try {
+      const res = await bhashiniTextToSpeech({ text, language, gender: 'female' })
+      if (res?.audioContent) {
+        const audio = playBase64Audio(res.audioContent)
+        currentAudioRef.current = audio
+        audio.addEventListener('ended', () => {
+          setTtsLoadingId(null)
+          currentAudioRef.current = null
+        })
+        return
+      }
+    } catch {
+      // Bhashini TTS failed (500 or network) — fall back to browser speechSynthesis
+    }
+
+    // ── Browser speechSynthesis fallback ─────────────────────────────────────
+    if (window.speechSynthesis) {
+      const utter = new SpeechSynthesisUtterance(text)
+      utter.lang = bcp47Map[language] || 'en-IN'
+      utter.rate = 0.95
+      utter.onend = () => setTtsLoadingId(null)
+      utter.onerror = () => setTtsLoadingId(null)
+      window.speechSynthesis.speak(utter)
+    } else {
+      setTtsLoadingId(null)
+    }
+  }
+
   // ─── Send message ──────────────────────────────────────────────────────────
   const handleSend = async (textToSend) => {
     const rawText = textToSend !== undefined ? textToSend : inputMessage
@@ -602,14 +785,39 @@ function HealthAssistant() {
         })
       }
 
+      // ── Translate reply into selected language if not English ──────────────
+      let replyText = res.reply || 'Thank you for sharing your symptoms.'
+      let remedyText = res.remedy_suggestion || null
+      let followText = res.follow_up_question || null
+
+      if (language !== 'en') {
+        // Translate all text fields in one go (parallel)
+        const toTranslate = [replyText, remedyText, followText].filter(Boolean)
+        try {
+          const translated = await Promise.all(
+            toTranslate.map((t) =>
+              bhashiniTranslate({ text: t, sourceLanguage: 'en', targetLanguage: language })
+                .then((r) => r?.translatedText || t)
+                .catch(() => t)
+            )
+          )
+          let i = 0
+          replyText = translated[i++]
+          if (remedyText) remedyText = translated[i++]
+          if (followText) followText = translated[i++]
+        } catch {
+          // If translation fails, show original English — better than nothing
+        }
+      }
+
       const sysMsg = {
         id: 'sys_' + Date.now(),
         sender: 'system',
-        reply: res.reply || 'Thank you for sharing your symptoms.',
+        reply: replyText,
         zone: res.zone || null,
         is_final: res.is_final || false,
-        remedy_suggestion: res.remedy_suggestion || null,
-        follow_up_question: res.follow_up_question || null,
+        remedy_suggestion: remedyText,
+        follow_up_question: followText,
       }
 
       setMessages((prev) => [...prev, sysMsg])
@@ -796,6 +1004,17 @@ function HealthAssistant() {
                             ❓ {msg.follow_up_question}
                           </div>
                         )}
+                        {msg.reply && (
+                          <button
+                            type="button"
+                            title="Listen to this message"
+                            onClick={() => handleTTS(msg.id, msg.reply)}
+                            className="mt-2 flex items-center gap-1 text-[#59756e] text-xs font-semibold bg-transparent border-0 cursor-pointer p-0 hover:text-[#29574b]"
+                          >
+                            <Volume2 size={14} className={ttsLoadingId === msg.id ? 'animate-pulse text-[#29574b]' : ''} />
+                            <span>{ttsLoadingId === msg.id ? 'Playing…' : 'Listen'}</span>
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>
@@ -855,6 +1074,23 @@ function HealthAssistant() {
                 className="flex-1 min-w-0 h-[52px] px-2 py-3 border-0 outline-none text-[#171d1b] bg-transparent text-base"
               />
               <LanguageSelector value={language} onChange={setLanguage} />
+              {/* ── Mic button (Bhashini ASR) ── */}
+              <button
+                type="button"
+                aria-label={micRecording ? 'Stop recording' : 'Speak your symptoms'}
+                title={micRecording ? 'Stop recording' : 'Speak your symptoms (Bhashini ASR)'}
+                onClick={handleMicClick}
+                disabled={micLoading}
+                className={`flex items-center justify-center shrink-0 w-10 h-10 rounded-full border-0 cursor-pointer transition-colors duration-150 ${
+                  micRecording
+                    ? 'bg-[#f43f5e] text-white animate-pulse'
+                    : micLoading
+                    ? 'bg-[#e0ece5] text-[#59756e] cursor-wait'
+                    : 'bg-[#e0ece5] text-[#29574b] hover:bg-[#cdddd5]'
+                }`}
+              >
+                {micRecording ? <MicOff size={18} /> : <Mic size={18} />}
+              </button>
               <button type="submit" aria-label="Send message" disabled={!canSend} className={`text-white bg-[#29574b] rounded-full shadow w-10 h-10 flex items-center justify-center shrink-0 border-0 ${!canSend ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#1f4239]'}`}>
                 <Send size={19} className="-ml-0.5" />
               </button>
