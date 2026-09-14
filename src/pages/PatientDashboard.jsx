@@ -247,7 +247,10 @@ export function Sidebar({ userName, activeLabel = 'Dashboard', className = '' })
   }
 
   return (
-    <aside className={`hidden md:flex flex-col w-72 shrink-0 h-[calc(100vh-88px)] sticky top-[88px] p-6 gap-8 bg-transparent border-r border-[rgba(41,87,75,0.12)] overflow-y-auto ${className}`}>
+    <aside
+      className={`hidden md:flex flex-col w-72 shrink-0 h-[calc(100vh-88px)] sticky top-[88px] p-6 gap-8 bg-transparent border-r border-[rgba(41,87,75,0.12)] overflow-y-auto no-scrollbar ${className}`}
+      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+    >
       <div className="flex items-center gap-3">
         <div className="w-12 h-12 rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-xl shrink-0 shadow-md">
           {initials}

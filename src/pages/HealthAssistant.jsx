@@ -220,7 +220,10 @@ function ChatHistorySidebar({ sessions, activeSessionId, onNew, onSelect, onRena
   }
 
   return (
-    <aside className={`hidden md:flex h-screen sticky top-0 bg-[#eff5f1] border-r border-[#d8e5de] flex-col transition-all duration-200 overflow-hidden shrink-0 box-border z-30 ${collapsed ? 'w-16 min-w-[64px] max-w-[64px]' : 'w-[280px] min-w-[280px] max-w-[280px]'}`}>
+    <aside
+      className={`hidden md:flex h-screen sticky top-0 bg-[#eff5f1] border-r border-[#d8e5de] flex-col transition-all duration-200 overflow-hidden shrink-0 box-border z-30 no-scrollbar ${collapsed ? 'w-16 min-w-[64px] max-w-[64px]' : 'w-[280px] min-w-[280px] max-w-[280px]'}`}
+      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+    >
       {/* Header */}
       <div className={`flex items-center border-b border-[rgba(41,87,75,0.08)] ${collapsed ? 'justify-center px-2 pt-4 pb-3' : 'justify-between px-3.5 pt-4 pb-3'}`}>
         {!collapsed && (
@@ -258,7 +261,7 @@ function ChatHistorySidebar({ sessions, activeSessionId, onNew, onSelect, onRena
 
       {/* Session list (Expanded) */}
       {!collapsed ? (
-        <div className="flex-1 overflow-y-auto px-3 pt-1.5 pb-4 flex flex-col gap-2">
+        <div className="flex-1 overflow-y-auto px-3 pt-1.5 pb-4 flex flex-col gap-2 no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {sessions.length === 0 && (
             <div className="text-[#59756e] text-[13.5px] text-center py-9 px-3 font-medium leading-relaxed">
               No previous chats yet.<br />Click <strong>New Chat</strong> to begin.
@@ -920,7 +923,10 @@ function HealthAssistant() {
           </div>
 
           <div className="absolute -top-48 -right-32 w-96 h-96 rounded-full bg-[rgba(66,111,99,0.05)] blur-3xl pointer-events-none" />
-          <div className="w-full max-w-[820px] px-4 md:px-6 py-6 md:py-8 mx-auto flex-1 flex flex-col overflow-y-auto min-h-0 z-10">
+          <div
+            className="w-full max-w-[820px] px-4 md:px-6 py-6 md:py-8 mx-auto flex-1 flex flex-col overflow-y-auto min-h-0 z-10 no-scrollbar"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
             <header className="pb-6 text-center">
               <p className="mb-2 text-[#29574b] font-bold text-base tracking-wide uppercase">AI Health Assistant</p>
               <h1 className="text-[#171d1b] text-3xl font-bold font-serif">Tell me what&apos;s bothering you.</h1>
