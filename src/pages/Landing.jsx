@@ -10,8 +10,9 @@ import facilityImage from '../assets/Facility.png'
 import languageImage from '../assets/Language.png'
 import voiceImage from '../assets/Voice.png'
 import connectivityImage from '../assets/Connectivity.png'
+import figmaRightSectionImage from '../assets/figma-right-section.png'
 
-const medicalTexture = 'https://www.figma.com/api/mcp/asset/5a5ce48b-c78a-4fe0-9803-35e297f3b7fc.png'
+const medicalTexture = figmaRightSectionImage
 const iconClock = isThisSeriousImage
 const iconRoute = whereShouldImage
 const iconFollow = whatsNextImage
@@ -81,13 +82,54 @@ function Hero() {
 	return <section id="top" className="relative overflow-hidden px-5 pb-20 pt-32 sm:px-8 lg:px-16 lg:pt-40">
 		<div className="relative mx-auto grid max-w-[1152px] items-center gap-12 lg:grid-cols-[5fr_7fr]">
 			<div className="order-2 lg:order-1"><h1 className="max-w-xl font-serif text-4xl sm:text-5xl lg:text-7xl font-bold leading-[1.1] tracking-[-.02em] text-[#29574b]">Better care,<br />closer to home.</h1><p className="mt-6 max-w-md text-lg leading-relaxed text-[#404845]">Navigate your health journey with clarity. SwasthyaSahay connects you to the right care, at the right time, with quiet confidence.</p><div className="mt-8 flex flex-wrap gap-4"><CtaButton>Start your journey</CtaButton><SecondaryButton href="#journey">See how it works</SecondaryButton></div></div>
-			<div className="relative order-1 h-[420px] sm:h-[520px] lg:order-2 lg:h-[600px]"><div className="absolute inset-0 overflow-hidden rounded-[40px] border border-[#c0c8c4]/20 bg-[#c3e9f0]/20 shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)]"><img src={medicalTexture} alt="Abstract medical data visualization" className="h-full w-full object-cover opacity-80 mix-blend-multiply" /></div><MiniReferral /><RiskCard /></div>
+			<div className="relative order-1 h-[420px] sm:h-[520px] lg:order-2 lg:h-[600px]">
+				<div className="absolute inset-0 overflow-hidden rounded-[40px] border border-[#c0c8c4]/20 bg-[#c3e9f0]/20 shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)]">
+					<img src={medicalTexture} alt="Abstract medical data visualization" className="h-full w-full object-cover opacity-80 mix-blend-multiply" />
+					{/* Underlay patches to completely dissolve the duplicate cards baked into the background graphic */}
+					<div className="absolute top-[5%] right-[4%] w-[52%] h-[32%] rounded-[32px] bg-[#d9eee5] backdrop-blur-md opacity-95 pointer-events-none" />
+					<div className="absolute bottom-[14%] left-[4%] w-[48%] h-[32%] rounded-[32px] bg-[#d9eee5] backdrop-blur-md opacity-95 pointer-events-none" />
+				</div>
+				<MiniReferral />
+				<RiskCard />
+			</div>
 		</div>
 	</section>
 }
 
-function MiniReferral() { return <div className="absolute right-5 top-5 w-56 rounded-[28px] border border-[#c0c8c4]/30 bg-[#f5fbf7] p-5 shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)] sm:right-10 sm:w-72"><div className="flex items-center gap-3"><div className="grid size-10 place-items-center rounded-full bg-[#426f63]/20"><img src={facilityInfoImage} alt="" className="size-5" /></div><div><strong className="block text-sm">CHC Manesar</strong><span className="text-xs font-bold text-[#404845]">Recommended Match</span></div></div><div className="mt-4 flex justify-between rounded-2xl bg-[#eff5f1] px-3 py-3 text-xs font-bold text-[#404845]"><span>Wait Time</span><b className="text-[#29574b]">~15 mins</b></div></div> }
-function RiskCard() { return <div className="absolute bottom-10 left-5 w-52 rounded-[28px] border border-[#c0c8c4]/30 bg-[#f5fbf7] p-6 shadow-[0_10px_40px_-10px_rgba(41,87,75,.08)] sm:left-10 sm:w-64"><p className="text-[10px] font-bold tracking-[.12em] text-[#404845]">HEALTH ASSESSMENT</p><div className="mt-2 flex items-end gap-2"><strong className="font-serif text-5xl text-[#29574b]">85</strong><span className="mb-2 text-sm text-[#404845]">/100</span></div><div className="mt-3 h-2 rounded-full bg-[#dee4e0]"><div className="h-full w-[85%] rounded-full bg-[#29574b]" /></div></div> }
+function MiniReferral() {
+	return (
+		<div className="absolute right-[5%] top-[7%] w-[48%] min-w-[250px] max-w-[310px] rounded-[28px] border border-[#c0c8c4]/40 bg-[#f5fbf7] p-4 sm:p-5 shadow-[0_12px_40px_-10px_rgba(41,87,75,.15)] z-10">
+			<div className="flex items-center gap-3">
+				<div className="grid size-10 place-items-center rounded-full bg-[#426f63]/20 shrink-0">
+					<img src={facilityInfoImage} alt="" className="size-5" />
+				</div>
+				<div>
+					<strong className="block text-sm font-bold text-[#171d1b]">CHC Manesar</strong>
+					<span className="text-xs font-bold text-[#404845]">Recommended Match</span>
+				</div>
+			</div>
+			<div className="mt-4 flex justify-between items-center rounded-2xl bg-[#eff5f1] px-3 py-3 text-xs font-bold text-[#404845]">
+				<span>Wait Time</span>
+				<b className="text-[#29574b]">~15 mins</b>
+			</div>
+		</div>
+	)
+}
+
+function RiskCard() {
+	return (
+		<div className="absolute bottom-[16%] left-[5%] w-[44%] min-w-[230px] max-w-[285px] rounded-[28px] border border-[#c0c8c4]/40 bg-[#f5fbf7] p-5 sm:p-6 shadow-[0_12px_40px_-10px_rgba(41,87,75,.15)] z-10">
+			<p className="text-[10px] font-bold tracking-[.12em] text-[#404845]">HEALTH ASSESSMENT</p>
+			<div className="mt-2 flex items-end gap-2">
+				<strong className="font-serif text-4xl sm:text-5xl text-[#29574b]">85</strong>
+				<span className="mb-1.5 sm:mb-2 text-sm text-[#404845]">/100</span>
+			</div>
+			<div className="mt-3 h-2 rounded-full bg-[#dee4e0]">
+				<div className="h-full w-[85%] rounded-full bg-[#29574b]" />
+			</div>
+		</div>
+	)
+}
 
 function Problem() { const items = [['Is this serious?', "Symptoms are confusing. Knowing when to act shouldn't be a guessing game.", iconClock], ['Where should I go?', 'Navigating clinics, wait times, and specialties adds stress to sickness.', iconRoute], ["What's next?", 'The journey rarely ends after one visit. Follow-ups get lost in the noise.', iconFollow]]; return <section className="bg-[#eff5f1]/50 px-5 py-20 sm:px-8 lg:px-16"><div className="mx-auto max-w-[1152px]"><SectionTitle>Finding care is only part of the<br className="hidden sm:block" /> problem.</SectionTitle><div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16">{items.map(([title, text, icon], index) => <article key={title} className={`max-w-xs ${index === 1 ? 'lg:mt-16' : index === 2 ? 'lg:mt-32' : ''}`}><img src={icon} alt="" className="mb-6 size-7 opacity-50" /><h3 className="font-serif text-3xl font-semibold text-[#171d1b]">{title}</h3><p className="mt-2 leading-relaxed text-[#404845]">{text}</p></article>)}</div></div></section> }
 function SectionTitle({ children }) { return <h2 className="text-center font-serif text-4xl font-semibold leading-tight text-[#29574b] sm:text-5xl">{children}</h2> }
