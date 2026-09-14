@@ -1,7 +1,7 @@
 /**
  * Bhashini Full-Website Translator (Govt. of India ULCA / Dhruva NMT Engine)
  * Translates entire React SPA DOM content dynamically into 24 Indian languages.
- * Supports MutationObserver for seamless route transitions and dynamic state changes.
+ * Synchronous in-flight translation & MutationObserver to eliminate flash of English.
  */
 
 (function () {
@@ -27,7 +27,7 @@
     { code: "kn", name: "Kannada", nativeName: "ಕನ್ನಡ" },
     { code: "ml", name: "Malayalam", nativeName: "മലയാളം" },
     { code: "pa", name: "Punjabi", nativeName: "ਪੰਜਾਬੀ" },
-    { code: "or", name: "Odia", nativeName: "ଓଡ଼ିଆ" },
+    { code: "or", name: "Odia", nativeName: "ଓਡ଼ਿଆ" },
     { code: "as", name: "Assamese", nativeName: "অসমীয়া" },
     { code: "ur", name: "Urdu", nativeName: "اردو" },
     { code: "sa", name: "Sanskrit", nativeName: "संस्कृत" },
@@ -49,7 +49,7 @@
   // In-memory translation cache: `${lang}:${text}` -> translatedText
   const translationCache = new Map();
 
-  // Load persisted cache from localStorage if available
+  // Load persisted cache synchronously from localStorage on startup
   try {
     const savedCache = localStorage.getItem("bhashini_tr_cache");
     if (savedCache) {
@@ -62,12 +62,11 @@
 
   function saveCacheToStorage() {
     try {
-      // Keep most recent 500 entries to prevent storage bloat
       const obj = {};
       let count = 0;
       for (const [k, v] of translationCache.entries()) {
         obj[k] = v;
-        if (++count > 500) break;
+        if (++count > 2500) break;
       }
       localStorage.setItem("bhashini_tr_cache", JSON.stringify(obj));
     } catch (e) {
@@ -75,7 +74,10 @@
     }
   }
 
-  let currentLanguage = localStorage.getItem("bhashini_website_lang") || "en";
+  let currentLanguage =
+    localStorage.getItem("bhashini_website_lang") ||
+    localStorage.getItem("SwasthyaSahay-dashboard-lang") ||
+    "en";
   let isTranslating = false;
   let observer = null;
   let pendingNodes = new Set();
@@ -92,6 +94,10 @@
     "PATH",
     "INPUT",
   ]);
+
+  function finishInitialTranslation() {
+    document.documentElement.classList.remove("bhashini-translating");
+  }
 
   /**
    * Checks if a node should be translated
@@ -110,6 +116,31 @@
     if (/^[\d\s\-_.,!?:;#@%&*()+=/\\|<>\[\]{}'"]+$/.test(text)) return false;
 
     return true;
+  }
+
+  /**
+   * Synchronously translates a single text node from the cache if available.
+   * Returns true if translated immediately, false otherwise.
+   */
+  function translateNodeSync(node, targetLang) {
+    if (!node || node.nodeType !== Node.TEXT_NODE || targetLang === "en") return false;
+    if (!isValidTextNode(node)) return false;
+
+    if (!originalTextMap.has(node)) {
+      originalTextMap.set(node, node.nodeValue);
+    }
+
+    const orig = (originalTextMap.get(node) || node.nodeValue).trim();
+    const cacheKey = `${targetLang}:${orig}`;
+
+    if (translationCache.has(cacheKey)) {
+      const cached = translationCache.get(cacheKey);
+      if (cached && node.nodeValue !== cached) {
+        node.nodeValue = cached;
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -143,23 +174,15 @@
     nodes.forEach((node) => {
       if (!node.isConnected) return;
 
-      if (!originalTextMap.has(node)) {
-        originalTextMap.set(node, node.nodeValue);
+      // Try synchronous translation first
+      if (translateNodeSync(node, targetLang)) {
+        return;
       }
 
       const orig = (originalTextMap.get(node) || node.nodeValue).trim();
-      const cacheKey = `${targetLang}:${orig}`;
-
-      if (translationCache.has(cacheKey)) {
-        const cached = translationCache.get(cacheKey);
-        if (cached && node.nodeValue !== cached) {
-          node.nodeValue = cached;
-        }
-      } else {
-        nodesToTranslate.push(node);
-        if (!uncachedTexts.includes(orig)) {
-          uncachedTexts.push(orig);
-        }
+      nodesToTranslate.push(node);
+      if (!uncachedTexts.includes(orig)) {
+        uncachedTexts.push(orig);
       }
     });
 
@@ -218,21 +241,30 @@
     if (targetLang === "en") {
       currentLanguage = "en";
       localStorage.setItem("bhashini_website_lang", "en");
+      localStorage.setItem("SwasthyaSahay-dashboard-lang", "en");
       restoreOriginalText();
+      finishInitialTranslation();
       window.dispatchEvent(new CustomEvent("bhashini:languageChange", { detail: { language: "en" } }));
       return;
     }
 
     currentLanguage = targetLang;
     localStorage.setItem("bhashini_website_lang", targetLang);
+    localStorage.setItem("SwasthyaSahay-dashboard-lang", targetLang);
     window.dispatchEvent(new CustomEvent("bhashini:languageChange", { detail: { language: targetLang } }));
 
     isTranslating = true;
     try {
-      const allNodes = getTextNodes(document.body);
+      const allNodes = getTextNodes(document.body || document.documentElement);
+      // Synchronously translate everything from cache first
+      allNodes.forEach((node) => translateNodeSync(node, targetLang));
+      finishInitialTranslation();
+
+      // Translate remaining uncached strings
       await processNodes(allNodes, targetLang);
     } finally {
       isTranslating = false;
+      finishInitialTranslation();
     }
 
     startObserver();
@@ -242,7 +274,7 @@
    * Restores original text on all modified nodes
    */
   function restoreOriginalText() {
-    const allNodes = getTextNodes(document.body);
+    const allNodes = getTextNodes(document.body || document.documentElement);
     allNodes.forEach((node) => {
       if (originalTextMap.has(node)) {
         const original = originalTextMap.get(node);
@@ -254,53 +286,68 @@
   }
 
   /**
-   * MutationObserver tracks DOM changes from React routing and state updates
+   * MutationObserver tracks DOM changes from React routing and state updates.
+   * Intercepts added nodes and translates cached strings SYNCHRONOUSLY before paint!
    */
   function startObserver() {
     if (observer) return;
 
+    const target = document.documentElement || document.body;
+    if (!target) return;
+
     observer = new MutationObserver((mutations) => {
       if (currentLanguage === "en" || isTranslating) return;
 
-      let hasNewNodes = false;
+      let hasUncachedNodes = false;
+
       mutations.forEach((mutation) => {
         if (mutation.type === "childList") {
           mutation.addedNodes.forEach((added) => {
-            if (added.nodeType === Node.TEXT_NODE && isValidTextNode(added)) {
-              pendingNodes.add(added);
-              hasNewNodes = true;
+            if (added.nodeType === Node.TEXT_NODE) {
+              // Try instant synchronous replacement from cache
+              const translated = translateNodeSync(added, currentLanguage);
+              if (!translated && isValidTextNode(added)) {
+                pendingNodes.add(added);
+                hasUncachedNodes = true;
+              }
             } else if (added.nodeType === Node.ELEMENT_NODE) {
               const nodes = getTextNodes(added);
               nodes.forEach((n) => {
-                pendingNodes.add(n);
-                hasNewNodes = true;
+                const translated = translateNodeSync(n, currentLanguage);
+                if (!translated) {
+                  pendingNodes.add(n);
+                  hasUncachedNodes = true;
+                }
               });
             }
           });
         } else if (mutation.type === "characterData") {
-          const target = mutation.target;
-          if (isValidTextNode(target)) {
-            const orig = originalTextMap.get(target);
-            if (!orig || orig !== target.nodeValue) {
-              originalTextMap.set(target, target.nodeValue);
-              pendingNodes.add(target);
-              hasNewNodes = true;
+          const targetNode = mutation.target;
+          if (isValidTextNode(targetNode)) {
+            const orig = originalTextMap.get(targetNode);
+            if (!orig || orig !== targetNode.nodeValue) {
+              originalTextMap.set(targetNode, targetNode.nodeValue);
+              const translated = translateNodeSync(targetNode, currentLanguage);
+              if (!translated) {
+                pendingNodes.add(targetNode);
+                hasUncachedNodes = true;
+              }
             }
           }
         }
       });
 
-      if (hasNewNodes) {
+      if (hasUncachedNodes) {
         clearTimeout(debounceTimeout);
         debounceTimeout = setTimeout(() => {
           const batch = Array.from(pendingNodes);
           pendingNodes.clear();
           processNodes(batch, currentLanguage);
-        }, 150);
+        }, 80);
       }
     });
 
-    observer.observe(document.body, {
+    observer.observe(target, {
       childList: true,
       subtree: true,
       characterData: true,
@@ -315,17 +362,30 @@
     getSupportedLanguages: () => SUPPORTED_LANGS,
   };
 
-  // Auto-start on load if a non-English language was previously selected
-  function init() {
+  // Immediate startup logic:
+  // Start observing right away on documentElement so early React mounts are caught!
+  startObserver();
+
+  function onDomReady() {
     startObserver();
     if (currentLanguage && currentLanguage !== "en") {
-      setTimeout(() => setLanguage(currentLanguage), 300);
+      const allNodes = getTextNodes(document.body || document.documentElement);
+      // Synchronously translate from cache
+      allNodes.forEach((n) => translateNodeSync(n, currentLanguage));
+      finishInitialTranslation();
+
+      // Trigger background translation for any remaining text
+      processNodes(allNodes, currentLanguage).then(finishInitialTranslation);
+    } else {
+      finishInitialTranslation();
     }
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", onDomReady);
+    // Also attach on window load just in case
+    window.addEventListener("load", finishInitialTranslation);
   } else {
-    init();
+    onDomReady();
   }
 })();

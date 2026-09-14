@@ -5,10 +5,34 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>medcheck</title>
+
+    <!-- Anti-Flash of English: Prevents raw English from rendering on reload if a different language is active -->
+    <script>
+      (function () {
+        try {
+          var lang = localStorage.getItem('bhashini_website_lang') || localStorage.getItem('SwasthyaSahay-dashboard-lang');
+          if (lang && lang !== 'en') {
+            document.documentElement.classList.add('bhashini-translating');
+            setTimeout(function () {
+              document.documentElement.classList.remove('bhashini-translating');
+            }, 400);
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      html.bhashini-translating body {
+        opacity: 0 !important;
+      }
+      body {
+        transition: opacity 0.12s ease-in;
+      }
+    </style>
+
+    <script src="/bhashini-website-translator.js" data-api="https://sih-otuc.onrender.com"></script>
   </head>
   <body>
     <div id="root"></div>
-    <script src="/bhashini-website-translator.js" data-api="https://sih-otuc.onrender.com"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
