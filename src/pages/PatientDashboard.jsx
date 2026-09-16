@@ -39,6 +39,7 @@ import {
   Baby,
   Globe,
   Search,
+  Landmark,
 } from 'lucide-react'
 import { getStoredUser, logout } from '../api/apiClient.js'
 import { getVitals } from '../api/patientApi.js'
@@ -57,6 +58,7 @@ const navItems = [
   [Stethoscope,           'Doctors'],
   [Building2,             'Hospitals'],
   [ShoppingBag,           'Stores'],
+  [Landmark,              'Government Schemes'],
   [Siren,                 'Emergency'],
   [Baby,                  'Child & Maternal Health'],
   [User,                  'My Profile'],
@@ -270,6 +272,7 @@ export function Sidebar({ userName, activeLabel = 'Dashboard', className = '' })
             label === 'Health Assistant' ? '/health-assistant' :
             label === 'Hospitals'      ? '/hospitals' :
             label === 'Stores'         ? '/stores' :
+            label === 'Government Schemes' ? '/schemes' :
             label === 'Emergency'      ? '/emergency' :
             label === 'Child & Maternal Health' ? '/child-maternal-care' :
             `#${label.toLowerCase().replaceAll(' ', '-')}`
@@ -293,6 +296,8 @@ export function Sidebar({ userName, activeLabel = 'Dashboard', className = '' })
                   navigate('/hospitals')
                 } else if (label === 'Stores') {
                   navigate('/stores')
+                } else if (label === 'Government Schemes') {
+                  navigate('/schemes')
                 } else if (label === 'Emergency') {
                   navigate('/emergency')
                 } else if (label === 'Child & Maternal Health') {

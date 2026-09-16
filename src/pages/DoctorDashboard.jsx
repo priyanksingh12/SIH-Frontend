@@ -38,6 +38,7 @@ const SIDEBAR_ITEMS = [
   { label: 'Dashboard', icon: '⌂', path: '/doctor-dashboard' },
   { label: 'Patients', icon: '♧', path: '/doctor-patients' },
   { label: 'Appointments', icon: '▣', path: '#appointments' },
+  { label: 'Govt Schemes', icon: '🏛', path: '/schemes' },
   { label: 'My Profile', icon: '◎', path: '/doctor-dashboard' },
 ]
 

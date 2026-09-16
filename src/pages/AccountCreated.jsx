@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { getStoredUser } from '../api/apiClient.js'
+import accountCreatedImage from '../assets/Account Created.png'
 
-const confirmationImage = 'https://www.figma.com/api/mcp/asset/b4f97d49-77dd-45a3-9dfa-6d13057bc63e.png'
+const confirmationImage = accountCreatedImage
 
 export default function AccountCreated() {
   const navigate = useNavigate()

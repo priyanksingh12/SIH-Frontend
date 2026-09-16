@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import { signup } from '../api/authApi.js'
 import LanguageSelector from '../components/LanguageSelector.jsx'
+import signupImage from '../assets/Signup.png'
 
-const clinicImage = 'https://www.figma.com/api/mcp/asset/ea0832b8-8024-4aa8-a597-822e199eea9f.png'
+const clinicImage = signupImage
 
 const LANGUAGES = [
   { value: 'en', label: 'English' },
@@ -94,7 +95,6 @@ export default function SignUp() {
               <small className="block text-[10px] tracking-widest opacity-80 uppercase">CONNECTED HEALTHCARE ECOSYSTEM</small>
             </div>
             <div className="ml-auto flex items-center gap-3">
-              <LanguageSelector />
               <button type="button" onClick={backToLanding} className="bg-transparent border-none text-white text-sm font-semibold cursor-pointer hover:underline flex items-center gap-2">
                 Back to website <span>→</span>
               </button>
@@ -117,7 +117,9 @@ export default function SignUp() {
 
         {/* ── Right form panel ── */}
         <section className="relative w-full md:w-1/2 flex flex-col justify-between p-8 md:p-12 overflow-auto bg-[rgba(252,253,252,0.92)] order-2 md:order-none">
-          <div className="absolute top-6 right-8 text-xs font-bold tracking-widest border border-[#d5dbd8] rounded-full px-4 py-2 cursor-pointer bg-white hidden md:block text-[#1b342e]">◎ &nbsp; English (IN) &nbsp;⌄</div>
+          <div className="absolute top-4 right-4 sm:top-6 sm:right-8 z-20">
+            <LanguageSelector />
+          </div>
           <form className="w-full max-w-[480px] mx-auto grid gap-5" onSubmit={submit}>
           <header className="mb-2">
             <h1 className="text-3xl md:text-4xl font-serif text-[#1b342e]">Create your account</h1>

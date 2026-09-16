@@ -86,13 +86,13 @@ export default function LanguageSelector({ className = '', dropUp = false }) {
       } finally {
         setTranslating(false)
       }
-    } else if (code === 'en') {
+    } else {
       window.location.reload()
     }
   }
 
   return (
-    <div ref={wrapRef} className={`relative shrink-0 ${className}`}>
+    <div ref={wrapRef} data-no-translate="true" className={`relative shrink-0 ${className}`}>
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}

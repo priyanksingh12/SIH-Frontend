@@ -1,4 +1,4 @@
-﻿import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import MedicalShaderBg from './components/MedicalShaderBg'
 import PatientDashboard from './pages/PatientDashboard'
@@ -19,6 +19,7 @@ import NearbyHospitals from './pages/NearbyHospitals'
 import NearbyMedicalStores from './pages/NearbyMedicalStores'
 import EmergencyPage from './pages/EmergencyPage'
 import ChildMaternalCare from './pages/ChildMaternalCare'
+import SchemesPage from './pages/SchemesPage'
 import './App.css'
 
 /**
@@ -113,6 +114,8 @@ function App() {
           <Route path="/doctor-dashboard" element={<ProtectedRoute><DoctorDashboard /></ProtectedRoute>} />
           <Route path="/vitals" element={<ProtectedRoute><Vitals /></ProtectedRoute>} />
           <Route path="/patient-dashboard" element={<ProtectedRoute><PatientDashboard /></ProtectedRoute>} />
+          <Route path="/schemes" element={<ProtectedRoute><SchemesPage /></ProtectedRoute>} />
+          <Route path="/schemes/:slug" element={<ProtectedRoute><SchemesPage /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
