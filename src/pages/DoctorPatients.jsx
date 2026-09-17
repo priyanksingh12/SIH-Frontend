@@ -150,8 +150,7 @@ export default function DoctorPatients() {
     <div className="min-h-screen flex bg-transparent text-[#171d1b]">
       <DoctorSidebar doctorName={doctorName} facilityName={facilityName} />
       <main className="flex-1 min-w-0 w-full">
-        <header className="relative overflow-hidden h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[rgba(41,87,75,0.12)] bg-[#f5fbf7]">
-          <MedicalShaderBg isNavbar />
+        <header className="relative overflow-hidden h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[rgba(41,87,75,0.12)] bg-[#D5E6E0]">
           <div className="relative z-10 w-full flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-sm font-bold">▣ &nbsp; Secure Clinical Session</span>

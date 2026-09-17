@@ -213,8 +213,7 @@ export function TopBar({ userName }) {
   const navigate = useNavigate()
   const initials = userName.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'PT'
   return (
-    <header className="relative z-50 h-[88px] flex items-center justify-between px-4 md:px-16 py-6 bg-[#f5fbf7] border-b border-[rgba(41,87,75,0.12)]" style={{ overflow: 'visible' }}>
-      <MedicalShaderBg isNavbar />
+    <header className="relative z-50 h-[88px] flex items-center justify-between px-4 md:px-16 py-6 bg-[#D5E6E0] border-b border-[rgba(41,87,75,0.12)]" style={{ overflow: 'visible' }}>
       <div className="relative z-10 w-full flex items-center justify-between">
         <a style={{ color: '#29574b' }} className="font-serif text-2xl font-bold md:text-[32px] text-[#29574b] brand-text no-underline tracking-tight shrink-0" href="#dashboard" onClick={(e) => { e.preventDefault(); navigate('/patient-dashboard') }}>
           SwasthyaSahay

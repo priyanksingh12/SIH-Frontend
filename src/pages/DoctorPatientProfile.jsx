@@ -11,8 +11,7 @@ function getInitials(name) {
 function DoctorTopbar({ doctorName }) {
   const navigate = useNavigate()
   return (
-    <header className="relative overflow-hidden h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[#e2eae5] bg-[#f5fbf7] sticky top-0 z-[10]">
-      <MedicalShaderBg isNavbar />
+    <header className="relative overflow-hidden h-[68px] flex items-center justify-between px-4 md:px-8 border-b border-[#e2eae5] bg-[#D5E6E0] sticky top-0 z-[10]">
       <div className="relative z-10 w-full flex items-center justify-between">
         <div className="flex items-center gap-4">
           <span onClick={() => navigate('/doctor-patients')} className="cursor-pointer text-[#29574b] font-bold text-sm hidden md:inline">

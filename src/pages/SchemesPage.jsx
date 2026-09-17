@@ -21,6 +21,7 @@ import {
   ArrowRight,
 } from 'lucide-react'
 import { TopBar, Sidebar } from './PatientDashboard.jsx'
+import MedicalShaderBg from '../components/MedicalShaderBg'
 import { getStoredUser } from '../api/apiClient.js'
 import { getSchemes, getSchemeBySlug, getSchemeRecommendations } from '../api/schemesApi.js'
 
@@ -91,7 +92,7 @@ export default function SchemesPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [selectedState, setSelectedState] = useState('All States')
-  const [selectedLevel, setSelectedLevel] = useState('All') // 'All' | 'Central' | 'State'
+  const [selectedLevel, setSelectedLevel] = useState('All') // 'All' | 'Central'
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
@@ -210,7 +211,8 @@ export default function SchemesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5fbf7] text-[#171d1b]">
+    <div className="min-h-screen bg-transparent text-[#171d1b] relative">
+      <MedicalShaderBg />
       <TopBar userName={userName} />
 
       <div className="flex">
@@ -321,9 +323,9 @@ export default function SchemesPage() {
                   </select>
                 </div>
 
-                {/* Level Toggle: All / Central / State */}
+                {/* Level Toggle: All / Central */}
                 <div className="flex items-center gap-1 p-1 rounded-xl bg-[#f0f5f2] border border-[#d5dbd8]">
-                  {['All', 'Central', 'State'].map((lvl) => (
+                  {['All', 'Central'].map((lvl) => (
                     <button
                       key={lvl}
                       type="button"

@@ -126,8 +126,7 @@ export default function DoctorInfo() {
     <div className="min-h-screen flex bg-[#f5f7f6] font-sans">
       <DoctorSidebar />
       <main className="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto" id="doctor-workspace">
-        <header className="relative overflow-hidden h-[72px] shrink-0 bg-[#f5fbf7] border-b border-[#e2eae5] px-6 md:px-10 flex items-center justify-between sticky top-0 z-[10]">
-          <MedicalShaderBg isNavbar />
+        <header className="relative overflow-hidden h-[72px] shrink-0 bg-[#D5E6E0] border-b border-[#e2eae5] px-6 md:px-10 flex items-center justify-between sticky top-0 z-[10]">
           <div className="relative z-10 w-full flex items-center justify-between">
             <div className="flex items-center gap-6">
               <button className="border-0 bg-transparent text-[#59756e] font-bold text-sm cursor-pointer hidden md:block">← &nbsp; Back to Patients</button>

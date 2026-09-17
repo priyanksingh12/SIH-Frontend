@@ -207,7 +207,7 @@ button { border: 0; cursor: pointer; font-family: inherit; }
 .doctors-page-header,
 header.topbar,
 .profile-workspace-header {
-  background: #f5fbf7;
+  background: #D5E6E0 !important;
   border-bottom: 1px solid rgba(41, 87, 75, 0.12);
 }
 
