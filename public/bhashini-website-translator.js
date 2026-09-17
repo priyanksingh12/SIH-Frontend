@@ -134,12 +134,14 @@
 
   /**
    * Sets the original English text for a node.
-   * CRITICAL: Never overwrites an already-recorded English original!
+   * force=true allows updating when React modifies dynamic content.
    */
-  function setOriginalEnglish(node, text) {
+  function setOriginalEnglish(node, text, force = false) {
     if (!node || text === undefined || text === null) return;
-    if (node.__bhashini_orig_en__ !== undefined) return;
-    if (originalTextMap.has(node)) return;
+    if (!force) {
+      if (node.__bhashini_orig_en__ !== undefined) return;
+      if (originalTextMap.has(node)) return;
+    }
 
     node.__bhashini_orig_en__ = text;
     originalTextMap.set(node, text);
@@ -158,8 +160,10 @@
 
     const text = node.nodeValue?.trim();
     if (!text || text.length < 2) return false;
-    // Pure numbers / symbols
+    // Pure numbers / symbols (e.g. "120/80", "92", "98%", "72")
     if (/^[\d\s\-_.,!?:;#@%&*()+=/\\|<>\[\]{}'"]+$/.test(text)) return false;
+    // Common medical numbers with standard measurement units (e.g. "120/80 mmHg", "92 mg/dL", "72 bpm")
+    if (/^[\d./\s]+(mmHg|mg\/dL|bpm|%|cm|kg|lbs)?$/i.test(text)) return false;
 
     return true;
   }
@@ -177,6 +181,7 @@
       if (orig && node.nodeValue !== orig) {
         isApplyingTranslation = true;
         node.nodeValue = orig;
+        delete node.__bhashini_last_trans__;
         isApplyingTranslation = false;
         return true;
       }
@@ -198,7 +203,9 @@
         const leadingSpace = orig.match(/^\s*/)?.[0] || "";
         const trailingSpace = orig.match(/\s*$/)?.[0] || "";
         isApplyingTranslation = true;
-        node.nodeValue = leadingSpace + cached + trailingSpace;
+        const transVal = leadingSpace + cached + trailingSpace;
+        node.__bhashini_last_trans__ = transVal;
+        node.nodeValue = transVal;
         isApplyingTranslation = false;
         return true;
       }
@@ -291,6 +298,7 @@
           isApplyingTranslation = true;
           nodesToTranslate.forEach((node) => {
             if (!node.isConnected) return;
+            if (!isValidTextNode(node)) return;
             const orig = getOriginalEnglish(node);
             if (!orig) return;
             const trimmedOrig = orig.trim();
@@ -298,7 +306,9 @@
             if (translated) {
               const leadingSpace = orig.match(/^\s*/)?.[0] || "";
               const trailingSpace = orig.match(/\s*$/)?.[0] || "";
-              node.nodeValue = leadingSpace + translated + trailingSpace;
+              const transVal = leadingSpace + translated + trailingSpace;
+              node.__bhashini_last_trans__ = transVal;
+              node.nodeValue = transVal;
             }
           });
           isApplyingTranslation = false;
@@ -390,9 +400,11 @@
     try {
       const allNodes = getTextNodes(document.body || document.documentElement);
       allNodes.forEach((node) => {
+        if (!isValidTextNode(node)) return;
         const original = getOriginalEnglish(node);
         if (original && node.nodeValue !== original) {
           node.nodeValue = original;
+          delete node.__bhashini_last_trans__;
         }
       });
     } finally {
@@ -443,10 +455,33 @@
           });
         } else if (mutation.type === "characterData") {
           const targetNode = mutation.target;
-          if (isValidTextNode(targetNode)) {
-            const knownOrig = getOriginalEnglish(targetNode);
-            if (!knownOrig && !reverseCache.has(targetNode.nodeValue)) {
-              setOriginalEnglish(targetNode, targetNode.nodeValue);
+          if (!targetNode || targetNode.nodeType !== Node.TEXT_NODE) return;
+
+          // If node is inside data-no-translate or ignored tag
+          if (targetNode.parentElement?.closest?.("[data-no-translate]")) {
+            delete targetNode.__bhashini_orig_en__;
+            delete targetNode.__bhashini_last_trans__;
+            originalTextMap.delete(targetNode);
+            pendingNodes.delete(targetNode);
+            return;
+          }
+
+          const currentVal = targetNode.nodeValue;
+          // React changed nodeValue outside translation
+          if (currentVal !== targetNode.__bhashini_last_trans__) {
+            // Check if newly set text is pure numbers/measurements or invalid
+            if (!isValidTextNode(targetNode)) {
+              delete targetNode.__bhashini_orig_en__;
+              delete targetNode.__bhashini_last_trans__;
+              originalTextMap.delete(targetNode);
+              pendingNodes.delete(targetNode);
+              return;
+            }
+
+            // Node now contains new English text from React state update
+            setOriginalEnglish(targetNode, currentVal, true);
+
+            if (currentLanguage !== "en") {
               const translated = translateNodeSync(targetNode, currentLanguage);
               if (!translated) {
                 pendingNodes.add(targetNode);

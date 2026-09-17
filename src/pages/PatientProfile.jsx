@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { getStoredUser } from '../api/apiClient.js'
 import { getPatientProfile, updatePatientProfile, getVitals, getReports, getMedicalHistory } from '../api/patientApi.js'
 import { getAppointments } from '../api/appointmentApi.js'
@@ -151,17 +151,17 @@ function VitalsBaseline({ latestVitals, loading }) {
         <div className="grid gap-4">
           <div className="flex justify-between p-3.5 rounded-xl bg-[#f5fbf7] border border-[#e2eae5]">
             <span className="font-semibold text-[#404845]">Resting Blood Pressure</span>
-            <strong className="text-xl font-bold font-serif text-[#171d1b]">{bp}</strong>
+            <strong data-no-translate="true" className="text-xl font-bold font-serif text-[#171d1b]">{bp}</strong>
           </div>
           <div className="flex justify-between p-3.5 rounded-xl bg-[#f5fbf7] border border-[#e2eae5]">
             <span className="font-semibold text-[#404845]">Heart Rate</span>
-            <strong className="text-xl font-bold font-serif text-[#171d1b]">{hr}</strong>
+            <strong data-no-translate="true" className="text-xl font-bold font-serif text-[#171d1b]">{hr}</strong>
           </div>
           <div className="flex justify-between p-3.5 rounded-xl bg-[#f5fbf7] border border-[#e2eae5]">
             <span className="font-semibold text-[#404845]">Fasting Blood Sugar</span>
-            <strong className="text-xl font-bold font-serif text-[#171d1b]">{sugar}</strong>
+            <strong data-no-translate="true" className="text-xl font-bold font-serif text-[#171d1b]">{sugar}</strong>
           </div>
-          <div className="flex justify-around items-center p-4 rounded-xl bg-[#effaf6] border border-[#b8dfd1] mt-1.5">
+          <div data-no-translate="true" className="flex justify-around items-center p-4 rounded-xl bg-[#effaf6] border border-[#b8dfd1] mt-1.5">
             <span className="text-center"><small className="block text-[#59756e] text-xs">Height</small><b className="text-base text-[#29574b]">{height}</b></span>
             <i className="w-[1px] h-6 bg-[#c4dcd3]" />
             <span className="text-center"><small className="block text-[#59756e] text-xs">Weight</small><b className="text-base text-[#29574b]">{weight}</b></span>
@@ -283,7 +283,7 @@ export default function PatientProfile() {
   const patientId = user?.id
 
   const [profile, setProfile] = useState(user || {})
-  const [vitals, setVitals] = useState([])
+  const [vitals, setVitals] = useState(() => getMergedVitalsList([]))
   const [vitalsLoading, setVitalsLoading] = useState(true)
   const [reports, setReports] = useState([])
   const [reportsLoading, setReportsLoading] = useState(true)

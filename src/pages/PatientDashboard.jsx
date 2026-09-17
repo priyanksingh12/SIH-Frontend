@@ -391,6 +391,7 @@ function HealthScoreGauge({ score = 85, riskLevel = 'low' }) {
         textAlign: 'center'
       }}>
         <motion.strong
+          data-no-translate="true"
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
@@ -597,7 +598,7 @@ export default function PatientDashboard() {
   const firstName = userName.split(' ')[0]
   const patientId = user?.id
 
-  const [vitalsList, setVitalsList] = useState([])
+  const [vitalsList, setVitalsList] = useState(() => getMergedVitalsList([]))
   const [activeTab, setActiveTab] = useState('all')
   const [appointments, setAppointments] = useState([])
   const [appointmentsLoading, setAppointmentsLoading] = useState(true)
@@ -747,7 +748,7 @@ export default function PatientDashboard() {
                 <Clock size={20} style={{ color: '#29574b' }} />
                 <div>
                   <span style={{ fontSize: '0.85rem', color: '#717975', display: 'block', fontWeight: 600 }}>LAST UPDATED</span>
-                  <strong style={{ fontSize: '1.05rem', color: '#171d1b' }}>
+                  <strong data-no-translate="true" style={{ fontSize: '1.05rem', color: '#171d1b' }}>
                     {latestVitals?.created_at ? formatRecordDate(latestVitals.created_at) : 'Not recorded'}
                   </strong>
                 </div>
@@ -1020,7 +1021,7 @@ export default function PatientDashboard() {
                     <p className="eyebrow" style={{ fontSize: '0.9rem', fontWeight: 700, color: '#526e67', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Activity size={16} style={{ color: '#10b981' }} /> BLOOD PRESSURE
                     </p>
-                    <div className="metric-value" style={{ fontSize: '2.2rem', fontWeight: 800, color: '#171d1b', margin: '4px 0' }}>
+                    <div className="metric-value" data-no-translate="true" style={{ fontSize: '2.2rem', fontWeight: 800, color: '#171d1b', margin: '4px 0' }}>
                       {bpValue} <small style={{ fontSize: '1rem', color: '#717975', fontWeight: 600 }}>mmHg</small>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
@@ -1057,7 +1058,7 @@ export default function PatientDashboard() {
                     <p className="eyebrow" style={{ fontSize: '0.9rem', fontWeight: 700, color: '#526e67', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Droplets size={16} style={{ color: '#3b82f6' }} /> BLOOD SUGAR
                     </p>
-                    <div className="metric-value" style={{ fontSize: '2.2rem', fontWeight: 800, color: '#171d1b', margin: '4px 0' }}>
+                    <div className="metric-value" data-no-translate="true" style={{ fontSize: '2.2rem', fontWeight: 800, color: '#171d1b', margin: '4px 0' }}>
                       {sugarValue} <small style={{ fontSize: '1rem', color: '#717975', fontWeight: 600 }}>mg/dL</small>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
@@ -1094,7 +1095,7 @@ export default function PatientDashboard() {
                     <p className="eyebrow" style={{ fontSize: '0.9rem', fontWeight: 700, color: '#526e67', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Wind size={16} style={{ color: '#06b6d4' }} /> SPO2 (OXYGEN)
                     </p>
-                    <div className="metric-value" style={{ fontSize: '2.2rem', fontWeight: 800, color: '#171d1b', margin: '4px 0' }}>
+                    <div className="metric-value" data-no-translate="true" style={{ fontSize: '2.2rem', fontWeight: 800, color: '#171d1b', margin: '4px 0' }}>
                       {spo2Value}
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
@@ -1131,7 +1132,7 @@ export default function PatientDashboard() {
                     <p className="eyebrow" style={{ fontSize: '0.9rem', fontWeight: 700, color: '#526e67', display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <Heart size={16} style={{ color: '#ec4899' }} /> HEART RATE
                     </p>
-                    <div className="metric-value" style={{ fontSize: '2.2rem', fontWeight: 800, color: '#171d1b', margin: '4px 0' }}>
+                    <div className="metric-value" data-no-translate="true" style={{ fontSize: '2.2rem', fontWeight: 800, color: '#171d1b', margin: '4px 0' }}>
                       {hrValue} <small style={{ fontSize: '1rem', color: '#717975', fontWeight: 600 }}>bpm</small>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
