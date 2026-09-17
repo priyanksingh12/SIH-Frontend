@@ -92,7 +92,7 @@ export default function SchemesPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [debouncedQuery, setDebouncedQuery] = useState('')
   const [selectedState, setSelectedState] = useState('All States')
-  const [selectedLevel, setSelectedLevel] = useState('All') // 'All' | 'Central'
+  const [selectedLevel, setSelectedLevel] = useState('All') // 'All' | 'Central' | 'State'
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCount, setTotalCount] = useState(0)
@@ -127,21 +127,43 @@ export default function SchemesPage() {
     setLoading(true)
     setError(null)
 
+    const isStateSelected = selectedState && selectedState !== 'All States'
+
     getSchemes({
-      page,
-      limit: 12,
+      page: isStateSelected ? 1 : page,
+      limit: isStateSelected ? 500 : 12,
       q: debouncedQuery,
       state: selectedState,
     })
       .then((res) => {
         if (isCancelled) return
         let list = res.data || []
+
+        // When a state is selected, ensure schemes shown are available in that state
+        // Central initiatives apply across all states; state initiatives match chosen state
+        if (isStateSelected) {
+          const target = selectedState.trim().toLowerCase()
+          list = list.filter((s) => {
+            const bState = (s.beneficiary_state || '').trim().toLowerCase()
+            return bState === target || bState === 'all' || s.level?.toLowerCase() === 'central'
+          })
+
+          // Prioritize state-level schemes of the chosen state at the top
+          list.sort((a, b) => {
+            const aIsState = a.level?.toLowerCase() === 'state' ? 1 : 0
+            const bIsState = b.level?.toLowerCase() === 'state' ? 1 : 0
+            return bIsState - aIsState
+          })
+        }
+
+        // Apply level filter (All / Central / State)
         if (selectedLevel !== 'All') {
           list = list.filter((s) => s.level?.toLowerCase() === selectedLevel.toLowerCase())
         }
+
         setSchemes(list)
-        setTotalPages(res.pages || 1)
-        setTotalCount(res.total || 0)
+        setTotalPages(isStateSelected ? 1 : (res.pages || 1))
+        setTotalCount(selectedLevel !== 'All' || isStateSelected ? list.length : (res.total || list.length))
       })
       .catch((err) => {
         if (isCancelled) return
@@ -323,9 +345,9 @@ export default function SchemesPage() {
                   </select>
                 </div>
 
-                {/* Level Toggle: All / Central */}
+                {/* Level Toggle: All / Central / State */}
                 <div className="flex items-center gap-1 p-1 rounded-xl bg-[#f0f5f2] border border-[#d5dbd8]">
-                  {['All', 'Central'].map((lvl) => (
+                  {['All', 'Central', 'State'].map((lvl) => (
                     <button
                       key={lvl}
                       type="button"
@@ -352,7 +374,7 @@ export default function SchemesPage() {
                   {selectedState !== 'All States' && ` in ${selectedState}`}
                   {debouncedQuery && ` matching "${debouncedQuery}"`}
                 </span>
-                {selectedState !== 'All States' || debouncedQuery ? (
+                {selectedState !== 'All States' || debouncedQuery || selectedLevel !== 'All' ? (
                   <button
                     type="button"
                     onClick={() => {

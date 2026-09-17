@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { getStoredUser } from '../api/apiClient.js'
 import accountCreatedImage from '../assets/Account Created.png'
+import LanguageSelector from '../components/LanguageSelector.jsx'
 
 const confirmationImage = accountCreatedImage
 
@@ -32,7 +33,10 @@ export default function AccountCreated() {
           <div className="font-serif text-2xl font-bold tracking-tight text-white">SwasthyaSahay</div>
           <small className="text-[9px] tracking-widest opacity-80 uppercase block">WELCOME TO THE NETWORK</small>
         </div>
-        <button type="button" onClick={() => navigate('/')} className="bg-transparent border-none text-white font-semibold text-sm cursor-pointer hover:underline hidden md:block">← &nbsp;Back to website</button>
+        <div className="flex items-center gap-4">
+          <LanguageSelector />
+          <button type="button" onClick={() => navigate('/')} className="bg-transparent border-none text-white font-semibold text-sm cursor-pointer hover:underline hidden md:block">← &nbsp;Back to website</button>
+        </div>
       </header>
       <div className="relative z-10 max-w-[800px]">
         <blockquote className="text-xl md:text-3xl font-serif font-medium leading-tight">"Welcome to a synchronized continuum of care designed for rural clinics, specialized doctors, and empowered patients."</blockquote>

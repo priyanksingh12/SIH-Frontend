@@ -4,6 +4,7 @@ import { getFacilities } from '../api/facilityApi.js'
 import { registerDoctor } from '../api/doctorApi.js'
 import { getStoredUser } from '../api/apiClient.js'
 import MedicalShaderBg from '../components/MedicalShaderBg'
+import LanguageSelector from '../components/LanguageSelector.jsx'
 
 function DoctorSidebar() {
   const links = ['Dashboard', 'Patients', 'Appointments', 'Vitals & History', 'My Profile']
@@ -133,6 +134,7 @@ export default function DoctorInfo() {
               <span className="text-[#29574b] font-bold text-sm bg-[#eaf3ee] px-3 py-1.5 rounded-full">♧ &nbsp; Secure Clinical Session</span>
             </div>
             <div className="flex items-center gap-4">
+              <LanguageSelector />
               <button className="hidden md:block px-4 py-2 bg-gradient-to-r from-[#29574b] to-[#1e4037] text-[#00ff88] border-0 rounded-full font-bold text-xs cursor-pointer shadow-md shadow-[#29574b]/20">✦ &nbsp; AI Clinical Assistant</button>
               <button className="w-10 h-10 rounded-full border border-[#e2eae5] bg-[#fafdfb] text-[#29574b] text-lg cursor-pointer relative flex items-center justify-center">♧<i className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-[#e74c3c]" /></button>
               <strong className="hidden md:flex flex-col text-[#171d1b] text-sm">Dr. {getStoredUser()?.name || 'Doctor'} <small className="text-[#59756e] font-normal text-xs">Attending</small></strong>

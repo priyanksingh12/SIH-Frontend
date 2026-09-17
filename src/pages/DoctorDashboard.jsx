@@ -8,6 +8,7 @@ import VideoCallModal from '../components/VideoCallModal.jsx'
 import IncomingCallModal from '../components/IncomingCallModal.jsx'
 import MedicalShaderBg from '../components/MedicalShaderBg'
 import { useDoctorCallListener } from '../hooks/useDoctorCallListener.js'
+import LanguageSelector from '../components/LanguageSelector.jsx'
 
 // Helpers
 function getInitials(name) {
@@ -474,6 +475,7 @@ export default function DoctorDashboard() {
               <small className="text-xs text-[#59756e]">{doctorLoading ? 'Loading profile…' : doctor?.verified ? 'Verified · State Medical Registry' : 'Pending Verification'}</small>
             </div>
             <div className="flex items-center gap-3">
+              <LanguageSelector />
               <button onClick={() => navigate('/doctor-patients')} className="border-0 bg-[#eaf3ee] text-[#29574b] px-4 py-2 rounded-full font-bold text-[0.92rem] cursor-pointer">♧ Patients</button>
               <div className="w-[38px] h-[38px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-bold text-[0.95rem] shrink-0 hidden md:grid">{getInitials(displayName)}</div>
               <b className="hidden md:flex flex-col text-sm">{displayName}<small className="text-xs font-normal">Attending Physician</small></b>

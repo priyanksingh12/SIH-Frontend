@@ -262,6 +262,8 @@
     const CHUNK_SIZE = 25;
     for (let i = 0; i < uncachedTexts.length; i += CHUNK_SIZE) {
       const chunk = uncachedTexts.slice(i, i + CHUNK_SIZE);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
       try {
         const res = await fetch(`${API_BASE}/api/bhashini/translate-batch`, {
           method: "POST",
@@ -271,7 +273,9 @@
             sourceLanguage: "en",
             targetLanguage: targetLang,
           }),
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
 
         if (res.ok) {
           const data = await res.json();
@@ -308,6 +312,47 @@
   }
 
   /**
+   * Translates current page DOM into target language immediately from cache,
+   * then batches and processes any uncached nodes.
+   */
+  async function translateCurrentPage(targetLang) {
+    targetLang = (
+      targetLang ||
+      currentLanguage ||
+      localStorage.getItem("bhashini_website_lang") ||
+      localStorage.getItem("SwasthyaSahay-dashboard-lang") ||
+      "en"
+    ).toLowerCase();
+
+    currentLanguage = targetLang;
+
+    if (targetLang === "en") {
+      restoreOriginalText();
+      finishInitialTranslation();
+      return;
+    }
+
+    const allNodes = getTextNodes(document.body || document.documentElement);
+    if (!allNodes || allNodes.length === 0) return;
+
+    // Step 1: Immediately apply cached translations synchronously (0ms delay)
+    isApplyingTranslation = true;
+    allNodes.forEach((node) => {
+      let orig = getOriginalEnglish(node);
+      if (!orig) {
+        orig = node.nodeValue;
+        setOriginalEnglish(node, orig);
+      }
+      translateNodeSync(node, targetLang);
+    });
+    isApplyingTranslation = false;
+    finishInitialTranslation();
+
+    // Step 2: Translate any remaining uncached strings in the background
+    await processNodes(allNodes, targetLang);
+  }
+
+  /**
    * Translates the whole website into the specified target language dynamically
    */
   async function setLanguage(targetLang) {
@@ -328,18 +373,7 @@
 
     isTranslating = true;
     try {
-      const allNodes = getTextNodes(document.body || document.documentElement);
-
-      // Step 1: Immediately apply cached translations synchronously
-      isApplyingTranslation = true;
-      allNodes.forEach((node) => {
-        translateNodeSync(node, targetLang);
-      });
-      isApplyingTranslation = false;
-      finishInitialTranslation();
-
-      // Step 2: Translate any remaining uncached strings in the background
-      await processNodes(allNodes, targetLang);
+      await translateCurrentPage(targetLang);
     } finally {
       isTranslating = false;
       finishInitialTranslation();
@@ -378,7 +412,7 @@
 
     observer = new MutationObserver((mutations) => {
       if (isApplyingTranslation) return;
-      if (currentLanguage === "en" || isTranslating) return;
+      if (currentLanguage === "en") return;
 
       let hasUncachedNodes = false;
 
@@ -440,15 +474,60 @@
     });
   }
 
+  /**
+   * Patches HTML5 History API to automatically trigger translation whenever
+   * the URL changes in a single page application (SPA).
+   */
+  function patchHistory() {
+    if (window.__bhashini_history_patched__) return;
+    window.__bhashini_history_patched__ = true;
+
+    const originalPushState = history.pushState;
+    history.pushState = function () {
+      const ret = originalPushState.apply(this, arguments);
+      window.dispatchEvent(new Event("bhashini:locationchange"));
+      return ret;
+    };
+
+    const originalReplaceState = history.replaceState;
+    history.replaceState = function () {
+      const ret = originalReplaceState.apply(this, arguments);
+      window.dispatchEvent(new Event("bhashini:locationchange"));
+      return ret;
+    };
+
+    window.addEventListener("popstate", () => {
+      window.dispatchEvent(new Event("bhashini:locationchange"));
+    });
+
+    function handleNavigation() {
+      const lang =
+        currentLanguage ||
+        localStorage.getItem("bhashini_website_lang") ||
+        localStorage.getItem("SwasthyaSahay-dashboard-lang") ||
+        "en";
+      if (lang && lang !== "en") {
+        translateCurrentPage(lang);
+        setTimeout(() => translateCurrentPage(lang), 150);
+        setTimeout(() => translateCurrentPage(lang), 500);
+        setTimeout(() => translateCurrentPage(lang), 1200);
+      }
+    }
+
+    window.addEventListener("bhashini:locationchange", handleNavigation);
+  }
+
   // Expose Global Public API
   window.BhashiniTranslator = {
     setLanguage,
+    translateCurrentPage,
     restoreOriginalText,
     getLanguage: () => currentLanguage,
     getSupportedLanguages: () => SUPPORTED_LANGS,
   };
 
   // Immediate startup logic:
+  patchHistory();
   startObserver();
 
   function onDomReady() {

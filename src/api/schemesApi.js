@@ -9,15 +9,21 @@ import { BASE_URL } from './apiClient.js'
 /**
  * Fetch all health schemes with search, state filter, and pagination.
  */
-export async function getSchemes({ page = 1, limit = 12, q = '', state = '', category = 'health' } = {}) {
+export async function getSchemes({ page = 1, limit, q = '', state = '', category = 'health' } = {}) {
   const params = new URLSearchParams()
   if (category) params.set('category', category)
   if (page) params.set('page', page.toString())
-  if (limit) params.set('limit', limit.toString())
-  if (q && q.trim()) params.set('q', q.trim())
-  if (state && state.trim() && state !== 'All States' && state !== 'All') {
+
+  const isStateSelected = state && state.trim() && state !== 'All States' && state !== 'All'
+  if (isStateSelected) {
     params.set('state', state.trim())
+    // When a state is selected, fetch all schemes available in that state without limiting
+    params.set('limit', (limit || 500).toString())
+  } else if (limit) {
+    params.set('limit', limit.toString())
   }
+
+  if (q && q.trim()) params.set('q', q.trim())
 
   const res = await fetch(`${BASE_URL}/api/schemes?${params.toString()}`)
   if (!res.ok) {

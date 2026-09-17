@@ -1,7 +1,8 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getStoredUser } from '../api/apiClient.js'
 import { saveVitals, addMedicalHistory } from '../api/patientApi.js'
+import LanguageSelector from '../components/LanguageSelector.jsx'
 
 const inputFields = [
   ['bloodPressure', 'Blood Pressure', '120/80', 'mmHg', 'Target: below 120/80'],
@@ -162,7 +163,7 @@ export default function Vitals() {
     <div className="vitals-page" style={{ justifyContent: 'center' }}>
       <main className="vitals-main" style={{ width: '100%', maxWidth: '840px', margin: '0 auto', padding: '40px 24px' }}>
         <div className="vitals-content" style={{ width: '100%', padding: 0 }}>
-          <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-start' }}>
+          <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <button
               type="button"
               onClick={() => navigate(dashPath)}
@@ -183,6 +184,7 @@ export default function Vitals() {
             >
               ← Back to Dashboard
             </button>
+            <LanguageSelector />
           </div>
           <header className="vitals-header" style={{ textAlign: 'center', marginBottom: '36px' }}>
             <h1 style={{ fontSize: '3.2rem', fontWeight: 700, margin: 0 }}>Add Vitals</h1>

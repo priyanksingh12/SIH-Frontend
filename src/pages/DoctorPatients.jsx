@@ -7,6 +7,7 @@ import VideoCallModal from '../components/VideoCallModal.jsx'
 import IncomingCallModal from '../components/IncomingCallModal.jsx'
 import MedicalShaderBg from '../components/MedicalShaderBg'
 import { useDoctorCallListener } from '../hooks/useDoctorCallListener.js'
+import LanguageSelector from '../components/LanguageSelector.jsx'
 
 const toneMap = ['sage', 'rose', 'blue', 'sand', 'mint', 'lilac']
 const avatarColors = {
@@ -157,6 +158,7 @@ export default function DoctorPatients() {
               <small className="text-xs text-[#59756e]">Verified · State Medical Registry</small>
             </div>
             <div className="flex items-center gap-2 md:gap-3">
+              <LanguageSelector />
               <Link to="/doctor-dashboard" className="hidden md:flex items-center gap-2 border-0 bg-[#eaf3ee] text-[#29574b] px-4 py-2 rounded-full font-bold text-[0.92rem] no-underline">
                 👤 My Profile
               </Link>

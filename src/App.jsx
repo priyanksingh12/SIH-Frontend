@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import MedicalShaderBg from './components/MedicalShaderBg'
 import PatientDashboard from './pages/PatientDashboard'
@@ -89,11 +89,47 @@ function ProtectedRoute({ children }) {
   return children
 }
 
+function AutoLanguageTranslator() {
+  const location = useLocation()
+
+  useEffect(() => {
+    const activeLang =
+      window.localStorage.getItem('bhashini_website_lang') ||
+      window.localStorage.getItem('SwasthyaSahay-dashboard-lang') ||
+      'en'
+
+    if (activeLang && activeLang !== 'en') {
+      if (window.BhashiniTranslator) {
+        window.BhashiniTranslator.translateCurrentPage?.(activeLang)
+      }
+      // Re-trigger passes as React finishes async component mounting and API fetching
+      const t1 = setTimeout(() => {
+        window.BhashiniTranslator?.translateCurrentPage?.(activeLang)
+      }, 150)
+      const t2 = setTimeout(() => {
+        window.BhashiniTranslator?.translateCurrentPage?.(activeLang)
+      }, 500)
+      const t3 = setTimeout(() => {
+        window.BhashiniTranslator?.translateCurrentPage?.(activeLang)
+      }, 1200)
+
+      return () => {
+        clearTimeout(t1)
+        clearTimeout(t2)
+        clearTimeout(t3)
+      }
+    }
+  }, [location.pathname, location.search])
+
+  return null
+}
+
 function App() {
   return (
     <>
       <MedicalShaderBg />
       <Router>
+        <AutoLanguageTranslator />
         <Routes>
           <Route path="/" element={<HomeRoute />} />
           <Route path="/landing" element={<Landing />} />

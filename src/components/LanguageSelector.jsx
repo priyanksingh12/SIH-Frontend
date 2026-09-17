@@ -76,6 +76,8 @@ export default function LanguageSelector({ className = '', dropUp = false }) {
 
     setActiveLang(code)
     localStorage.setItem('bhashini_website_lang', code)
+    localStorage.setItem('SwasthyaSahay-dashboard-lang', code)
+    window.dispatchEvent(new CustomEvent('bhashini:languageChange', { detail: { language: code } }))
 
     if (window.BhashiniTranslator) {
       setTranslating(true)

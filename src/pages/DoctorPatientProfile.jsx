@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { getStoredUser, logout } from '../api/apiClient.js'
 import { getPatientProfile, getVitals, getMedicalHistory, getReports } from '../api/patientApi.js'
 import MedicalShaderBg from '../components/MedicalShaderBg'
+import LanguageSelector from '../components/LanguageSelector.jsx'
 
 function getInitials(name) {
   return (name || '').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase() || 'PT'
@@ -20,6 +21,7 @@ function DoctorTopbar({ doctorName }) {
           <b className="text-[#171d1b] font-bold text-sm">▣ Doctor Clinical OPD Workspace</b>
         </div>
       <div className="flex items-center gap-2 md:gap-3">
+        <LanguageSelector />
         <div className="w-[38px] h-[38px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-[0.95rem] shrink-0">
           {getInitials(doctorName)}
         </div>
