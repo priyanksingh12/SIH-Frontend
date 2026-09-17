@@ -92,7 +92,7 @@ function IdentityCard({ userName, profile, user, latestVitals }) {
 
   return (
     <section className="p-6 rounded-[20px] bg-white border border-[#e2eae5] shadow-[0_8px_24px_rgba(41,87,75,0.06)] mb-6 flex items-center gap-5">
-      <div className="w-[76px] h-[76px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-3xl shrink-0 shadow-[0_4px_14px_rgba(41,87,75,0.25)] border-4 border-[#dcece5]">
+      <div data-no-translate="true" className="w-[76px] h-[76px] rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-3xl shrink-0 shadow-[0_4px_14px_rgba(41,87,75,0.25)] border-4 border-[#dcece5]">
         {getInitials(userName)}
       </div>
       <div className="flex-1">

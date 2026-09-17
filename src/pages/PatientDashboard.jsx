@@ -228,7 +228,7 @@ export function TopBar({ userName }) {
             <span />
           </button>
           <div className="flex items-center gap-3 pl-2 border-l border-[rgba(41,87,75,0.2)] text-[#171d1b] text-sm font-semibold cursor-pointer" onClick={() => navigate('/patient-profile')}>
-            <div className="w-9 h-9 rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-base">
+            <div data-no-translate="true" className="w-9 h-9 rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-base">
               {initials}
             </div>
             <span className="font-bold text-base text-[#171d1b]">{userName}</span>
@@ -253,7 +253,7 @@ export function Sidebar({ userName, activeLabel = 'Dashboard', className = '' })
       style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
     >
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-xl shrink-0 shadow-md">
+        <div data-no-translate="true" className="w-12 h-12 rounded-full bg-[#29574b] text-[#00ff88] grid place-items-center font-extrabold text-xl shrink-0 shadow-md">
           {initials}
         </div>
         <div>
@@ -723,7 +723,9 @@ export default function PatientDashboard() {
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
               <div>
-                <h1 style={{ fontSize: '3.2rem', fontWeight: 800, margin: 0 }}>{getGreeting()}, {firstName}.</h1>
+                <h1 style={{ fontSize: '3.2rem', fontWeight: 800, margin: 0 }}>
+                  <span>{getGreeting()}</span>, <span>{firstName}</span>.
+                </h1>
                 <p style={{ fontSize: '1.25rem', marginTop: '6px', color: '#404845', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <CheckCircle2 size={20} style={{ color: '#10b981' }} />
                   {vitalsList.length > 0

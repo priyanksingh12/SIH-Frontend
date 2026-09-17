@@ -159,7 +159,10 @@
     if (parent.closest(".bhashini-widget-container")) return false;
 
     const text = node.nodeValue?.trim();
-    if (!text || text.length < 2) return false;
+    if (!text) return false;
+    // Must contain at least one letter (Latin or any Indic / Unicode alphabet letter)
+    // Allows 1-character names/words (e.g. "sh", "श", "A") while skipping pure punctuation symbols like ".", ","
+    if (!/[a-zA-Z\u0900-\u0D7F\u0A00-\u0A7F\p{L}]/u.test(text)) return false;
     // Pure numbers / symbols (e.g. "120/80", "92", "98%", "72")
     if (/^[\d\s\-_.,!?:;#@%&*()+=/\\|<>\[\]{}'"]+$/.test(text)) return false;
     // Common medical numbers with standard measurement units (e.g. "120/80 mmHg", "92 mg/dL", "72 bpm")
@@ -398,15 +401,17 @@
   function restoreOriginalText() {
     isApplyingTranslation = true;
     try {
-      const allNodes = getTextNodes(document.body || document.documentElement);
-      allNodes.forEach((node) => {
-        if (!isValidTextNode(node)) return;
+      const root = document.body || document.documentElement;
+      if (!root) return;
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+      let node;
+      while ((node = walker.nextNode())) {
         const original = getOriginalEnglish(node);
         if (original && node.nodeValue !== original) {
           node.nodeValue = original;
           delete node.__bhashini_last_trans__;
         }
-      });
+      }
     } finally {
       isApplyingTranslation = false;
     }
