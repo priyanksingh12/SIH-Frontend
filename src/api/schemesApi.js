@@ -1,6 +1,6 @@
 /**
  * Schemes API Service for SwasthyaSahay.
- * Connects directly to the live backend API gateway (https://sih-otuc.onrender.com).
+ * Connects directly to the live backend API gateway (https://sih-fh87.onrender.com).
  * No external APIs or mock data used.
  */
 

@@ -49,7 +49,7 @@ const BODY_AREAS = [
   },
 ]
 
-const BACKEND_URL = import.meta.env.VITE_API_BASE_URL || "https://sih-otuc.onrender.com"
+const BACKEND_URL = import.meta.env.VITE_API_BASE_URL || "https://sih-fh87.onrender.com"
 
 async function fetchNearbyMedicalHelp(symptoms, latitude, longitude) {
   const res = await fetch(`${BACKEND_URL}/emergency/find-help`, {

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Helper utility to convert Base64 PDF strings to Blobs / Blob URLs
  * and handle seamless local viewing & downloading.
  */
@@ -28,7 +28,8 @@ export function convertBase64ToPdfBlobUrl(pdfSource) {
 
   // Relative path — resolve to full backend URL
   if (typeof pdfSource === 'string' && pdfSource.startsWith('/')) {
-    return `https://sih-otuc.onrender.com${pdfSource}`
+    const backendUrl = import.meta.env.VITE_API_BASE_URL || 'https://sih-fh87.onrender.com'
+    return `${backendUrl}${pdfSource}`
   }
 
   // HTTP/HTTPS URL — return as-is so caller can open/embed it directly
@@ -78,7 +79,7 @@ export function downloadPdfFile(pdfSource, filename = 'SwasthyaSahay_Clinical_Re
   const cleanFilename = filename.endsWith('.pdf') ? filename : `${filename}.pdf`
 
   // Resolve relative paths to full URL
-  const BACKEND_URL = 'https://sih-otuc.onrender.com'
+  const BACKEND_URL = import.meta.env.VITE_API_BASE_URL || 'https://sih-fh87.onrender.com'
   if (typeof pdfSource === 'string' && pdfSource.startsWith('/')) {
     pdfSource = `${BACKEND_URL}${pdfSource}`
   }

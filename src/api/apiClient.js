@@ -1,9 +1,9 @@
-﻿/**
+/**
  * Central API client for SwasthyaSahay backend.
  * Handles base URL, auth headers, and silent token refresh on 401.
  */
 
-export const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sih-otuc.onrender.com'
+export const BASE_URL = import.meta.env.VITE_API_BASE_URL 
 
 // ─── Token helpers ───────────────────────────────────────────────────────────
 

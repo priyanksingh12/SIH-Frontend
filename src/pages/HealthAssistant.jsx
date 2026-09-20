@@ -853,7 +853,7 @@ function HealthAssistant() {
     setReportLoading(true)
     try {
       const res = await triageReport(sessionId)
-      const BACKEND_URL = 'https://sih-otuc.onrender.com'
+      const BACKEND_URL = import.meta.env.VITE_API_BASE_URL || 'https://sih-fh87.onrender.com'
       const resolveUrl = (val) => {
         if (!val || typeof val !== 'string') return val
         if (val.startsWith('/')) return `${BACKEND_URL}${val}`

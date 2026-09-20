@@ -16,7 +16,7 @@
     window.__API_BASE__ ||
     (window.location.hostname === "localhost" && window.location.port === "5000"
       ? "http://localhost:5000"
-      : "https://sih-otuc.onrender.com");
+      : "https://sih-fh87.onrender.com");
 
   const SUPPORTED_LANGS = [
     { code: "en", name: "English", nativeName: "English" },
